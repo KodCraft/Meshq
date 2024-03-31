@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import az.kodcraft.dashboard.navigation.dashboardGraph
 import az.kodcraft.onboarding.navigation.OnBoardingRouteConstants
 import az.kodcraft.onboarding.navigation.onBoardingGraph
 
@@ -31,16 +32,16 @@ fun MeshqNavHost(
 //            navigateToHome = navController::navigateToHome
         )
 
-//        dashboardGraph(
-//            navController = navController,
-////            changeTopAndBottomState = { _, _ -> },
-////            navigateToCampaign = navController::navigateToCampaign,
-////            navigateToProjects = navController::navigateToProjects,
-////            navigateToProjectDetails = navController::navigateToProjectDetails,
-////            navigateToNotification = navController::navigateToNotification,
-////            onNavigateToCampaignDetails = navController::navigateToCampaignDetails,
-////            onNavigateToSearch = navController::navigateToSearch,
-////            onNavigateToLogin = navController::navigateToLogin
-//        )
+        dashboardGraph(
+            navController = navController,
+//            changeTopAndBottomState = { _, _ -> },
+//            navigateToCampaign = navController::navigateToCampaign,
+//            navigateToProjects = navController::navigateToProjects,
+//            navigateToProjectDetails = navController::navigateToProjectDetails,
+//            navigateToNotification = navController::navigateToNotification,
+//            onNavigateToCampaignDetails = navController::navigateToCampaignDetails,
+//            onNavigateToSearch = navController::navigateToSearch,
+//            onNavigateToLogin = navController::navigateToLogin
+        )
     }
 }

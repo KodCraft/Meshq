@@ -1,4 +1,4 @@
-package az.kodcraft.meshq.ui.theme
+package az.kodcraft.core.presentation.theme
 
 import android.app.Activity
 import android.os.Build
@@ -17,24 +17,17 @@ import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    secondary = PrimaryLight,
+    tertiary = Pink80,
+    background = PrimaryBlue,
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    secondary = PrimaryLight,
+    tertiary = Pink40,
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    background = PrimaryBlue,
 )
 
 @Composable
@@ -64,7 +57,7 @@ fun MeshqTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = MeshqTypography,
         content = content
     )
 }

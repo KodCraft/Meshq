@@ -1,0 +1,42 @@
+ext {
+    set("compileSdkVersion", 34)
+    set("minSdkVersion", 26)
+    set("targetSdkVersion", 34)
+}
+
+subprojects {
+    afterEvaluate {
+        if (plugins.hasPlugin("com.android.library") || plugins.hasPlugin("com.android.application")) {
+            android {
+                compileSdkVersion(rootProject.ext.compileSdkVersion)
+
+                defaultConfig {
+                    minSdkVersion(rootProject.ext.minSdkVersion)
+                    targetSdkVersion(rootProject.ext.targetSdkVersion)
+                    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+                    consumerProguardFiles("consumer-rules.pro")
+                }
+
+
+                compileOptions {
+                    sourceCompatibility = JavaVersion.VERSION_17
+                    targetCompatibility = JavaVersion.VERSION_17
+                }
+                kotlinOptions {
+                    jvmTarget = "17"
+                }
+                buildFeatures {
+                    compose = true
+                }
+                composeOptions {
+                    kotlinCompilerExtensionVersion = "1.5.2"
+                }
+                packaging {
+                    resources {
+                        excludes += "/META-INF/{AL2.0,LGPL2.1}"
+                    }
+                }
+            }
+        }
+    }
+}

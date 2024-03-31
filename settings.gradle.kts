@@ -12,10 +12,14 @@ pluginManagement {
     }
 }
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
     repositories {
         google()
         mavenCentral()
+        maven(url = "https://jitpack.io")
+        maven {
+            url = uri("https://plugins.gradle.org/m2/")
+        }
     }
 }
 
