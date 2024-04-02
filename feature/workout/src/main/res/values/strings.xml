@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="workout_details_screen_workout_tab_program">Proqram</string>
+    <string name="workout_details_screen_workout_tab_notes">Qeydlər</string>
+    <string name="workout_details_screen_start_workout_button">Məşqə başla</string>
+</resources>

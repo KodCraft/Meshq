@@ -45,7 +45,7 @@ val Typography.smallTitle: TextStyle
 
 val Typography.headLine: TextStyle
     get() = TextStyle(
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.Normal,
         fontFamily = MeshqFont,
         fontSize = 16.sp,
         lineHeight = 20.sp,

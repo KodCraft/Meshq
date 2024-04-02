@@ -1,7 +1,5 @@
 package az.kodcraft.dashboard.presentation
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,7 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import az.kodcraft.core.presentation.composable.TopAppBar
+import az.kodcraft.core.presentation.composable.appBar.TopAppBar
 import az.kodcraft.core.presentation.theme.PrimaryTurq
 import az.kodcraft.core.presentation.theme.body
 import az.kodcraft.core.presentation.theme.largeTitle
@@ -48,10 +46,14 @@ import java.util.Locale
 
 @Composable
 fun DashboardRoute(
-    viewModel: DashboardViewModel = hiltViewModel()
+    viewModel: DashboardViewModel = hiltViewModel(),
+    navigateToWorkoutDetails: (id: String) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    DashboardScreen(uiState, onIntent = { viewModel.acceptIntent(it) }, {})
+    DashboardScreen(
+        uiState,
+        onIntent = { viewModel.acceptIntent(it) },
+        onWorkoutClick = { navigateToWorkoutDetails(it) })
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -64,53 +66,58 @@ fun DashboardScreen(
     Column(
         Modifier
             .fillMaxSize()
-            .padding(horizontal = 24.dp)
             .background(MaterialTheme.colorScheme.background)
     ) {
         TopAppBar(showMenuIcon = true)
-        Text(
-            modifier = Modifier.padding(horizontal = 6.dp),
-            text = stringResource(R.string.dashboard_screen_title),
-            color = Color.White,
-            style = MaterialTheme.typography.largeTitle
-        )
-        Spacer(modifier = Modifier.height(30.dp))
-        val listState = rememberLazyListState(
-            initialFirstVisibleItemIndex = StartIndex,
-        )
-
-        LazyRow(
-            modifier = Modifier
-                .fillMaxWidth(),
-            state = listState,
-            flingBehavior = rememberSnapFlingBehavior(
-                lazyListState = listState
-            )
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
         ) {
-            items(PageCount) { index ->
-                val selectedWeek = remember {
-                    (uiState.selectedDay.get(
-                        WeekFields.of(
-                            Locale.getDefault()
-                        ).weekOfWeekBasedYear()
-                    ) + (index - StartIndex))
-                }
+            Text(
+                modifier = Modifier.padding(horizontal = 6.dp),
+                text = stringResource(R.string.dashboard_screen_title),
+                color = Color.White,
+                style = MaterialTheme.typography.largeTitle
+            )
+            Spacer(modifier = Modifier.height(30.dp))
+            val listState = rememberLazyListState(
+                initialFirstVisibleItemIndex = StartIndex,
+            )
 
-                selectedWeek.getWeekData().apply {
-                    WeekRow(
-                        modifier = Modifier
-                            .fillParentMaxWidth()
-                            .padding(horizontal = 6.dp),
-                        data = weekDays,
-                        selectedDay = uiState.selectedDay,
-                        onDayClicked = { onIntent.invoke(DashboardIntent.SetDay(it)) }
-                    )
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                state = listState,
+                flingBehavior = rememberSnapFlingBehavior(
+                    lazyListState = listState
+                )
+            ) {
+                items(PageCount) { index ->
+                    val selectedWeek = remember {
+                        (uiState.selectedDay.get(
+                            WeekFields.of(
+                                Locale.getDefault()
+                            ).weekOfWeekBasedYear()
+                        ) + (index - StartIndex))
+                    }
+
+                    selectedWeek.getWeekData().apply {
+                        WeekRow(
+                            modifier = Modifier
+                                .fillParentMaxWidth()
+                                .padding(horizontal = 6.dp),
+                            data = weekDays,
+                            selectedDay = uiState.selectedDay,
+                            onDayClicked = { onIntent.invoke(DashboardIntent.SetDay(it)) }
+                        )
+                    }
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(30.dp))
-        Workouts(workouts = uiState.weekWorkouts, onWorkoutClick)
+            Spacer(modifier = Modifier.height(30.dp))
+            Workouts(workouts = uiState.weekWorkouts, onWorkoutClick)
+        }
     }
 }
 

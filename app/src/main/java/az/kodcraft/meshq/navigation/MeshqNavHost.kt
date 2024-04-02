@@ -9,6 +9,8 @@ import androidx.navigation.compose.NavHost
 import az.kodcraft.dashboard.navigation.dashboardGraph
 import az.kodcraft.onboarding.navigation.OnBoardingRouteConstants
 import az.kodcraft.onboarding.navigation.onBoardingGraph
+import az.kodcraft.workout.navigation.WorkoutRouteConstants
+import az.kodcraft.workout.navigation.workoutGraph
 
 @Composable
 fun MeshqNavHost(
@@ -33,9 +35,8 @@ fun MeshqNavHost(
         )
 
         dashboardGraph(
-            navController = navController,
 //            changeTopAndBottomState = { _, _ -> },
-//            navigateToCampaign = navController::navigateToCampaign,
+            navigateToWorkoutDetails = {navController.navigate(WorkoutRouteConstants.WORKOUT_DETAILS_SCREEN)},
 //            navigateToProjects = navController::navigateToProjects,
 //            navigateToProjectDetails = navController::navigateToProjectDetails,
 //            navigateToNotification = navController::navigateToNotification,
@@ -43,5 +44,7 @@ fun MeshqNavHost(
 //            onNavigateToSearch = navController::navigateToSearch,
 //            onNavigateToLogin = navController::navigateToLogin
         )
+
+        workoutGraph(navigateToWorkoutProgress= {navController.navigate(WorkoutRouteConstants.WORKOUT_PROGRESS_SCREEN)})
     }
 }

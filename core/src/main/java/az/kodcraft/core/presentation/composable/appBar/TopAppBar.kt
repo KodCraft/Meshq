@@ -1,4 +1,4 @@
-package az.kodcraft.core.presentation.composable
+package az.kodcraft.core.presentation.composable.appBar
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,7 +16,7 @@ import androidx.compose.material3.Icon
 
 @Composable
 fun TopAppBar(
-    showMenuIcon: Boolean = true,
+    showMenuIcon: Boolean = false,
     onMenuClick: () -> Unit = {},
     showBackIcon: Boolean = false,
     iconsColor: Color = Color.White,
@@ -25,7 +25,7 @@ fun TopAppBar(
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(vertical = 24.dp, horizontal = 6.dp),
+            .padding(24.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (showMenuIcon)
@@ -37,7 +37,7 @@ fun TopAppBar(
             )
         else if (showBackIcon)
             Icon(
-                modifier = Modifier.clickable { onBackClick() },
+                modifier = Modifier.padding().clickable { onBackClick() },
                 painter = painterResource(id = R.drawable.ic_back),
                 tint = iconsColor,
                 contentDescription = null
