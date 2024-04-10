@@ -8,7 +8,7 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="az.dpc.sima" />
+                  <option name="appId" value="com.fsa.to_do_app" />
                 </ConnectionSetting>
               </option>
               <option name="failureTypes">

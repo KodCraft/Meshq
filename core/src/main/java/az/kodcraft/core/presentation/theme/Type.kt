@@ -60,24 +60,23 @@ val Typography.body: TextStyle
         lineHeight = 18.sp,
         letterSpacing = 0.sp
     )
-
-val Typography.callOut: TextStyle
+val Typography.bodyLight: TextStyle
     get() = TextStyle(
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.ExtraLight,
+        fontFamily = MeshqFont,
+        fontSize = 14.sp,
+        lineHeight = 18.sp,
+        letterSpacing = 0.sp
+    )
+val Typography.bodySmallLight: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.ExtraLight,
         fontFamily = MeshqFont,
         fontSize = 14.sp,
         lineHeight = 18.sp,
         letterSpacing = 0.sp
     )
 
-val Typography.subHead: TextStyle
-    get() = TextStyle(
-        fontWeight = FontWeight.Normal,
-        fontFamily = MeshqFont,
-        fontSize = 12.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.sp
-    )
 
 val Typography.footNote: TextStyle
     get() = TextStyle(
@@ -85,15 +84,6 @@ val Typography.footNote: TextStyle
         fontFamily = MeshqFont,
         fontSize = 12.sp,
         lineHeight = 16.sp,
-        letterSpacing = 0.sp
-    )
-
-val Typography.caption: TextStyle
-    get() = TextStyle(
-        fontWeight = FontWeight.Normal,
-        fontFamily = MeshqFont,
-        fontSize = 10.sp,
-        lineHeight = 14.sp,
         letterSpacing = 0.sp
     )
 

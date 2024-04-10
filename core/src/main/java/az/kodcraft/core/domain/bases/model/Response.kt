@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.transform
 sealed class Response<out T> {
 
     data class Success<out T>(val data: T) : Response<T>()
-    data class Failure(val error: String) : Response<Nothing>()
+    data class Failure(val error: String?) : Response<Nothing>()
     object Loading : Response<Nothing>()
     object NetworkError : Response<Nothing>()
 
@@ -20,14 +20,6 @@ sealed class Response<out T> {
     }
 }
 
-fun <T, R> Response<T>.map(transform: (T) -> R): Response<R> {
-    return when (this) {
-        is Response.Success -> Response.Success(transform(data))
-        is Response.Failure -> Response.Failure(error)
-        Response.Loading -> Response.Loading
-        Response.NetworkError -> Response.NetworkError
-    }
-}
 
 fun <T> Flow<Response<T>>.doOnSuccess(action: suspend (T) -> Unit): Flow<Response<T>> =
     transform { result ->
@@ -40,7 +32,7 @@ fun <T> Flow<Response<T>>.doOnSuccess(action: suspend (T) -> Unit): Flow<Respons
 fun <T> Flow<Response<T>>.doOnFailure(action: suspend (String) -> Unit): Flow<Response<T>> =
     transform { result ->
         if (result is Response.Failure) {
-            action(result.error)
+            action(result.error?:"")
         }
         return@transform emit(result)
     }

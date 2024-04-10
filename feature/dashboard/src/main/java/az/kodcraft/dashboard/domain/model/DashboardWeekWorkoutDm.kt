@@ -10,7 +10,7 @@ data class DashboardWeekWorkoutDm(
     val date: String,
     val content: String,
     val labels: List<String> = emptyList(),
-    val isSelected:Boolean
+    val isSelected:Boolean = false
 ) :Parcelable{
     companion object{
         val MOCK = DashboardWeekWorkoutDm(

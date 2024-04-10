@@ -53,12 +53,13 @@ fun WeekDay(data: DayOfWeekDm, selectedDay:LocalDate, onDayClicked:() -> Unit) {
             Text(text = data.day.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
                 color = if (data.day == selectedDay) Color.Black else Color.White,
 
-                style = MaterialTheme.typography.body)
+                style = MaterialTheme.typography.body
+            )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = data.day.dayOfMonth.toString(),
                 color = if (data.day == selectedDay) Color.Black else Color.White,
-                style = MaterialTheme.typography.body.copy(fontWeight = FontWeight.Normal)
+                style = MaterialTheme.typography.body
             )
         }
     }

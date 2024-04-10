@@ -12,5 +12,6 @@ data class WorkoutDetailsUiState(
 ):Parcelable {
     sealed class PartialState {
         data object Loading : PartialState()
+        data class WorkoutData(val data:WorkoutDm) : PartialState()
     }
 }

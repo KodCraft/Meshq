@@ -1,5 +1,6 @@
 package az.kodcraft.dashboard.presentation
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import az.kodcraft.core.domain.bases.model.doOnFailure
 import az.kodcraft.core.domain.bases.model.doOnLoading
@@ -47,7 +48,7 @@ class DashboardViewModel @Inject constructor(
             DashboardIntent.GetWeekData -> fetchWeekData()
             is DashboardIntent.GetWeekWorkouts -> fetchWeekWorkouts(intent.date)
             is DashboardIntent.SetDay -> flow {
-                emit(DashboardUiState.PartialState.SelectedDay(intent.date))
+                emit(DashboardUiState.PartialState.SelectedDay(intent.date, intent.index))
                 acceptIntent(DashboardIntent.GetWeekWorkouts(intent.date))
             }
         }
@@ -61,7 +62,7 @@ class DashboardViewModel @Inject constructor(
         )
 
         DashboardUiState.PartialState.Init -> previousState.copy(
-            isLoading = true, isError = false,
+            isLoading = false, isError = false,
             selectedDay = LocalDate.now()
         )
 
@@ -74,7 +75,8 @@ class DashboardViewModel @Inject constructor(
         )
 
         is DashboardUiState.PartialState.SelectedDay -> previousState.copy(
-            selectedDay = partialState.date
+            selectedDay = partialState.date,
+            startIndex = partialState.index
         )
     }
 
@@ -103,22 +105,23 @@ class DashboardViewModel @Inject constructor(
 
     private fun fetchWeekWorkouts(date: LocalDate): Flow<DashboardUiState.PartialState> = flow {
         getWeekWorkoutsUseCase.execute(
-            date.get(
-                WeekFields.of(
-                    Locale.getDefault()
-                ).weekOfWeekBasedYear()
-            )
+            date
         ).doOnSuccess { weekData ->
+            Log.d("FIRESTORE_CALL", "VIEWMODEL - EMIT SUCCESS")
             emit(
                 DashboardUiState.PartialState.WeekWorkouts(
                     weekData
                 )
             )
         }.doOnFailure {
+            Log.d("FIRESTORE_CALL", "VIEWMODEL - EMIT FAILURE: $it")
             // emit(DashboardUiState.PartialState.Error(it.message.orEmpty()))
         }.doOnLoading {
+
+            Log.d("FIRESTORE_CALL", "VIEWMODEL - EMIT LOADING")
             emit(DashboardUiState.PartialState.Loading)
         }.doOnNetworkError {
+            Log.d("FIRESTORE_CALL", "VIEWMODEL - EMIT NETWORK ERROR")
             //  emit(DashboardUiState.PartialState.NetworkError)
         }.collect()
     }

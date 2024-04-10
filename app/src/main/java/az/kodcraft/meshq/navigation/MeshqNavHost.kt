@@ -10,13 +10,13 @@ import az.kodcraft.dashboard.navigation.dashboardGraph
 import az.kodcraft.onboarding.navigation.OnBoardingRouteConstants
 import az.kodcraft.onboarding.navigation.onBoardingGraph
 import az.kodcraft.workout.navigation.WorkoutRouteConstants
+import az.kodcraft.workout.navigation.navigateToWorkoutDetails
 import az.kodcraft.workout.navigation.workoutGraph
 
 @Composable
 fun MeshqNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    onBackClick: () -> Unit = {},
     padding: PaddingValues = PaddingValues(0.dp),
     startDestination: String = OnBoardingRouteConstants.SPLASH_SCREEN
 ) {
@@ -28,15 +28,11 @@ fun MeshqNavHost(
     )
     {
         onBoardingGraph(
-            navController = navController,
-//            changeTopAndBottomState = { _, _ -> },
-//            navigateToLogin = navController::navigateToLogin,
-//            navigateToHome = navController::navigateToHome
+            navController = navController
         )
 
         dashboardGraph(
-//            changeTopAndBottomState = { _, _ -> },
-            navigateToWorkoutDetails = {navController.navigate(WorkoutRouteConstants.WORKOUT_DETAILS_SCREEN)},
+            navigateToWorkoutDetails =  navController::navigateToWorkoutDetails,
 //            navigateToProjects = navController::navigateToProjects,
 //            navigateToProjectDetails = navController::navigateToProjectDetails,
 //            navigateToNotification = navController::navigateToNotification,
@@ -45,6 +41,8 @@ fun MeshqNavHost(
 //            onNavigateToLogin = navController::navigateToLogin
         )
 
-        workoutGraph(navigateToWorkoutProgress= {navController.navigate(WorkoutRouteConstants.WORKOUT_PROGRESS_SCREEN)})
+        workoutGraph(
+            navigateToWorkoutProgress = { navController.navigate(WorkoutRouteConstants.WORKOUT_PROGRESS_SCREEN) },
+            navigateBack = { navController.popBackStack() })
     }
 }
