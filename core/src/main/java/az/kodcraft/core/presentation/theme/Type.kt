@@ -28,7 +28,7 @@ val Typography.largeTitle: TextStyle
 
 val Typography.mediumTitle: TextStyle
     get() = TextStyle(
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.Bold,
         fontFamily = MeshqFont,
         fontSize = 36.sp,
         lineHeight = 40.sp,

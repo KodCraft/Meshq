@@ -9,8 +9,8 @@ import androidx.navigation.compose.NavHost
 import az.kodcraft.dashboard.navigation.dashboardGraph
 import az.kodcraft.onboarding.navigation.OnBoardingRouteConstants
 import az.kodcraft.onboarding.navigation.onBoardingGraph
-import az.kodcraft.workout.navigation.WorkoutRouteConstants
 import az.kodcraft.workout.navigation.navigateToWorkoutDetails
+import az.kodcraft.workout.navigation.navigateToWorkoutProgress
 import az.kodcraft.workout.navigation.workoutGraph
 
 @Composable
@@ -32,17 +32,11 @@ fun MeshqNavHost(
         )
 
         dashboardGraph(
-            navigateToWorkoutDetails =  navController::navigateToWorkoutDetails,
-//            navigateToProjects = navController::navigateToProjects,
-//            navigateToProjectDetails = navController::navigateToProjectDetails,
-//            navigateToNotification = navController::navigateToNotification,
-//            onNavigateToCampaignDetails = navController::navigateToCampaignDetails,
-//            onNavigateToSearch = navController::navigateToSearch,
-//            onNavigateToLogin = navController::navigateToLogin
+            navigateToWorkoutDetails =  navController::navigateToWorkoutDetails
         )
 
         workoutGraph(
-            navigateToWorkoutProgress = { navController.navigate(WorkoutRouteConstants.WORKOUT_PROGRESS_SCREEN) },
+            navigateToWorkoutProgress =  navController::navigateToWorkoutProgress,
             navigateBack = { navController.popBackStack() })
     }
 }

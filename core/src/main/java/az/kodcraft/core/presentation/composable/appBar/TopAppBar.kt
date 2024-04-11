@@ -1,6 +1,5 @@
 package az.kodcraft.core.presentation.composable.appBar
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import az.kodcraft.core.R
+import az.kodcraft.core.utils.noRippleClickable
 
 
 @Composable
@@ -31,14 +31,14 @@ fun TopAppBar(
     ) {
         if (showMenuIcon)
             Icon(
-                modifier = Modifier.clickable { onMenuClick() },
+                modifier = Modifier.noRippleClickable { onMenuClick() },
                 painter = painterResource(id = R.drawable.ic_menu),
                 tint = iconsColor,
                 contentDescription = null
             )
         else if (showBackIcon)
             Icon(
-                modifier = Modifier.padding().clickable { onBackClick() },
+                modifier = Modifier.padding().noRippleClickable { onBackClick() },
                 painter = painterResource(id = R.drawable.ic_back),
                 tint = iconsColor,
                 contentDescription = null

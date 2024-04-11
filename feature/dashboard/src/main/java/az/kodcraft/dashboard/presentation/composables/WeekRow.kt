@@ -1,7 +1,6 @@
 package az.kodcraft.dashboard.presentation.composables
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,9 +17,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import az.kodcraft.core.presentation.theme.body
+import az.kodcraft.core.utils.noRippleClickable
 import az.kodcraft.dashboard.domain.model.DayOfWeekDm
 import java.time.LocalDate
 import java.time.format.TextStyle
@@ -40,7 +39,7 @@ fun WeekRow(modifier: Modifier = Modifier, data:List<DayOfWeekDm>, selectedDay: 
 fun WeekDay(data: DayOfWeekDm, selectedDay:LocalDate, onDayClicked:() -> Unit) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.clickable { onDayClicked() }
+        modifier = Modifier.noRippleClickable { onDayClicked() }
             .width(30.dp)
             .background(
                 if (data.day == selectedDay) MaterialTheme.colorScheme.secondary else Color.Transparent,

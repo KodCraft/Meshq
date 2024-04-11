@@ -1,7 +1,6 @@
 package az.kodcraft.workout.presentation.workoutDetails
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,8 +36,9 @@ import az.kodcraft.core.presentation.composable.button.ButtonSecondary
 import az.kodcraft.core.presentation.theme.PrimaryBlue
 import az.kodcraft.core.presentation.theme.body
 import az.kodcraft.core.presentation.theme.bodySmallLight
-import az.kodcraft.core.presentation.theme.largeTitle
+import az.kodcraft.core.presentation.theme.mediumTitle
 import az.kodcraft.core.presentation.theme.primaryTurq
+import az.kodcraft.core.utils.noRippleClickable
 import az.kodcraft.workout.R
 import az.kodcraft.workout.domain.model.WorkoutDm
 import az.kodcraft.workout.presentation.workoutDetails.composable.CardTabs
@@ -83,7 +83,7 @@ fun WorkoutDetailsScreen(
             onBackClick = navigateBack,
             content = {
                 Spacer(modifier = Modifier.weight(1f))
-                CompleteButton(onClick = {})
+                CompleteButton(onClick = {}, PrimaryBlue.copy(0.6f))
                 Spacer(modifier = Modifier.width(12.dp))
                 WorkoutDate(uiState.workout.date)
             }
@@ -96,9 +96,8 @@ fun WorkoutDetailsScreen(
             Text(
                 modifier = Modifier.padding(24.dp),
                 text = uiState.workout.title,
-                style = MaterialTheme.typography.largeTitle.copy(color = PrimaryBlue)
+                style = MaterialTheme.typography.mediumTitle.copy(color = PrimaryBlue)
             )
-            Spacer(modifier = Modifier.height(24.dp))
             WorkoutContentCard(
                 modifier = Modifier.weight(1f),
                 workout = uiState.workout,
@@ -128,7 +127,7 @@ fun WorkoutContentCard(modifier: Modifier, workout: WorkoutDm, onStartWorkoutCli
         ButtonSecondary(
             text = stringResource(R.string.workout_details_screen_btn_start_workout),
             modifier = Modifier
-                .clickable { onStartWorkoutClicked() }
+                .noRippleClickable { onStartWorkoutClicked() }
                 .align(Alignment.CenterHorizontally)
                 .fillMaxWidth()
                 .padding(45.dp)
@@ -152,8 +151,7 @@ fun CardContent(selectedTab: WorkoutTab, workout: WorkoutDm) {
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
-        }
-        else{
+        } else {
             Text(
                 text = workout.notes,
                 style = MaterialTheme.typography.bodySmallLight
@@ -164,12 +162,13 @@ fun CardContent(selectedTab: WorkoutTab, workout: WorkoutDm) {
 }
 
 @Composable
-fun CompleteButton(onClick: () -> Unit) {
+fun CompleteButton(onClick: () -> Unit, buttonColor: Color) {
     Row(
         modifier = Modifier
-            .clickable { onClick() }
+            .noRippleClickable
+            { onClick() }
             .clip(RoundedCornerShape(8.dp))
-            .background(PrimaryBlue.copy(0.6f))
+            .background(buttonColor)
             .padding(6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -180,8 +179,9 @@ fun CompleteButton(onClick: () -> Unit) {
             modifier = Modifier.size(20.dp)
         )
         Spacer(modifier = Modifier.width(6.dp))
-        Text(text = stringResource(R.string.workout_details_screen_btn_complete_workout),
-        style = MaterialTheme.typography.body
+        Text(
+            text = stringResource(R.string.workout_details_screen_btn_complete_workout),
+            style = MaterialTheme.typography.body
         )
         Spacer(modifier = Modifier.width(6.dp))
     }

@@ -1,6 +1,5 @@
 package az.kodcraft.workout.presentation.workoutDetails.composable
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import az.kodcraft.core.presentation.theme.headLine
+import az.kodcraft.core.utils.noRippleClickable
 import az.kodcraft.workout.R
 
 
@@ -31,7 +31,7 @@ fun CardTabs(selectedTab: WorkoutTab, onTabCLicked: (WorkoutTab) -> Unit) {
         WorkoutTab.entries.forEach { tab ->
             Column(
                 modifier = Modifier
-                    .clickable { onTabCLicked(tab) }
+                    .noRippleClickable { onTabCLicked(tab) }
                     .weight(0.5f)
             ) {
                 Text(

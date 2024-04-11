@@ -5,7 +5,7 @@ import az.kodcraft.workout.domain.model.WorkoutDm
 import com.google.firebase.Timestamp
 
 data class WorkoutDto(
-    val id: String = "",
+    var id: String = "",
     val title: String = "",
     val notes: String = "",
     val date: Timestamp = Timestamp.now(),
@@ -14,7 +14,7 @@ data class WorkoutDto(
 ) {
 
     data class Exercise(
-        val id: String = "",
+        var id: String = "",
         val name: String = "",
         val sets: List<Set> = emptyList()
     ) {

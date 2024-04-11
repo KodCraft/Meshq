@@ -10,3 +10,6 @@ object WorkoutRouteConstants {
 fun NavController.navigateToWorkoutDetails(workoutId:String){
     navigate(WorkoutRouteConstants.WORKOUT_DETAILS_SCREEN.replace("{workoutId}", workoutId))
 }
+fun NavController.navigateToWorkoutProgress(workoutId:String){
+    navigate(WorkoutRouteConstants.WORKOUT_PROGRESS_SCREEN.replace("{workoutId}", workoutId))
+}

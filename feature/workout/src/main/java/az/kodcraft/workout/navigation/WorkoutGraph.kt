@@ -20,7 +20,10 @@ fun NavGraphBuilder.workoutGraph(
     }
     composable(route = WorkoutRouteConstants.WORKOUT_PROGRESS_SCREEN) { backStackEntry ->
         backStackEntry.arguments?.getString("workoutId")?.let{ id ->
-            WorkoutProgressRoute()
+            WorkoutProgressRoute(
+                workoutId = id,
+                navigateBack = navigateBack
+            )
         }
 
     }

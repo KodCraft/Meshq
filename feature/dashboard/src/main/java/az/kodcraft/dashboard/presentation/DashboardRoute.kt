@@ -2,7 +2,6 @@ package az.kodcraft.dashboard.presentation
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +41,7 @@ import az.kodcraft.core.presentation.theme.body
 import az.kodcraft.core.presentation.theme.footNote
 import az.kodcraft.core.presentation.theme.largeTitle
 import az.kodcraft.core.presentation.theme.smallTitle
+import az.kodcraft.core.utils.noRippleClickable
 import az.kodcraft.dashboard.R
 import az.kodcraft.dashboard.domain.model.DashboardWeekWorkoutDm
 import az.kodcraft.dashboard.presentation.composables.WeekRow
@@ -149,7 +149,7 @@ fun Workouts(workouts: List<DashboardWeekWorkoutDm>, onWorkoutClick: (id: String
             Card(
                 modifier = Modifier.fillMaxWidth()
                     .height(185.dp)
-                    .clickable { onWorkoutClick(it.id) },
+                    .noRippleClickable { onWorkoutClick(it.id) },
                 colors = if (it.isSelected) CardDefaults.cardColors()
                     .copy(containerColor = PrimaryTurq) else CardDefaults.cardColors()
             ) {

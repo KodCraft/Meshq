@@ -13,21 +13,24 @@ data class WorkoutDm(
 ) : Parcelable {
 
     @Parcelize
-    data class Exercise(val id:String, val name: String, val sets: List<Set>) : Parcelable {
+    data class Exercise(val id: String, val name: String, val sets: List<Set>) : Parcelable {
         @Parcelize
         data class Set(
             val type: String,
             val reps: String,
             val restSeconds: Int,
-            val weight: String
+            val weight: String,
+            val isComplete: Boolean = false
         ) : Parcelable
 
+        fun isComplete() = sets.all { it.isComplete }
         override fun toString(): String {
             // Counting the number of warmup sets
             val warmupSetsCount = sets.count { it.type == "warmup" }
 
             // Filtering and grouping working sets by their repetition details
-            val workingSets = sets.filter { it.type == "working" }.groupBy { Pair(it.reps, it.weight) }
+            val workingSets =
+                sets.filter { it.type == "working" }.groupBy { Pair(it.reps, it.weight) }
 
             // Building a formatted string for working sets
             val workingSetsSummary = workingSets.entries.joinToString(" | ") { entry ->
@@ -38,7 +41,8 @@ data class WorkoutDm(
 
             // Finding a common rest period if applicable, assumes all working sets share the same rest period
             val commonRest = sets.filter { it.type == "working" }.map { it.restSeconds }.distinct()
-            val restDisplay = if (commonRest.size == 1) "${commonRest.first()} sec rest" else "varied rest"
+            val restDisplay =
+                if (commonRest.size == 1) "${commonRest.first()} sec rest" else "varied rest"
 
             // Constructing the final string
             return "$name - $warmupSetsCount warmup | $workingSetsSummary | $restDisplay"
