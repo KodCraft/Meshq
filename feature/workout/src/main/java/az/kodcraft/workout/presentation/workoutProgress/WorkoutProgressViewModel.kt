@@ -38,11 +38,22 @@ class WorkoutProgressViewModel @Inject constructor(
                 )
             )
 
+            is WorkoutProgressIntent.ToggleExercisePreview -> flowOf(
+                WorkoutProgressUiState.PartialState.ToggleExercisePreview(
+                    intent.exerciseId
+                )
+            )
+
             WorkoutProgressIntent.CompleteWorkout -> flowOf(
                 WorkoutProgressUiState.PartialState.CompleteWorkout
             )
 
             WorkoutProgressIntent.FinishWorkout -> emptyFlow() //TODO(Implement remote request for saving finished workout)
+            is WorkoutProgressIntent.ChangeExerciseSetStatus -> flowOf(
+                WorkoutProgressUiState.PartialState.ExerciseSetStatus(
+                    intent.exerciseId, intent.setId
+                )
+            )
         }
 
 
@@ -83,6 +94,25 @@ class WorkoutProgressViewModel @Inject constructor(
                 }
             )
         )
+
+        is WorkoutProgressUiState.PartialState.ToggleExercisePreview -> previousState.copy(
+            workout = previousState.workout.copy(
+                exercises = previousState.workout.exercises.map { exercise ->
+                    if (exercise.id == partialState.exerciseId)
+                        exercise.copy(isInPreviewMode = !exercise.isInPreviewMode)
+                    else exercise
+                }
+            )
+        )
+
+        is WorkoutProgressUiState.PartialState.ExerciseSetStatus -> previousState.copy(
+            isLoading = false, isError = false,
+            workout = previousState.workout.copy(
+                exercises = updateExerciseSetStatus(
+                    previousState.workout.exercises, partialState.exerciseId, partialState.setId
+                )
+            )
+        )
     }
 
     private fun updateExerciseStatus(
@@ -92,11 +122,38 @@ class WorkoutProgressViewModel @Inject constructor(
         // Toggle completion status of the specified exercise and determine new current
         val updatedExercises = exercises.map { exercise ->
             if (exercise.id == exerciseId) {
-                val newSets = exercise.sets.map { it.copy(isComplete = !it.isComplete) }
+                val newSets = exercise.sets.map { it.copy(isComplete = !exercise.isComplete()) }
                 exercise.copy(sets = newSets)
             } else {
                 exercise
             }
+        }
+        val newCurrentIndex = updatedExercises.indexOfFirst { !it.isComplete() }
+
+        // Update isCurrent status based on new current index
+        return updatedExercises.mapIndexed { index, exercise ->
+            if (index == newCurrentIndex) {
+                exercise.copy(isCurrent = true)
+            } else {
+                exercise.copy(isCurrent = false)
+            }
+        }
+    }
+
+    private fun updateExerciseSetStatus(
+        exercises: List<WorkoutDm.Exercise>,
+        exerciseId: String,
+        setId: String,
+    ): List<WorkoutDm.Exercise> {
+        // Toggle completion status of the specified exercise and determine new current
+        val updatedExercises = exercises.map { exercise ->
+            if (exercise.id == exerciseId) {
+                exercise.copy(sets = exercise.sets.map { set ->
+                    if (set.id == setId) set.copy(
+                        isComplete = !set.isComplete
+                    ) else set
+                })
+            } else exercise
         }
         val newCurrentIndex = updatedExercises.indexOfFirst { !it.isComplete() }
 

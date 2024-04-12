@@ -3,6 +3,7 @@ package az.kodcraft.workout.data.dto
 import az.kodcraft.core.utils.formatDateToStringDatAndMonth
 import az.kodcraft.workout.domain.model.WorkoutDm
 import com.google.firebase.Timestamp
+import kotlin.random.Random
 
 data class WorkoutDto(
     var id: String = "",
@@ -19,6 +20,7 @@ data class WorkoutDto(
         val sets: List<Set> = emptyList()
     ) {
         data class Set(
+            val id:String = Random(123).toString(),
             val type: String = "",
             val reps: String = "",
             val rest_seconds: Int = 0,
@@ -34,6 +36,7 @@ data class WorkoutDto(
         exercises = exercises.map {
             WorkoutDm.Exercise(id = it.id, name = it.name, sets = it.sets.map { set ->
                 WorkoutDm.Exercise.Set(
+                    id = set.id,
                     type = set.type,
                     reps = set.reps,
                     restSeconds = set.rest_seconds,

@@ -19,10 +19,12 @@ data class WorkoutDm(
         val id: String,
         val name: String,
         val sets: List<Set>,
-        val isCurrent: Boolean = false
+        val isCurrent: Boolean = false,
+        val isInPreviewMode: Boolean = false,
     ) : Parcelable {
         @Parcelize
         data class Set(
+            val id:String,
             val type: String,
             val reps: String,
             val restSeconds: Int,
