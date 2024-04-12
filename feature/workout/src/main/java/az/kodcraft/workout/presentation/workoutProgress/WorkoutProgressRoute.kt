@@ -25,10 +25,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import az.kodcraft.core.R
 import az.kodcraft.core.presentation.composable.appBar.TopAppBar
+import az.kodcraft.core.presentation.composable.button.ButtonSecondary
 import az.kodcraft.core.presentation.theme.PrimaryTurq
 import az.kodcraft.core.presentation.theme.body
 import az.kodcraft.core.presentation.theme.largeTitle
@@ -67,7 +69,10 @@ fun WorkoutProgressScreen(
             onBackClick = navigateBack,
             content = {
                 Spacer(modifier = Modifier.weight(1f))
-                CompleteButton(onClick = {}, PrimaryTurq.copy(0.6f))
+                CompleteButton(
+                    onClick = { onIntent.invoke(WorkoutProgressIntent.CompleteWorkout) },
+                    PrimaryTurq.copy(0.6f)
+                )
                 Spacer(modifier = Modifier.width(12.dp))
             })
 
@@ -88,14 +93,21 @@ fun WorkoutProgressScreen(
                     onIntent.invoke(
                         WorkoutProgressIntent.ChangeExerciseStatus(it)
                     )
-                })
+                },
+                onWorkoutFinish = { onIntent.invoke(WorkoutProgressIntent.FinishWorkout) })
+
+            Spacer(Modifier.height(50.dp))
         }
     }
 
 }
 
 @Composable
-fun WorkoutProgressContent(workout: WorkoutDm, exerciseCompleteClick: (String) -> Unit) {
+fun WorkoutProgressContent(
+    workout: WorkoutDm,
+    exerciseCompleteClick: (String) -> Unit,
+    onWorkoutFinish: () -> Unit
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
@@ -105,18 +117,34 @@ fun WorkoutProgressContent(workout: WorkoutDm, exerciseCompleteClick: (String) -
             ExerciseDropDownCard(exercise = it, isCompleteClick = { exerciseCompleteClick(it.id) })
             Spacer(modifier = Modifier.height(24.dp))
         }
+        if (workout.isComplete()) {
+            item {
+
+                Spacer(Modifier.height(16.dp))
+                ButtonSecondary(text = stringResource(az.kodcraft.workout.R.string.workout_progress_screen_btn_finish),
+                    modifier = Modifier
+                        .noRippleClickable { onWorkoutFinish() }
+                        .fillMaxWidth()
+                        .padding(16.dp))
+            }
+        }
     }
 }
 
 @Composable
 fun ExerciseDropDownCard(exercise: WorkoutDm.Exercise, isCompleteClick: () -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        val isExerciseComplete = exercise.sets.all { it.isComplete }
+        val isExerciseComplete = exercise.isComplete()
+        val isExerciseCurrent = exercise.isCurrent
         Row(
             modifier = Modifier
                 .weight(1f)
                 .clip(RoundedCornerShape(12.dp))
-                .background(Color.LightGray.copy(0.1f)),
+                .background(
+                    if (isExerciseCurrent) PrimaryTurq.copy(0.3f) else Color.LightGray.copy(
+                        0.1f
+                    )
+                ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -136,7 +164,7 @@ fun ExerciseDropDownCard(exercise: WorkoutDm.Exercise, isCompleteClick: () -> Un
         Icon(
             painter = painterResource(id = if (isExerciseComplete) R.drawable.ic_done else R.drawable.ic_check),
             contentDescription = "exercise complete indicator",
-            tint = Color.LightGray.copy(0.3f),
+            tint = if (isExerciseComplete) PrimaryTurq else Color.LightGray.copy(0.3f),
             modifier = Modifier.noRippleClickable { isCompleteClick() }
         )
     }

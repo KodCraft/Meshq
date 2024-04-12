@@ -6,6 +6,7 @@ import az.kodcraft.core.domain.bases.model.doOnLoading
 import az.kodcraft.core.domain.bases.model.doOnNetworkError
 import az.kodcraft.core.domain.bases.model.doOnSuccess
 import az.kodcraft.core.presentation.bases.BaseViewModel
+import az.kodcraft.workout.domain.model.WorkoutDm
 import az.kodcraft.workout.domain.usecase.GetWorkoutUseCase
 import az.kodcraft.workout.presentation.workoutProgress.contract.WorkoutProgressEvent
 import az.kodcraft.workout.presentation.workoutProgress.contract.WorkoutProgressIntent
@@ -13,6 +14,7 @@ import az.kodcraft.workout.presentation.workoutProgress.contract.WorkoutProgress
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
@@ -29,7 +31,6 @@ class WorkoutProgressViewModel @Inject constructor(
 
     override fun mapIntents(intent: WorkoutProgressIntent): Flow<WorkoutProgressUiState.PartialState> =
         when (intent) {
-
             is WorkoutProgressIntent.GetWorkoutData -> fetchWorkoutData(intent.workoutId)
             is WorkoutProgressIntent.ChangeExerciseStatus -> flowOf(
                 WorkoutProgressUiState.PartialState.ExerciseStatus(
@@ -37,6 +38,11 @@ class WorkoutProgressViewModel @Inject constructor(
                 )
             )
 
+            WorkoutProgressIntent.CompleteWorkout -> flowOf(
+                WorkoutProgressUiState.PartialState.CompleteWorkout
+            )
+
+            WorkoutProgressIntent.FinishWorkout -> emptyFlow() //TODO(Implement remote request for saving finished workout)
         }
 
 
@@ -50,19 +56,58 @@ class WorkoutProgressViewModel @Inject constructor(
         )
 
         is WorkoutProgressUiState.PartialState.WorkoutData -> previousState.copy(
-            isLoading = false, isError = false, workout = partialState.data
+            isLoading = false,
+            isError = false,
+            workout = partialState.data.copy(exercises = partialState.data.exercises.mapIndexed { index, exercise ->
+                if (index == 0) exercise.copy(isCurrent = true) else exercise
+            })
         )
 
         is WorkoutProgressUiState.PartialState.ExerciseStatus -> previousState.copy(
             isLoading = false, isError = false,
-            workout = previousState.workout.copy(exercises = previousState.workout.exercises
-                .map { exercise ->
-                    if (exercise.id == partialState.exerciseId) {
-                        exercise.copy(
-                            sets = exercise.sets.map { it.copy(isComplete = !exercise.isComplete()) })
-                    } else exercise
-                })
+            workout = previousState.workout.copy(
+                exercises = updateExerciseStatus(
+                    previousState.workout.exercises,
+                    partialState.exerciseId
+                )
+            )
         )
+
+        WorkoutProgressUiState.PartialState.CompleteWorkout -> previousState.copy(
+            isLoading = false, isError = false,
+            workout = previousState.workout.copy(
+                exercises = previousState.workout.exercises.map { exercise ->
+                    exercise.copy(
+                        isCurrent = false,
+                        sets = exercise.sets.map { set -> set.copy(isComplete = true) })
+                }
+            )
+        )
+    }
+
+    private fun updateExerciseStatus(
+        exercises: List<WorkoutDm.Exercise>,
+        exerciseId: String
+    ): List<WorkoutDm.Exercise> {
+        // Toggle completion status of the specified exercise and determine new current
+        val updatedExercises = exercises.map { exercise ->
+            if (exercise.id == exerciseId) {
+                val newSets = exercise.sets.map { it.copy(isComplete = !it.isComplete) }
+                exercise.copy(sets = newSets)
+            } else {
+                exercise
+            }
+        }
+        val newCurrentIndex = updatedExercises.indexOfFirst { !it.isComplete() }
+
+        // Update isCurrent status based on new current index
+        return updatedExercises.mapIndexed { index, exercise ->
+            if (index == newCurrentIndex) {
+                exercise.copy(isCurrent = true)
+            } else {
+                exercise.copy(isCurrent = false)
+            }
+        }
     }
 
 
@@ -74,9 +119,7 @@ class WorkoutProgressViewModel @Inject constructor(
             ).doOnSuccess { data ->
                 if (data != null)
                     emit(
-                        WorkoutProgressUiState.PartialState.WorkoutData(
-                            data
-                        )
+                        WorkoutProgressUiState.PartialState.WorkoutData(data)
                     )
             }.doOnFailure {
                 // emit(WorkoutProgressUiState.PartialState.Error(it.message.orEmpty()))

@@ -10,12 +10,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import az.kodcraft.core.presentation.theme.buttonTypo
 
 
 @Composable
-fun ButtonSecondary(text: String, modifier: Modifier) {
+fun ButtonSecondary(text: String, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.border(
             shape = RoundedCornerShape(12.dp),
@@ -29,4 +30,10 @@ fun ButtonSecondary(text: String, modifier: Modifier) {
             text = text, style = MaterialTheme.typography.buttonTypo.copy(color = Color.White)
         )
     }
+}
+
+@Composable
+@Preview
+fun Preview(){
+    ButtonSecondary("meow")
 }

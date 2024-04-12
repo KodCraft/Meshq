@@ -12,8 +12,15 @@ data class WorkoutDm(
     val exercises: List<Exercise> = emptyList()
 ) : Parcelable {
 
+
+    fun isComplete() = exercises.any() && exercises.all { it.isComplete() }
     @Parcelize
-    data class Exercise(val id: String, val name: String, val sets: List<Set>) : Parcelable {
+    data class Exercise(
+        val id: String,
+        val name: String,
+        val sets: List<Set>,
+        val isCurrent: Boolean = false
+    ) : Parcelable {
         @Parcelize
         data class Set(
             val type: String,
@@ -23,7 +30,7 @@ data class WorkoutDm(
             val isComplete: Boolean = false
         ) : Parcelable
 
-        fun isComplete() = sets.all { it.isComplete }
+        fun isComplete() = sets.any() && sets.all { it.isComplete }
         override fun toString(): String {
             // Counting the number of warmup sets
             val warmupSetsCount = sets.count { it.type == "warmup" }

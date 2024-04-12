@@ -12,6 +12,7 @@ data class WorkoutProgressUiState(
 ) : Parcelable {
     sealed class PartialState {
         data object Loading : PartialState()
+        data object CompleteWorkout : PartialState()
         data class WorkoutData(val data: WorkoutDm) : PartialState()
         data class ExerciseStatus(val exerciseId: String) : PartialState()
     }
