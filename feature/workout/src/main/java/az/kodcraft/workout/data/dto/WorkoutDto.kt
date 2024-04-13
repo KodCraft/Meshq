@@ -9,6 +9,7 @@ data class WorkoutDto(
     var id: String = "",
     val title: String = "",
     val notes: String = "",
+    val isFinished: Boolean = false,
     val date: Timestamp = Timestamp.now(),
     val labels: List<String> = emptyList(),
     var exercises: List<Exercise> = emptyList()
@@ -20,7 +21,7 @@ data class WorkoutDto(
         val sets: List<Set> = emptyList()
     ) {
         data class Set(
-            val id:String = Random(123).toString(),
+            val id:String = Random(123).nextInt().toString(),
             val type: String = "",
             val reps: String = "",
             val rest_seconds: Int = 0,
@@ -32,6 +33,7 @@ data class WorkoutDto(
         id = id,
         date = date.toDate().formatDateToStringDatAndMonth(),
         title = title,
+        isFinished = isFinished,
         notes = notes,
         exercises = exercises.map {
             WorkoutDm.Exercise(id = it.id, name = it.name, sets = it.sets.map { set ->

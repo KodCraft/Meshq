@@ -8,6 +8,7 @@ import az.kodcraft.workout.presentation.workoutProgress.WorkoutProgressRoute
 fun NavGraphBuilder.workoutGraph(
     navigateToWorkoutProgress: (String) -> Unit,
     navigateBack: () -> Unit,
+    navigateHome: () -> Unit,
 ) {
     composable(route = WorkoutRouteConstants.WORKOUT_DETAILS_SCREEN) { backStackEntry ->
         backStackEntry.arguments?.getString("workoutId")?.let { id ->
@@ -22,7 +23,8 @@ fun NavGraphBuilder.workoutGraph(
         backStackEntry.arguments?.getString("workoutId")?.let{ id ->
             WorkoutProgressRoute(
                 workoutId = id,
-                navigateBack = navigateBack
+                navigateBack = navigateBack,
+                navigateHome = navigateHome,
             )
         }
 

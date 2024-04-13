@@ -18,4 +18,13 @@ class WorkoutRepositoryImpl(private val service: WorkoutService) : WorkoutReposi
             }
         )
     }
+
+    override suspend fun saveFinishedWorkout(workout: WorkoutDm): Flow<Response<Boolean>> {
+        return safeFirestoreCall(
+            mapToDomain = { it },
+            firestoreCall = {
+                service.saveFinishedWorkout(workout)
+            }
+        )
+    }
 }
