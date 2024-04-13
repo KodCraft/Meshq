@@ -83,7 +83,7 @@ fun WorkoutDetailsScreen(
             onBackClick = navigateBack,
             content = {
                 Spacer(modifier = Modifier.weight(1f))
-                CompleteButton(onClick = {}, PrimaryBlue.copy(0.6f))
+                CompleteButton(onClick = {}, buttonColor = PrimaryBlue.copy(0.6f))
                 Spacer(modifier = Modifier.width(12.dp))
                 WorkoutDate(uiState.workout.date)
             }
@@ -162,7 +162,7 @@ fun CardContent(selectedTab: WorkoutTab, workout: WorkoutDm) {
 }
 
 @Composable
-fun CompleteButton(onClick: () -> Unit, buttonColor: Color) {
+fun CompleteButton(onClick: () -> Unit, buttonColor: Color, isFinished:Boolean = false) {
     Row(
         modifier = Modifier
             .noRippleClickable
@@ -172,17 +172,32 @@ fun CompleteButton(onClick: () -> Unit, buttonColor: Color) {
             .padding(6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            painter = painterResource(id = az.kodcraft.core.R.drawable.ic_done),
-            tint = MaterialTheme.colorScheme.onBackground,
-            contentDescription = "complete workout button",
-            modifier = Modifier.size(20.dp)
-        )
-        Spacer(modifier = Modifier.width(6.dp))
-        Text(
-            text = stringResource(R.string.workout_details_screen_btn_complete_workout),
-            style = MaterialTheme.typography.body
-        )
+        if(isFinished){
+            Text(
+                text = stringResource(R.string.workout_details_screen_btn_workout_is_finished),
+                style = MaterialTheme.typography.body
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Icon(
+                painter = painterResource(id = az.kodcraft.core.R.drawable.ic_check_circle),
+                tint = MaterialTheme.colorScheme.onBackground,
+                contentDescription = "complete workout button",
+                modifier = Modifier.size(20.dp)
+            )
+        }
+        else {
+            Icon(
+                painter = painterResource(id = az.kodcraft.core.R.drawable.ic_done),
+                tint = MaterialTheme.colorScheme.onBackground,
+                contentDescription = "complete workout button",
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = stringResource(R.string.workout_details_screen_btn_complete_workout),
+                style = MaterialTheme.typography.body
+            )
+        }
         Spacer(modifier = Modifier.width(6.dp))
     }
 }

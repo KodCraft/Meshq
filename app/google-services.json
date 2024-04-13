@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "732026019185",
+    "project_id": "meshq-37141",
+    "storage_bucket": "meshq-37141.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:732026019185:android:a22c860215922abf06aad0",
+        "android_client_info": {
+          "package_name": "az.kodcraft.meshq"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChBFjkBmOgOzSFxkIcrb2RnOeZAPsx50o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

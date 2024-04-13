@@ -8,6 +8,7 @@ import az.kodcraft.core.domain.bases.model.doOnSuccess
 import az.kodcraft.core.presentation.bases.BaseViewModel
 import az.kodcraft.workout.domain.model.WorkoutDm
 import az.kodcraft.workout.domain.usecase.GetWorkoutUseCase
+import az.kodcraft.workout.domain.usecase.SaveFinishedWorkoutUseCase
 import az.kodcraft.workout.presentation.workoutProgress.contract.WorkoutProgressEvent
 import az.kodcraft.workout.presentation.workoutProgress.contract.WorkoutProgressIntent
 import az.kodcraft.workout.presentation.workoutProgress.contract.WorkoutProgressUiState
@@ -23,7 +24,8 @@ import javax.inject.Inject
 class WorkoutProgressViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     initialState: WorkoutProgressUiState,
-    private val getWorkoutUseCase: GetWorkoutUseCase
+    private val getWorkoutUseCase: GetWorkoutUseCase,
+    private val saveFinishedWorkoutUseCase: SaveFinishedWorkoutUseCase
 ) : BaseViewModel<WorkoutProgressUiState, WorkoutProgressUiState.PartialState, WorkoutProgressEvent, WorkoutProgressIntent>(
     savedStateHandle,
     initialState
@@ -48,7 +50,7 @@ class WorkoutProgressViewModel @Inject constructor(
                 WorkoutProgressUiState.PartialState.CompleteWorkout
             )
 
-            WorkoutProgressIntent.FinishWorkout -> emptyFlow() //TODO(Implement remote request for saving finished workout)
+            WorkoutProgressIntent.FinishWorkout -> saveFinishedWorkout()
             is WorkoutProgressIntent.ChangeExerciseSetStatus -> flowOf(
                 WorkoutProgressUiState.PartialState.ExerciseSetStatus(
                     intent.exerciseId, intent.setId
@@ -178,6 +180,21 @@ class WorkoutProgressViewModel @Inject constructor(
                     emit(
                         WorkoutProgressUiState.PartialState.WorkoutData(data)
                     )
+            }.doOnFailure {
+                // emit(WorkoutProgressUiState.PartialState.Error(it.message.orEmpty()))
+            }.doOnLoading {
+                emit(WorkoutProgressUiState.PartialState.Loading)
+            }.doOnNetworkError {
+                //  emit(WorkoutProgressUiState.PartialState.NetworkError)
+            }.collect()
+        }
+    private fun saveFinishedWorkout(): Flow<WorkoutProgressUiState.PartialState> =
+        flow {
+            saveFinishedWorkoutUseCase.execute(
+                uiState.value.workout
+            ).doOnSuccess { data ->
+                if (data)
+                    publishEvent(WorkoutProgressEvent.NavigateHome)
             }.doOnFailure {
                 // emit(WorkoutProgressUiState.PartialState.Error(it.message.orEmpty()))
             }.doOnLoading {

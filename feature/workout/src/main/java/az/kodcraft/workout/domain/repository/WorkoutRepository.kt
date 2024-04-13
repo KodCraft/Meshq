@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface WorkoutRepository {
     suspend fun getWorkout(workoutId: String): Flow<Response<WorkoutDm?>>
+    suspend fun saveFinishedWorkout(workout: WorkoutDm): Flow<Response<Boolean>>
 }

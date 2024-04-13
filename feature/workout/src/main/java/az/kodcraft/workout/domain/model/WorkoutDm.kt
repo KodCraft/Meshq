@@ -7,6 +7,7 @@ import kotlinx.parcelize.Parcelize
 data class WorkoutDm(
     val id: String,
     val title: String,
+    val isFinished: Boolean,
     val date: String,
     val notes: String,
     val exercises: List<Exercise> = emptyList()
@@ -59,12 +60,13 @@ data class WorkoutDm(
     }
 
     companion object {
-        val EMPTY = WorkoutDm(id = "", title = "", date = "", notes = "")
+        val EMPTY = WorkoutDm(id = "", title = "", date = "", notes = "", isFinished = false)
         val MOCK = WorkoutDm(
             id = "",
             title = "Push and Glutes",
             notes = "Agilli ol!",
-            date = "16 Feb"
+            date = "16 Feb",
+            isFinished = false
         )
     }
 }

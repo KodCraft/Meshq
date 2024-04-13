@@ -4,5 +4,6 @@
     <string name="workout_details_screen_workout_tab_notes">Qeydlər</string>
     <string name="workout_details_screen_btn_start_workout">Məşqə başla</string>
     <string name="workout_details_screen_btn_complete_workout">Tamamla</string>
-    <string name="workout_progress_screen_btn_finish">Bitir</string>
+    <string name="workout_details_screen_btn_workout_is_finished">Tamamlanıb</string>
+    <string name="workout_progress_screen_btn_finish">Yadda saxla</string>
 </resources>

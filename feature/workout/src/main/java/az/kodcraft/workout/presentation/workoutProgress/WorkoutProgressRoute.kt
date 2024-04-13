@@ -15,31 +15,47 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
 import az.kodcraft.core.presentation.composable.appBar.TopAppBar
 import az.kodcraft.core.presentation.composable.button.ButtonPrimary
 import az.kodcraft.core.presentation.theme.PrimaryTurq
 import az.kodcraft.core.presentation.theme.largeTitle
+import az.kodcraft.core.utils.collectWithLifecycle
 import az.kodcraft.core.utils.noRippleClickable
 import az.kodcraft.workout.R
 import az.kodcraft.workout.domain.model.WorkoutDm
 import az.kodcraft.workout.presentation.workoutDetails.CompleteButton
 import az.kodcraft.workout.presentation.workoutProgress.composable.ExerciseDropDownCard
 import az.kodcraft.workout.presentation.workoutProgress.composable.ExercisePreviewCard
+import az.kodcraft.workout.presentation.workoutProgress.contract.WorkoutProgressEvent
 import az.kodcraft.workout.presentation.workoutProgress.contract.WorkoutProgressIntent
 import az.kodcraft.workout.presentation.workoutProgress.contract.WorkoutProgressUiState
+import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun WorkoutProgressRoute(
     viewModel: WorkoutProgressViewModel = hiltViewModel(),
     navigateBack: () -> Unit,
+    navigateHome: () -> Unit,
     workoutId: String
 ) {
     LaunchedEffect(workoutId) {
         viewModel.acceptIntent(WorkoutProgressIntent.GetWorkoutData(workoutId = workoutId))
+    }
+
+    viewModel.event.collectWithLifecycle {
+        when (it) {
+            WorkoutProgressEvent.NavigateHome -> navigateHome()
+        }
     }
 
     val uiState by viewModel.uiState.collectAsState()
@@ -63,7 +79,8 @@ fun WorkoutProgressScreen(
                 Spacer(modifier = Modifier.weight(1f))
                 CompleteButton(
                     onClick = { onIntent.invoke(WorkoutProgressIntent.CompleteWorkout) },
-                    PrimaryTurq.copy(0.6f)
+                    buttonColor = PrimaryTurq.copy(0.6f),
+                    isFinished = uiState.workout.isFinished
                 )
                 Spacer(modifier = Modifier.width(12.dp))
             })
