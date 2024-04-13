@@ -72,7 +72,7 @@ val Typography.bodySmallLight: TextStyle
     get() = TextStyle(
         fontWeight = FontWeight.ExtraLight,
         fontFamily = MeshqFont,
-        fontSize = 14.sp,
+        fontSize = 12.sp,
         lineHeight = 18.sp,
         letterSpacing = 0.sp
     )
