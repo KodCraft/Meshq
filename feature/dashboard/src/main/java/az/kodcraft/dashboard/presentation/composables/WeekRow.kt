@@ -30,7 +30,7 @@ import java.util.Locale
 fun WeekRow(modifier: Modifier = Modifier, data:List<DayOfWeekDm>, selectedDay: LocalDate, onDayClicked:(date:LocalDate) -> Unit) {
     Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         data.forEach {
-            WeekDay(data = it, selectedDay = selectedDay,  {onDayClicked(it.day)})
+            WeekDay(data = it, selectedDay = selectedDay) { onDayClicked(it.day) }
         }
     }
 }
