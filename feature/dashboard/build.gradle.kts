@@ -1,3 +1,5 @@
+import libraryExtension.TrainingLibrary.DASHBOARD_NAME_SPACES
+
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -8,7 +10,7 @@ plugins {
 }
 
 android {
-    namespace = "az.kodcraft.dashboard"
+    namespace = DASHBOARD_NAME_SPACES
 }
 
 dependencies {

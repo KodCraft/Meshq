@@ -8,6 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import az.kodcraft.core.presentation.theme.MeshqTheme
 import az.kodcraft.dashboard.navigation.DashboardRouteConstants
 import az.kodcraft.meshq.navigation.MeshqNavHost
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,7 +19,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            az.kodcraft.core.presentation.theme.MeshqTheme {
+            MeshqTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
