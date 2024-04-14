@@ -15,7 +15,6 @@ import az.kodcraft.workout.presentation.workoutProgress.contract.WorkoutProgress
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
@@ -176,10 +175,11 @@ class WorkoutProgressViewModel @Inject constructor(
             getWorkoutUseCase.execute(
                 workoutId
             ).doOnSuccess { data ->
-                if (data != null)
+                if (data != null) {
                     emit(
                         WorkoutProgressUiState.PartialState.WorkoutData(data)
                     )
+                }
             }.doOnFailure {
                 // emit(WorkoutProgressUiState.PartialState.Error(it.message.orEmpty()))
             }.doOnLoading {
@@ -188,6 +188,7 @@ class WorkoutProgressViewModel @Inject constructor(
                 //  emit(WorkoutProgressUiState.PartialState.NetworkError)
             }.collect()
         }
+
     private fun saveFinishedWorkout(): Flow<WorkoutProgressUiState.PartialState> =
         flow {
             saveFinishedWorkoutUseCase.execute(

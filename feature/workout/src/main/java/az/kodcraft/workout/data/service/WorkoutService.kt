@@ -1,6 +1,5 @@
 package az.kodcraft.workout.data.service
 
-import android.util.Log
 import az.kodcraft.workout.data.dto.WorkoutDto
 import az.kodcraft.workout.domain.model.WorkoutDm
 import com.google.firebase.Firebase
@@ -16,7 +15,6 @@ class WorkoutService(
     suspend fun getWorkout(workoutId: String): WorkoutDto? {
         return workoutRef.document(workoutId).get().await().toObject(WorkoutDto::class.java)
             ?.apply {
-                Log.d("WORKOUT_SERVICE", "isFinished: $isFinished")
                 id = workoutId
                 val exercisesQuerySnapshot =
                     workoutRef.document(workoutId).collection("exercises").orderBy("order").get()

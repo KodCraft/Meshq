@@ -9,6 +9,7 @@ data class WorkoutDto(
     var id: String = "",
     val title: String = "",
     val notes: String = "",
+    @field:JvmField
     val isFinished: Boolean = false,
     val date: Timestamp = Timestamp.now(),
     val labels: List<String> = emptyList(),
@@ -36,9 +37,9 @@ data class WorkoutDto(
         isFinished = isFinished,
         notes = notes,
         exercises = exercises.map {
-            WorkoutDm.Exercise(id = it.id, name = it.name, sets = it.sets.map { set ->
+            WorkoutDm.Exercise(id = it.id, name = it.name, sets = it.sets.mapIndexed { index, set ->
                 WorkoutDm.Exercise.Set(
-                    id = set.id,
+                    id = index.toString(),
                     type = set.type,
                     reps = set.reps,
                     restSeconds = set.rest_seconds,

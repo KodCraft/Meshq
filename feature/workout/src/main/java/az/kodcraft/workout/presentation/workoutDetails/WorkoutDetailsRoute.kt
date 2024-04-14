@@ -1,6 +1,7 @@
 package az.kodcraft.workout.presentation.workoutDetails
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,6 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import az.kodcraft.core.presentation.composable.appBar.TopAppBar
 import az.kodcraft.core.presentation.composable.button.ButtonSecondary
 import az.kodcraft.core.presentation.theme.PrimaryBlue
+import az.kodcraft.core.presentation.theme.PrimaryTurq
 import az.kodcraft.core.presentation.theme.body
 import az.kodcraft.core.presentation.theme.bodySmallLight
 import az.kodcraft.core.presentation.theme.mediumTitle
@@ -58,11 +61,16 @@ fun WorkoutDetailsRoute(
     }
 
     val uiState by viewModel.uiState.collectAsState()
-    WorkoutDetailsScreen(
-        uiState = uiState,
-        onStartWorkoutClicked = { navigateToWorkoutProgress(uiState.workout.id) },
-        navigateBack = navigateBack
-    )
+    if (uiState.isLoading)
+        Box(Modifier.fillMaxSize()) {
+            CircularProgressIndicator(color = PrimaryTurq, modifier = Modifier.align(Alignment.Center))
+        }
+    else
+        WorkoutDetailsScreen(
+            uiState = uiState,
+            onStartWorkoutClicked = { navigateToWorkoutProgress(uiState.workout.id) },
+            navigateBack = navigateBack
+        )
 }
 
 
@@ -83,7 +91,11 @@ fun WorkoutDetailsScreen(
             onBackClick = navigateBack,
             content = {
                 Spacer(modifier = Modifier.weight(1f))
-                CompleteButton(onClick = {}, buttonColor = PrimaryBlue.copy(0.6f))
+                CompleteButton(
+                    onClick = {},
+                    buttonColor = PrimaryBlue.copy(0.6f),
+                    isFinished = uiState.workout.isFinished
+                )
                 Spacer(modifier = Modifier.width(12.dp))
                 WorkoutDate(uiState.workout.date)
             }
@@ -162,17 +174,18 @@ fun CardContent(selectedTab: WorkoutTab, workout: WorkoutDm) {
 }
 
 @Composable
-fun CompleteButton(onClick: () -> Unit, buttonColor: Color, isFinished:Boolean = false) {
+fun CompleteButton(onClick: () -> Unit, buttonColor: Color, isFinished: Boolean = false) {
     Row(
         modifier = Modifier
             .noRippleClickable
-            { onClick() }
+            { if(isFinished.not()) onClick() }
             .clip(RoundedCornerShape(8.dp))
             .background(buttonColor)
             .padding(6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if(isFinished){
+        if (isFinished) {
+            Spacer(modifier = Modifier.width(3.dp))
             Text(
                 text = stringResource(R.string.workout_details_screen_btn_workout_is_finished),
                 style = MaterialTheme.typography.body
@@ -184,8 +197,7 @@ fun CompleteButton(onClick: () -> Unit, buttonColor: Color, isFinished:Boolean =
                 contentDescription = "complete workout button",
                 modifier = Modifier.size(20.dp)
             )
-        }
-        else {
+        } else {
             Icon(
                 painter = painterResource(id = az.kodcraft.core.R.drawable.ic_done),
                 tint = MaterialTheme.colorScheme.onBackground,

@@ -1,10 +1,16 @@
 package az.kodcraft.dashboard.presentation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -64,11 +70,13 @@ import java.util.Locale
 @Composable
 fun DashboardRoute(
     viewModel: DashboardViewModel = hiltViewModel(),
+    padding: PaddingValues,
     navigateToWorkoutDetails: (id: String) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     DashboardScreen(
         uiState,
+        padding = padding,
         onIntent = { viewModel.acceptIntent(it) },
         onWorkoutClick = { navigateToWorkoutDetails(it) })
 }
@@ -78,11 +86,13 @@ fun DashboardRoute(
 fun DashboardScreen(
     uiState: DashboardUiState,
     onIntent: (DashboardIntent) -> Unit = {},
-    onWorkoutClick: (id: String) -> Unit = {}
+    onWorkoutClick: (id: String) -> Unit = {},
+    padding: PaddingValues
 ) {
     Column(
         Modifier
             .fillMaxSize()
+            .padding(padding)
             .background(MaterialTheme.colorScheme.background)
     ) {
         TopAppBar(showMenuIcon = true)
@@ -90,7 +100,7 @@ fun DashboardScreen(
             Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.Start
         ) {
             Text(
                 modifier = Modifier.padding(horizontal = 6.dp),
@@ -98,7 +108,6 @@ fun DashboardScreen(
                 color = Color.White,
                 style = MaterialTheme.typography.largeTitle
             )
-            Spacer(modifier = Modifier.height(20.dp))
 
             val listState = rememberLazyListState(
                 initialFirstVisibleItemIndex = uiState.startIndex,
@@ -116,7 +125,7 @@ fun DashboardScreen(
                     TextStyle.FULL,
                     Locale.getDefault()
                 ),
-                onMonthSelected = {onIntent.invoke(DashboardIntent.SetDay(it, visibleWeekIndex))},
+                onMonthSelected = { onIntent.invoke(DashboardIntent.SetDay(it, visibleWeekIndex)) },
                 year = uiState.selectedDay.year
             )
 
@@ -158,24 +167,36 @@ fun DashboardScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(22.dp))
             if (uiState.isLoading)
                 LinearProgressIndicator(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(1.dp)
                 )
-            else {
-                Spacer(modifier = Modifier.height(1.dp))
 
-                Workouts(workouts = uiState.weekWorkouts, onWorkoutClick)
-                if (uiState.weekWorkouts.isEmpty())
-                    Text(
-                        text = stringResource(R.string.dashboard_screen_no_data),
-                        style = MaterialTheme.typography.body,
-                        modifier = Modifier.padding(12.dp)
-                    )
+            Spacer(modifier = Modifier.height(8.dp))
+            AnimatedVisibility(
+                visible = uiState.isLoading.not() && uiState.weekWorkouts.any(),
+                enter = expandHorizontally(animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing), expandFrom = Alignment.Start),
+                exit = fadeOut()
+            ) {
+                Spacer(modifier = Modifier.height(2.dp))
+                Workouts(
+                    workouts = uiState.weekWorkouts,
+                    onWorkoutClick = onWorkoutClick,
+                )
             }
+            if (uiState.weekWorkouts.isEmpty())
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = stringResource(R.string.dashboard_screen_no_data),
+                    style = MaterialTheme.typography.body,
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .align(Alignment.CenterHorizontally)
+                )
+
         }
     }
 }
@@ -209,7 +230,7 @@ fun MonthDropdown(
                     .padding(8.dp)
             )
             Icon(
-                painter = painterResource(id = com.google.android.material.R.drawable.mtrl_ic_arrow_drop_down),
+                painter = painterResource(id = az.kodcraft.core.R.drawable.ic_dropdown),
                 contentDescription = "month dropdown",
                 modifier = Modifier.size(16.dp)
             )
@@ -241,8 +262,11 @@ fun MonthDropdown(
 
 
 @Composable
-fun Workouts(workouts: List<DashboardWeekWorkoutDm>, onWorkoutClick: (id: String) -> Unit) {
-    LazyColumn(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+fun Workouts(
+    workouts: List<DashboardWeekWorkoutDm>,
+    onWorkoutClick: (id: String) -> Unit
+) {
+    LazyColumn(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.Start) {
         items(workouts) {
             Card(
                 modifier = Modifier
@@ -315,7 +339,8 @@ fun WorkoutDate(date: String, modifier: Modifier) {
 @Composable
 fun PreviewDashboard() {
     DashboardScreen(
-        DashboardUiState()
+        DashboardUiState(),
+        padding = PaddingValues(0.dp)
     )
 }
 
