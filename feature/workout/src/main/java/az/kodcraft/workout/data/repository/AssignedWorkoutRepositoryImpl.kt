@@ -2,12 +2,13 @@ package az.kodcraft.workout.data.repository
 
 import az.kodcraft.core.data.ResponseHandler.safeFirestoreCall
 import az.kodcraft.core.domain.bases.model.Response
-import az.kodcraft.workout.data.service.WorkoutService
+import az.kodcraft.workout.data.dto.WorkoutDto.Companion.toDto
+import az.kodcraft.workout.data.service.AssignedWorkoutService
 import az.kodcraft.workout.domain.model.WorkoutDm
-import az.kodcraft.workout.domain.repository.WorkoutRepository
+import az.kodcraft.workout.domain.repository.AssignedWorkoutRepository
 import kotlinx.coroutines.flow.Flow
 
-class WorkoutRepositoryImpl(private val service: WorkoutService) : WorkoutRepository {
+class AssignedWorkoutRepositoryImpl(private val service: AssignedWorkoutService) : AssignedWorkoutRepository {
     override suspend fun getWorkout(
         workoutId:String
     ): Flow<Response<WorkoutDm?>> {
@@ -23,7 +24,7 @@ class WorkoutRepositoryImpl(private val service: WorkoutService) : WorkoutReposi
         return safeFirestoreCall(
             mapToDomain = { it },
             firestoreCall = {
-                service.saveFinishedWorkout(workout)
+                service.saveFinishedWorkout(workout.toDto())
             }
         )
     }

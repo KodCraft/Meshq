@@ -8,7 +8,7 @@ import kotlinx.parcelize.Parcelize
 data class WorkoutDetailsUiState(
     val isLoading: Boolean = true,
     val isError: Boolean = false,
-    val workout: WorkoutDm = WorkoutDm.MOCK
+    val workout: WorkoutDm = WorkoutDm.EMPTY
 ):Parcelable {
     sealed class PartialState {
         data object Loading : PartialState()

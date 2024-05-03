@@ -1,9 +1,9 @@
 package az.kodcraft.workout.data.dto
 
-import az.kodcraft.core.utils.formatDateToStringDatAndMonth
 import az.kodcraft.workout.domain.model.WorkoutDm
 import com.google.firebase.Timestamp
-import kotlin.random.Random
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.PropertyName
 
 data class WorkoutDto(
     var id: String = "",
@@ -18,35 +18,67 @@ data class WorkoutDto(
 
     data class Exercise(
         var id: String = "",
+        @get:PropertyName("exercise_id") @set:PropertyName("exercise_id")
+        var exerciseRef: DocumentReference? = null,
         val name: String = "",
-        val sets: List<Set> = emptyList()
+        var sets: List<Set> = emptyList()
     ) {
         data class Set(
-            val id:String = Random(123).nextInt().toString(),
+            var id:String = "",
             val type: String = "",
             val reps: String = "",
-            val rest_seconds: Int = 0,
-            val weight: String= ""
+            @get:PropertyName("rest_seconds")
+            val restSeconds: Int = 0,
+            val weight: String= "",
+            @get:PropertyName("weight_unit")
+            val unit: String= "kg",
+            @field:JvmField
+            val isComplete: Boolean= false,
         )
     }
 
     fun toDm() = WorkoutDm(
         id = id,
-        date = date.toDate().formatDateToStringDatAndMonth(),
+        date = date.toDate(),
         title = title,
         isFinished = isFinished,
         notes = notes,
         exercises = exercises.map {
-            WorkoutDm.Exercise(id = it.id, name = it.name, sets = it.sets.mapIndexed { index, set ->
+            WorkoutDm.Exercise(id = it.id, name = it.name, sets = it.sets.map { set ->
                 WorkoutDm.Exercise.Set(
-                    id = index.toString(),
+                    id = set.id,
                     type = set.type,
                     reps = set.reps,
-                    restSeconds = set.rest_seconds,
-                    weight = set.weight
+                    restSeconds = set.restSeconds,
+                    weight = set.weight,
+                    unit = set.unit,
+                    isComplete = set.isComplete
                 )
             })
         }
     )
+companion object{
+
+    fun WorkoutDm.toDto() = WorkoutDto(
+        id = id,
+        date = Timestamp(date),
+        title = title,
+        isFinished = isFinished,
+        notes = notes,
+        exercises = exercises.map {
+            Exercise(id = it.id, name = it.name, sets = it.sets.map { set ->
+                Exercise.Set(
+                    id = set.id,
+                    type = set.type,
+                    reps = set.reps,
+                    restSeconds = set.restSeconds,
+                    weight = set.weight,
+                    unit = set.unit,
+                    isComplete = set.isComplete
+                )
+            })
+        }
+    )
+}
 
 }

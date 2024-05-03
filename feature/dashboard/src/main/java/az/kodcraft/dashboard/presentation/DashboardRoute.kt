@@ -48,7 +48,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import az.kodcraft.core.presentation.bases.BasePreviewContainer
 import az.kodcraft.core.presentation.composable.appBar.TopAppBar
+import az.kodcraft.core.presentation.theme.PrimaryLight
 import az.kodcraft.core.presentation.theme.PrimaryTurq
 import az.kodcraft.core.presentation.theme.body
 import az.kodcraft.core.presentation.theme.bodyLight
@@ -178,7 +180,12 @@ fun DashboardScreen(
             Spacer(modifier = Modifier.height(8.dp))
             AnimatedVisibility(
                 visible = uiState.isLoading.not() && uiState.weekWorkouts.any(),
-                enter = expandHorizontally(animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing), expandFrom = Alignment.Start),
+                enter = expandHorizontally(
+                    animationSpec = tween(
+                        durationMillis = 300,
+                        easing = FastOutSlowInEasing
+                    ), expandFrom = Alignment.Start
+                ),
                 exit = fadeOut()
             ) {
                 Spacer(modifier = Modifier.height(2.dp))
@@ -187,7 +194,7 @@ fun DashboardScreen(
                     onWorkoutClick = onWorkoutClick,
                 )
             }
-            if (uiState.weekWorkouts.isEmpty())
+            if (uiState.weekWorkouts.isEmpty()) {
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = stringResource(R.string.dashboard_screen_no_data),
@@ -196,6 +203,7 @@ fun DashboardScreen(
                         .padding(12.dp)
                         .align(Alignment.CenterHorizontally)
                 )
+            }
 
         }
     }
@@ -274,7 +282,7 @@ fun Workouts(
                     .height(185.dp)
                     .noRippleClickable { onWorkoutClick(it.id) },
                 colors = if (it.isSelected) CardDefaults.cardColors()
-                    .copy(containerColor = PrimaryTurq) else CardDefaults.cardColors()
+                    .copy(containerColor = PrimaryTurq) else CardDefaults.cardColors().copy(containerColor = PrimaryLight)
             ) {
                 Box(Modifier.fillMaxSize()) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -337,12 +345,13 @@ fun WorkoutDate(date: String, modifier: Modifier) {
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewDashboard() {
+fun PreviewDashboard() = BasePreviewContainer {
     DashboardScreen(
         DashboardUiState(),
         padding = PaddingValues(0.dp)
     )
 }
+
 
 
 

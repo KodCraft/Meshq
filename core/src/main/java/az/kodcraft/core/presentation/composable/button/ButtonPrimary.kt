@@ -18,11 +18,15 @@ import az.kodcraft.core.presentation.theme.buttonTypo
 
 
 @Composable
-fun ButtonPrimary(text: String, modifier: Modifier = Modifier) {
+fun ButtonPrimary(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color = PrimaryTurq.copy(0.7f)
+) {
     Column(
         modifier = modifier
             .clip(shape = RoundedCornerShape(12.dp))
-            .background(color = PrimaryTurq.copy(0.7f)),
+            .background(color = color),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(

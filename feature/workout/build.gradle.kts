@@ -8,7 +8,11 @@ plugins {
 
 android {
     namespace = "az.kodcraft.workout"
+    buildFeatures {
+        compose = true
+    }
 }
+
 
 dependencies {
 
@@ -20,6 +24,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.ui.tooling)
 
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.android )

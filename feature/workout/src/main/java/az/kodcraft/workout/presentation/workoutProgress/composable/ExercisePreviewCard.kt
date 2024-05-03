@@ -2,6 +2,7 @@ package az.kodcraft.workout.presentation.workoutProgress.composable
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,8 +22,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import az.kodcraft.core.R
+import az.kodcraft.core.presentation.bases.BasePreviewContainer
+import az.kodcraft.core.presentation.composable.textField.TextFieldSingleLineBox
 import az.kodcraft.core.presentation.theme.PrimaryBlue
 import az.kodcraft.core.presentation.theme.PrimaryTurq
 import az.kodcraft.core.presentation.theme.body
@@ -31,13 +35,14 @@ import az.kodcraft.core.utils.noRippleClickable
 import az.kodcraft.workout.domain.model.WorkoutDm
 
 
-
 @Composable
 fun ExercisePreviewCard(
     exercise: WorkoutDm.Exercise,
     isCompleteClick: () -> Unit,
     onClick: () -> Unit,
+    isEditable:Boolean,
     onToggleExerciseSetStatus: (exerciseId: String, setId: String) -> Unit,
+    onWeightValueChange: (value: String, setId: String) -> Unit,
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         val isExerciseComplete = exercise.isComplete()
@@ -77,15 +82,19 @@ fun ExercisePreviewCard(
                     tint = Color.Black
                 )
             }
-            ExerciseSetsCard(exercise, modifier = Modifier.padding(8.dp),
-                onToggleExerciseSetStatus = { onToggleExerciseSetStatus(exercise.id, it) })
+            ExerciseSetsCard(
+                exercise, modifier = Modifier.padding(8.dp),
+                onToggleExerciseSetStatus = { onToggleExerciseSetStatus(exercise.id, it) },
+                onWeightValueChange = onWeightValueChange,
+                isEditable = isEditable
+            )
         }
         Spacer(modifier = Modifier.width(12.dp))
         Icon(
             painter = painterResource(id = if (isExerciseComplete) R.drawable.ic_done else R.drawable.ic_check),
             contentDescription = "exercise complete indicator",
             tint = if (isExerciseComplete) PrimaryTurq else Color.LightGray.copy(0.3f),
-            modifier = Modifier.noRippleClickable { isCompleteClick() }
+            modifier = Modifier.noRippleClickable { if(isEditable) isCompleteClick() }
         )
     }
 }
@@ -94,7 +103,9 @@ fun ExercisePreviewCard(
 fun ExerciseSetsCard(
     exercise: WorkoutDm.Exercise,
     modifier: Modifier,
-    onToggleExerciseSetStatus: (String) -> Unit
+    isEditable:Boolean,
+    onToggleExerciseSetStatus: (String) -> Unit,
+    onWeightValueChange: (value: String, setId: String) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -113,25 +124,45 @@ fun ExerciseSetsCard(
 
             Text(
                 text = "set type",
-                modifier = Modifier.weight(1.5f),
+                maxLines = 1,
+                modifier = Modifier
+                    .padding(horizontal = 3.dp)
+                    .weight(1.5f),
                 style = MaterialTheme.typography.bodySmallLight.copy(fontWeight = FontWeight.Medium)
             )
 
             Text(
                 text = "reps",
-                modifier = Modifier.weight(1f),
+                maxLines = 1,
+                modifier = Modifier
+                    .padding(horizontal = 3.dp)
+                    .weight(1f),
+                style = MaterialTheme.typography.bodySmallLight.copy(fontWeight = FontWeight.Medium)
+            )
+
+            Text(
+                text = "weight",
+                maxLines = 1,
+                modifier = Modifier
+                    .padding(horizontal = 3.dp)
+                    .weight(1.5f),
                 style = MaterialTheme.typography.bodySmallLight.copy(fontWeight = FontWeight.Medium)
             )
 
             Text(
                 text = "rest",
-                modifier = Modifier.weight(1f),
+                maxLines = 1,
+                modifier = Modifier
+                    .padding(horizontal = 3.dp)
+                    .weight(1f),
                 style = MaterialTheme.typography.bodySmallLight.copy(fontWeight = FontWeight.Medium)
             )
 
             Text(
                 text = "",
-                modifier = Modifier.width(24.dp),
+                maxLines = 1,
+                modifier = Modifier
+                    .width(24.dp),
                 style = MaterialTheme.typography.bodySmallLight.copy(fontWeight = FontWeight.Medium)
             )
         }
@@ -140,39 +171,90 @@ fun ExerciseSetsCard(
         exercise.sets.forEach {
             Row(
                 modifier = Modifier
-                    .noRippleClickable { onToggleExerciseSetStatus(it.id) }
+                    .noRippleClickable { if(isEditable) onToggleExerciseSetStatus(it.id) }
                     .fillMaxWidth()
                     .padding(horizontal = 18.dp, vertical = 2.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = it.type, style = MaterialTheme.typography.bodySmallLight,
-                    modifier = Modifier.weight(1.5f)
+                    text = it.type,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.bodySmallLight,
+                    modifier = Modifier
+                        .padding(horizontal = 3.dp)
+                        .weight(1.5f)
                 )
 
 
                 Text(
-                    text = it.reps, style = MaterialTheme.typography.bodySmallLight,
-                    modifier = Modifier.weight(1f)
+                    text = it.reps,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.bodySmallLight,
+                    modifier = Modifier
+                        .padding(horizontal = 3.dp)
+                        .weight(1f)
                 )
+
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 3.dp)
+                        .weight(1.5f),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextFieldSingleLineBox(
+                        isEditable = isEditable,
+                        value = it.weight,
+                        onValueChange = { v -> onWeightValueChange(v, it.id) },
+                        textStyle = MaterialTheme.typography.bodySmallLight,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = it.unit,
+                        style = MaterialTheme.typography.bodySmallLight,
+                        modifier = Modifier
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
 
                 Text(
                     text = "${it.restSeconds} sec",
+                    maxLines = 1,
                     style = MaterialTheme.typography.bodySmallLight,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .padding(horizontal = 3.dp)
+                        .weight(1f)
                 )
 
-                if (it.isComplete) Icon(
-                    painterResource(id = R.drawable.ic_check_circle),
-                    tint = PrimaryTurq.copy(0.7f),
-                    modifier = Modifier.size(16.dp),
-                    contentDescription = "set complete"
-                ) else {
-                    Spacer(modifier = Modifier.size(16.dp))  // Include spacer to maintain alignment
+                Box(modifier = Modifier.width(24.dp)) {
+                    if (it.isComplete) Icon(
+                        painterResource(id = R.drawable.ic_check_circle),
+                        tint = PrimaryTurq.copy(0.7f),
+                        modifier = Modifier
+                            .size(16.dp)
+                            .align(Alignment.Center),
+                        contentDescription = "set complete"
+                    )
                 }
             }
 
         }
 
     }
+}
+
+
+@Preview()
+@Composable
+fun PreviewExercisePreviewCard() = BasePreviewContainer {
+    ExercisePreviewCard(
+        exercise = WorkoutDm.Exercise.MOCK,
+        isCompleteClick = { },
+        onClick = { },
+        isEditable = true,
+        onToggleExerciseSetStatus = { _, _ -> },
+        onWeightValueChange = { _, _ -> })
 }
