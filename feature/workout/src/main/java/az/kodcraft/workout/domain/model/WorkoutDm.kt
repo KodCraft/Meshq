@@ -13,12 +13,10 @@ data class WorkoutDm(
     val notes: String,
     val exercises: List<Exercise> = emptyList()
 ) : Parcelable {
-
-
-    fun isComplete() = exercises.any() && exercises.all { it.isComplete() }
     @Parcelize
     data class Exercise(
         val id: String,
+        val exerciseRef: String,
         val name: String,
         val sets: List<Set>,
         val isCurrent: Boolean = false,
@@ -28,10 +26,11 @@ data class WorkoutDm(
         companion object{
             val MOCK = Exercise(
                 id = "cu",
+                exerciseRef = "",
                 name = "Squat",
                 sets = listOf(Set.MOCK, Set.MOCK),
                 isCurrent = true,
-                isInPreviewMode = true
+                isInPreviewMode = true,
             )
         }
         @Parcelize
@@ -93,6 +92,7 @@ data class WorkoutDm(
             isFinished = false,
             exercises = listOf(Exercise(
                 id = "mnesarchum",
+                exerciseRef = "",
                 name = "Lance Willis",
                 sets = listOf(),
                 isCurrent = false,

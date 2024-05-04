@@ -2,7 +2,6 @@ package az.kodcraft.workout.data.dto
 
 import az.kodcraft.workout.domain.model.WorkoutDm
 import com.google.firebase.Timestamp
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.PropertyName
 
 data class WorkoutDto(
@@ -19,7 +18,7 @@ data class WorkoutDto(
     data class Exercise(
         var id: String = "",
         @get:PropertyName("exercise_id") @set:PropertyName("exercise_id")
-        var exerciseRef: DocumentReference? = null,
+        var exerciseRefId: String = "",
         val name: String = "",
         var sets: List<Set> = emptyList()
     ) {
@@ -44,7 +43,7 @@ data class WorkoutDto(
         isFinished = isFinished,
         notes = notes,
         exercises = exercises.map {
-            WorkoutDm.Exercise(id = it.id, name = it.name, sets = it.sets.map { set ->
+            WorkoutDm.Exercise(id = it.id, name = it.name,exerciseRef = it.exerciseRefId, sets = it.sets.map { set ->
                 WorkoutDm.Exercise.Set(
                     id = set.id,
                     type = set.type,
@@ -52,7 +51,7 @@ data class WorkoutDto(
                     restSeconds = set.restSeconds,
                     weight = set.weight,
                     unit = set.unit,
-                    isComplete = set.isComplete
+                    isComplete = set.isComplete,
                 )
             })
         }
@@ -66,7 +65,7 @@ companion object{
         isFinished = isFinished,
         notes = notes,
         exercises = exercises.map {
-            Exercise(id = it.id, name = it.name, sets = it.sets.map { set ->
+            Exercise(id = it.id, name = it.name, exerciseRefId = it.exerciseRef, sets = it.sets.map { set ->
                 Exercise.Set(
                     id = set.id,
                     type = set.type,

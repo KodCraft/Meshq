@@ -52,7 +52,6 @@ import az.kodcraft.workout.presentation.workoutDetails.composable.WorkoutTab
 import az.kodcraft.workout.presentation.workoutDetails.contract.WorkoutDetailsIntent
 import az.kodcraft.workout.presentation.workoutDetails.contract.WorkoutDetailsUiState
 import az.kodcraft.workout.presentation.workoutProgress.composable.CompleteButton
-import az.kodcraft.workout.presentation.workoutProgress.composable.StartOverButton
 
 @Composable
 fun WorkoutDetailsRoute(
@@ -99,20 +98,20 @@ fun WorkoutDetailsScreen(
             onBackClick = navigateBack,
             content = {
                 Spacer(modifier = Modifier.weight(1f))
-                if (uiState.workout.isFinished) StartOverButton(
-                    onClick = {},
-                    buttonColor = Color.Red.copy(0.6f)
-                )
-                Spacer(modifier = Modifier.width(6.dp))
+//                if (uiState.workout.isFinished) StartOverButton(
+//                    onClick = {},
+//                    buttonColor = Color.Red.copy(0.6f)
+//                )
+//                Spacer(modifier = Modifier.width(6.dp))
                 CompleteButton(
                     onClick = {},
                     buttonColor = PrimaryBlue.copy(0.6f),
                     isFinished = uiState.workout.isFinished
                 )
-                if (uiState.workout.isFinished.not()) {
+               // if (uiState.workout.isFinished.not()) {
                     Spacer(modifier = Modifier.width(12.dp))
                     WorkoutDate(uiState.workout.date.formatDateToStringDatAndMonth())
-                }
+              //  }
             }
         )
         Column(
@@ -152,7 +151,7 @@ fun WorkoutContentCard(modifier: Modifier, workout: WorkoutDm, onStartWorkoutCli
                 .fillMaxWidth()
         )
         ButtonSecondary(
-            text = if (workout.isComplete()) stringResource(R.string.workout_details_screen_btn_view_workout) else stringResource(
+            text = if (workout.isFinished) stringResource(R.string.workout_details_screen_btn_view_workout) else stringResource(
                 R.string.workout_details_screen_btn_start_workout
             ),
             modifier = Modifier

@@ -3,27 +3,32 @@ package az.kodcraft.workout.data.service
 import android.util.Log
 import az.kodcraft.workout.data.dto.WorkoutDto
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
 class AssignedWorkoutService(
-    private val workoutRef: CollectionReference
+    private val assignedWorkoutRef: CollectionReference,
+    private val exerciseRef: CollectionReference,
+    private val exerciseLogRef: CollectionReference,
 ) {
 
     suspend fun getWorkout(workoutId: String): WorkoutDto? {
-        return workoutRef.document(workoutId).get().await().toObject(WorkoutDto::class.java)
+        return assignedWorkoutRef.document(workoutId).get().await().toObject(WorkoutDto::class.java)
             ?.apply {
                 id = workoutId
                 val exercisesQuerySnapshot =
-                    workoutRef.document(workoutId).collection("exercises").orderBy("order").get()
+                    assignedWorkoutRef.document(workoutId).collection("exercises").orderBy("order")
+                        .get()
                         .await()
 
                 val exercises = exercisesQuerySnapshot.map { document ->
                     document.toObject(WorkoutDto.Exercise::class.java).apply {
                         id = document.id  // Set the document ID
-
-                        val setsSnapshot = workoutRef.document(workoutId).collection("exercises")
-                            .document(document.id).collection("sets").orderBy("order").get().await()
+                        val setsSnapshot =
+                            assignedWorkoutRef.document(workoutId).collection("exercises")
+                                .document(document.id).collection("sets").orderBy("order").get()
+                                .await()
                         sets = setsSnapshot.map { setDoc ->
                             setDoc.toObject(WorkoutDto.Exercise.Set::class.java).apply {
 
@@ -40,15 +45,23 @@ class AssignedWorkoutService(
             }
     }
 
-    suspend fun saveFinishedWorkout(workout: WorkoutDto): Boolean {
-        val workoutDoc = workoutRef.document(workout.id)
+    suspend fun saveFinishedWorkout(assignedWorkout: WorkoutDto): Boolean {
+        val workoutDoc = assignedWorkoutRef.document(assignedWorkout.id)
 
+        val existingExerciseLogs =
+            exerciseLogRef.whereEqualTo("assignedWorkout", workoutDoc).get()
+                .await()
         FirebaseFirestore.getInstance().runTransaction { transaction ->
             // Update the 'isFinished' field of the workout
-            transaction.update(workoutDoc, "isFinished", workout.isFinished)
+            transaction.update(workoutDoc, "isFinished", assignedWorkout.isFinished)
+
+            // Delete exercise logs associated with the assigned workout
+            existingExerciseLogs.documents.forEach { doc ->
+                transaction.delete(doc.reference)
+            }
 
             // Update the 'weight' in each exercise's set and 'isComplete' status
-            workout.exercises.forEach { exercise ->
+            assignedWorkout.exercises.forEach { exercise ->
                 exercise.sets.forEach { set ->
                     val setDocRef = workoutDoc
                         .collection("exercises").document(exercise.id)
@@ -58,9 +71,26 @@ class AssignedWorkoutService(
                     transaction.update(setDocRef, "isComplete", set.isComplete)
                     transaction.update(setDocRef, "weight", set.weight)
                 }
+                exercise.sets.lastOrNull { it.type == "working" && it.weight.isNotBlank() }
+                    ?.let { set ->
+
+                        val assignedWorkoutRef = assignedWorkoutRef.document(assignedWorkout.id)
+                        val exerciseLog = hashMapOf(
+                            "userId" to "123",
+                            "assignedWorkout" to assignedWorkoutRef,
+                            "exercise_id" to exercise.exerciseRefId,
+                            "weight" to set.weight,
+                            "timestamp" to FieldValue.serverTimestamp()
+                            // Add more fields as needed
+                        )
+
+                        transaction.set(exerciseLogRef.document(), exerciseLog)
+                    }
             }
         }.await()
         return true
     }
+
+
 }
 
