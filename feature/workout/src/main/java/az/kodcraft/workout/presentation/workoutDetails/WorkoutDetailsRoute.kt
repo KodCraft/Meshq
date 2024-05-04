@@ -1,6 +1,7 @@
 package az.kodcraft.workout.presentation.workoutDetails
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,15 +31,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import az.kodcraft.core.presentation.bases.BasePreviewContainer
 import az.kodcraft.core.presentation.composable.appBar.TopAppBar
 import az.kodcraft.core.presentation.composable.button.ButtonSecondary
 import az.kodcraft.core.presentation.theme.PrimaryBlue
+import az.kodcraft.core.presentation.theme.PrimaryTurq
 import az.kodcraft.core.presentation.theme.body
 import az.kodcraft.core.presentation.theme.bodySmallLight
 import az.kodcraft.core.presentation.theme.mediumTitle
 import az.kodcraft.core.presentation.theme.primaryTurq
+import az.kodcraft.core.utils.formatDateToStringDatAndMonth
 import az.kodcraft.core.utils.noRippleClickable
 import az.kodcraft.workout.R
 import az.kodcraft.workout.domain.model.WorkoutDm
@@ -45,6 +51,7 @@ import az.kodcraft.workout.presentation.workoutDetails.composable.CardTabs
 import az.kodcraft.workout.presentation.workoutDetails.composable.WorkoutTab
 import az.kodcraft.workout.presentation.workoutDetails.contract.WorkoutDetailsIntent
 import az.kodcraft.workout.presentation.workoutDetails.contract.WorkoutDetailsUiState
+import az.kodcraft.workout.presentation.workoutProgress.composable.CompleteButton
 
 @Composable
 fun WorkoutDetailsRoute(
@@ -58,11 +65,19 @@ fun WorkoutDetailsRoute(
     }
 
     val uiState by viewModel.uiState.collectAsState()
-    WorkoutDetailsScreen(
-        uiState = uiState,
-        onStartWorkoutClicked = { navigateToWorkoutProgress(uiState.workout.id) },
-        navigateBack = navigateBack
-    )
+    if (uiState.isLoading)
+        Box(Modifier.fillMaxSize()) {
+            CircularProgressIndicator(
+                color = PrimaryTurq,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+    else
+        WorkoutDetailsScreen(
+            uiState = uiState,
+            onStartWorkoutClicked = { navigateToWorkoutProgress(uiState.workout.id) },
+            navigateBack = navigateBack
+        )
 }
 
 
@@ -83,9 +98,20 @@ fun WorkoutDetailsScreen(
             onBackClick = navigateBack,
             content = {
                 Spacer(modifier = Modifier.weight(1f))
-                CompleteButton(onClick = {}, buttonColor = PrimaryBlue.copy(0.6f))
-                Spacer(modifier = Modifier.width(12.dp))
-                WorkoutDate(uiState.workout.date)
+//                if (uiState.workout.isFinished) StartOverButton(
+//                    onClick = {},
+//                    buttonColor = Color.Red.copy(0.6f)
+//                )
+//                Spacer(modifier = Modifier.width(6.dp))
+                CompleteButton(
+                    onClick = {},
+                    buttonColor = PrimaryBlue.copy(0.6f),
+                    isFinished = uiState.workout.isFinished
+                )
+               // if (uiState.workout.isFinished.not()) {
+                    Spacer(modifier = Modifier.width(12.dp))
+                    WorkoutDate(uiState.workout.date.formatDateToStringDatAndMonth())
+              //  }
             }
         )
         Column(
@@ -125,7 +151,9 @@ fun WorkoutContentCard(modifier: Modifier, workout: WorkoutDm, onStartWorkoutCli
                 .fillMaxWidth()
         )
         ButtonSecondary(
-            text = stringResource(R.string.workout_details_screen_btn_start_workout),
+            text = if (workout.isFinished) stringResource(R.string.workout_details_screen_btn_view_workout) else stringResource(
+                R.string.workout_details_screen_btn_start_workout
+            ),
             modifier = Modifier
                 .noRippleClickable { onStartWorkoutClicked() }
                 .align(Alignment.CenterHorizontally)
@@ -161,47 +189,6 @@ fun CardContent(selectedTab: WorkoutTab, workout: WorkoutDm) {
     }
 }
 
-@Composable
-fun CompleteButton(onClick: () -> Unit, buttonColor: Color, isFinished:Boolean = false) {
-    Row(
-        modifier = Modifier
-            .noRippleClickable
-            { onClick() }
-            .clip(RoundedCornerShape(8.dp))
-            .background(buttonColor)
-            .padding(6.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        if(isFinished){
-            Text(
-                text = stringResource(R.string.workout_details_screen_btn_workout_is_finished),
-                style = MaterialTheme.typography.body
-            )
-            Spacer(modifier = Modifier.width(6.dp))
-            Icon(
-                painter = painterResource(id = az.kodcraft.core.R.drawable.ic_check_circle),
-                tint = MaterialTheme.colorScheme.onBackground,
-                contentDescription = "complete workout button",
-                modifier = Modifier.size(20.dp)
-            )
-        }
-        else {
-            Icon(
-                painter = painterResource(id = az.kodcraft.core.R.drawable.ic_done),
-                tint = MaterialTheme.colorScheme.onBackground,
-                contentDescription = "complete workout button",
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.width(6.dp))
-            Text(
-                text = stringResource(R.string.workout_details_screen_btn_complete_workout),
-                style = MaterialTheme.typography.body
-            )
-        }
-        Spacer(modifier = Modifier.width(6.dp))
-    }
-}
-
 
 @Composable
 fun WorkoutDate(date: String) {
@@ -217,3 +204,13 @@ fun WorkoutDate(date: String) {
     }
 }
 
+
+@Preview
+@Composable
+fun WorkoutDetailsPreview() = BasePreviewContainer {
+    WorkoutDetailsScreen(
+        uiState = WorkoutDetailsUiState(workout = WorkoutDm.MOCK.copy(isFinished = true)),
+        onStartWorkoutClicked = { /*TODO*/ }) {
+
+    }
+}

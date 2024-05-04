@@ -30,8 +30,8 @@ val Typography.mediumTitle: TextStyle
     get() = TextStyle(
         fontWeight = FontWeight.Bold,
         fontFamily = MeshqFont,
-        fontSize = 36.sp,
-        lineHeight = 40.sp,
+        fontSize = 38.sp,
+        lineHeight = 42.sp,
         letterSpacing = 0.sp
     )
 val Typography.smallTitle: TextStyle
@@ -47,7 +47,7 @@ val Typography.headLine: TextStyle
     get() = TextStyle(
         fontWeight = FontWeight.Normal,
         fontFamily = MeshqFont,
-        fontSize = 16.sp,
+        fontSize = 17.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.sp
     )
@@ -56,7 +56,7 @@ val Typography.body: TextStyle
     get() = TextStyle(
         fontWeight = FontWeight.Normal,
         fontFamily = MeshqFont,
-        fontSize = 14.sp,
+        fontSize = 16.sp,
         lineHeight = 18.sp,
         letterSpacing = 0.sp
     )
@@ -64,7 +64,7 @@ val Typography.bodyLight: TextStyle
     get() = TextStyle(
         fontWeight = FontWeight.ExtraLight,
         fontFamily = MeshqFont,
-        fontSize = 14.sp,
+        fontSize = 16.sp,
         lineHeight = 18.sp,
         letterSpacing = 0.sp
     )
@@ -72,7 +72,7 @@ val Typography.bodySmallLight: TextStyle
     get() = TextStyle(
         fontWeight = FontWeight.ExtraLight,
         fontFamily = MeshqFont,
-        fontSize = 12.sp,
+        fontSize = 14.sp,
         lineHeight = 18.sp,
         letterSpacing = 0.sp
     )

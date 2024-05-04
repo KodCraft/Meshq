@@ -1,8 +1,8 @@
 package az.kodcraft.workout.data.di
 
-import az.kodcraft.workout.data.repository.WorkoutRepositoryImpl
-import az.kodcraft.workout.data.service.WorkoutService
-import az.kodcraft.workout.domain.repository.WorkoutRepository
+import az.kodcraft.workout.data.repository.AssignedWorkoutRepositoryImpl
+import az.kodcraft.workout.data.service.AssignedWorkoutService
+import az.kodcraft.workout.domain.repository.AssignedWorkoutRepository
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.firestore
@@ -13,7 +13,10 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Qualifier
 
 const val WORKOUTS_COLLECTION = "workouts_collection"
-const val FINISHED_WORKOUTS_COLLECTION = "finished_workouts_collection"
+const val ASSIGNED_WORKOUTS_COLLECTION = "assigned_workouts_collection"
+const val EXERCISE_LOGS_COLLECTION = "exercise_logs_collection"
+const val EXERCISE_COLLECTION = "exercise_collection"
+
 @Module
 @InstallIn(SingletonComponent::class)
 object WorkoutDataModule {
@@ -22,25 +25,46 @@ object WorkoutDataModule {
     @Provides
     fun provideWorkoutDataRef() = Firebase.firestore.collection(WORKOUTS_COLLECTION)
 
-    @FinishedWorkoutCollection
+    @AssignedWorkoutCollection
     @Provides
-    fun provideFinishedWorkoutDataRef() = Firebase.firestore.collection(FINISHED_WORKOUTS_COLLECTION)
+    fun provideAssignedWorkoutDataRef() =
+        Firebase.firestore.collection(ASSIGNED_WORKOUTS_COLLECTION)
+
+    @ExerciseLogCollection
+    @Provides
+    fun provideExerciseLogDataRef() = Firebase.firestore.collection(EXERCISE_LOGS_COLLECTION)
+
+
+    @ExerciseCollection
+    @Provides
+    fun provideExerciseDataRef() = Firebase.firestore.collection(EXERCISE_COLLECTION)
+
 
     @Provides
-    fun provideWorkoutService(
-        @WorkoutCollection workoutDataRef: CollectionReference,
-        @FinishedWorkoutCollection finishedWorkoutDataRef: CollectionReference,
-    ): WorkoutService = WorkoutService(workoutDataRef,finishedWorkoutDataRef)
+    fun provideAssignedWorkoutService(
+        @AssignedWorkoutCollection workoutDataRef: CollectionReference,
+        @ExerciseLogCollection exerciseLogRef: CollectionReference,
+        @ExerciseCollection exerciseRef: CollectionReference,
+    ): AssignedWorkoutService = AssignedWorkoutService(workoutDataRef,exerciseRef, exerciseLogRef)
 
     @Provides
     fun provideWorkoutRepository(
-         workoutService: WorkoutService
-    ): WorkoutRepository = WorkoutRepositoryImpl(workoutService)
+        workoutService: AssignedWorkoutService
+    ): AssignedWorkoutRepository = AssignedWorkoutRepositoryImpl(workoutService)
 }
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class WorkoutCollection
+
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
-annotation class FinishedWorkoutCollection
+annotation class AssignedWorkoutCollection
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class ExerciseLogCollection
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class ExerciseCollection
