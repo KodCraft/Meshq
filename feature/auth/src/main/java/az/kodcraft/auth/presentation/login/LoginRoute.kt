@@ -1,7 +1,5 @@
 package az.kodcraft.auth.presentation.login
 
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,11 +19,8 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -45,18 +40,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import az.kodcraft.auth.R
+import az.kodcraft.auth.presentation.login.contract.LoginIntent
 import az.kodcraft.auth.presentation.login.contract.LoginUiState
+import az.kodcraft.core.presentation.composable.button.ButtonPrimary
 import az.kodcraft.core.presentation.theme.body
+import az.kodcraft.core.utils.noRippleClickable
 
 @Composable
 fun LoginRoute(
     viewModel: LoginViewModel = hiltViewModel(),
+    onLoginClicked: (phoneNumber: String) -> Unit,
     navigateToDashboard: () -> Unit,
     navigateBack: () -> Unit,
     userId: String
@@ -67,16 +65,18 @@ fun LoginRoute(
           // viewModel.acceptIntent(WorkoutDetailsIntent.GetWorkoutData(workoutId = workoutId))
       }*/
     val context = LocalContext.current
-    Toast.makeText(context, "sala aslanm", Toast.LENGTH_SHORT).show()
     LoginScreen(
         uiState = uiState,
-        onLoginClicked = { Log.d("salam", "LoginRoute: ") },
+        onLoginClicked = { onLoginClicked.invoke(it) },
+        onIntent = viewModel::acceptIntent,
     )
 }
 
 @Composable
 fun LoginScreen(
-    uiState: LoginUiState, onLoginClicked: () -> Unit
+    uiState: LoginUiState,
+    onLoginClicked: (phoneNumber: String) -> Unit,
+    onIntent: (LoginIntent) -> Unit
 ) {
     val backgroundImage: Painter = painterResource(id = R.drawable.login_background)
     Box(
@@ -90,61 +90,45 @@ fun LoginScreen(
         )
 
         // Your login screen's content
-        GymLoginScreen() // Assuming GymLoginScreen is your Composable function for login inputs
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            // Text input for the phone number
+            Spacer(modifier = Modifier.weight(1f))
 
-    }
-}
+            PhoneNumberInput(phoneNumber = uiState.phoneNumber,
+                countryCode = uiState.countryCode,
+                onPhoneNumberChanged = { onIntent.invoke(LoginIntent.OnPhoneNumberChanged(it)) },
+                onCountryCodeSelected = { onIntent.invoke(LoginIntent.CountryCode(it)) })
 
-@Composable
-fun GymLoginScreen() {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        // Text input for the phone number
-        Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        PhoneNumberInput()
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Proceed button
-        Button(modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            colors = ButtonColors(
-                containerColor = Color(0xFF257178),
-                contentColor = Color.White,
-                disabledContainerColor = Color.Blue,
-                disabledContentColor = Color.DarkGray
-            ),
-            onClick = {
-                // Handle the proceed action
-            }) {
-            Text(
-                style = MaterialTheme.typography.titleLarge.copy(
-                    color = Color.White, fontSize = 18.sp
-                ),
-                textAlign = TextAlign.Center,
+            // Proceed button
+            ButtonPrimary(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 10.dp, bottom = 10.dp),
-                text = "Davam et"
+                    .noRippleClickable {
+                        onLoginClicked.invoke("${uiState.countryCode}${uiState.phoneNumber}")
+                    }, text = "Davam et"
             )
+            Spacer(modifier = Modifier.height(26.dp))
         }
-        Spacer(modifier = Modifier.height(26.dp))
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PhoneNumberInput() {
-    var phoneNumber by remember { mutableStateOf("") }
+fun PhoneNumberInput(
+    phoneNumber: String,
+    countryCode: String,
+    onPhoneNumberChanged: (phoneNumber: String) -> Unit,
+    onCountryCodeSelected: (countryCode: String) -> Unit
+) {
     val countryCodes = listOf("+994", "+1", "+91", "+33", "+81")
     var expanded by remember { mutableStateOf(false) }
-    var selectedCode by remember { mutableStateOf(countryCodes[0]) }
 
     Text(
         modifier = Modifier.fillMaxWidth(),
@@ -176,7 +160,7 @@ fun PhoneNumberInput() {
             .heightIn(56.dp)  // Explicitly setting the height to match OutlinedTextField
             .wrapContentHeight(Alignment.CenterVertically), contentAlignment = Alignment.Center) {
             Text(
-                text = selectedCode, color = Color.White, fontSize = 18.sp
+                text = countryCode, color = Color.White, fontSize = 18.sp
             )
         }
 
@@ -188,7 +172,7 @@ fun PhoneNumberInput() {
             .fillMaxWidth()
             .height(56.dp),
             value = phoneNumber,
-            onValueChange = { phoneNumber = it },
+            onValueChange = { onPhoneNumberChanged.invoke(it) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
             textStyle = TextStyle(color = Color.White, fontSize = 18.sp), // Set text color and size
@@ -221,7 +205,7 @@ fun PhoneNumberInput() {
         ) {
             countryCodes.forEach { code ->
                 DropdownMenuItem(text = { Text(code) }, onClick = {
-                    selectedCode = code
+                    onCountryCodeSelected.invoke(code)
                     expanded = false
                 })
             }
@@ -232,5 +216,5 @@ fun PhoneNumberInput() {
 @Preview(showBackground = true)
 @Composable
 fun PreviewDashboard() {
-    LoginScreen(uiState = LoginUiState(), onLoginClicked = {})
+    LoginScreen(uiState = LoginUiState(), onLoginClicked = {}, onIntent = {})
 }

@@ -22,6 +22,7 @@ fun MeshqNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     padding: PaddingValues = PaddingValues(0.dp),
+    onLoginClicked: (phoneNumber: String) -> Unit,
     startDestination: String = OnBoardingRouteConstants.SPLASH_SCREEN
 ) {
     NavHost(
@@ -35,11 +36,11 @@ fun MeshqNavHost(
         )
 
         dashboardGraph(
-            padding = padding,
-            navigateToWorkoutDetails = navController::navigateToWorkoutDetails
+            padding = padding, navigateToWorkoutDetails = navController::navigateToWorkoutDetails
         )
 
         authGraph(navigateToDashboard = navController::navigateToLoginScreen,
+            onLoginClicked = onLoginClicked,
             navigateBack = { navController.popBackStack() })
 
         workoutGraph(navigateToWorkoutProgress = navController::navigateToWorkoutProgress,
