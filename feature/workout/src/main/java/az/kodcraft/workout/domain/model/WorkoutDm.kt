@@ -2,27 +2,37 @@ package az.kodcraft.workout.domain.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import java.util.Date
 
 @Parcelize
 data class WorkoutDm(
     val id: String,
     val title: String,
     val isFinished: Boolean,
-    val date: String,
+    val date: Date,
     val notes: String,
     val exercises: List<Exercise> = emptyList()
 ) : Parcelable {
-
-
-    fun isComplete() = exercises.any() && exercises.all { it.isComplete() }
     @Parcelize
     data class Exercise(
         val id: String,
+        val exerciseRef: String,
         val name: String,
         val sets: List<Set>,
         val isCurrent: Boolean = false,
         val isInPreviewMode: Boolean = false,
     ) : Parcelable {
+
+        companion object{
+            val MOCK = Exercise(
+                id = "cu",
+                exerciseRef = "",
+                name = "Squat",
+                sets = listOf(Set.MOCK, Set.MOCK),
+                isCurrent = true,
+                isInPreviewMode = true,
+            )
+        }
         @Parcelize
         data class Set(
             val id:String,
@@ -30,8 +40,21 @@ data class WorkoutDm(
             val reps: String,
             val restSeconds: Int,
             val weight: String,
+            val unit: String,
             val isComplete: Boolean = false
-        ) : Parcelable
+        ) : Parcelable{
+            companion object{
+                val MOCK = Set(
+                    id = "123",
+                    type = "warmup",
+                    reps = "8-10",
+                    restSeconds = 90,
+                    weight = "5",
+                    unit = "kg",
+                    isComplete = false
+                )
+            }
+        }
 
         fun isComplete() = sets.any() && sets.all { it.isComplete }
         override fun toString(): String {
@@ -60,13 +83,21 @@ data class WorkoutDm(
     }
 
     companion object {
-        val EMPTY = WorkoutDm(id = "", title = "", date = "", notes = "", isFinished = false)
+        val EMPTY = WorkoutDm(id = "", title = "", date = Date(), notes = "", isFinished = false)
         val MOCK = WorkoutDm(
             id = "",
             title = "Push and Glutes",
             notes = "Agilli ol!",
-            date = "16 Feb",
-            isFinished = false
+            date = Date(),
+            isFinished = false,
+            exercises = listOf(Exercise(
+                id = "mnesarchum",
+                exerciseRef = "",
+                name = "Lance Willis",
+                sets = listOf(),
+                isCurrent = false,
+                isInPreviewMode = false
+            ))
         )
     }
 }

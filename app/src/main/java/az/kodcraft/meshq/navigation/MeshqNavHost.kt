@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import az.kodcraft.auth.navigation.authGraph
 import az.kodcraft.auth.navigation.navigateToLoginScreen
+import az.kodcraft.core.navigation.NavGraphConstants
 import az.kodcraft.dashboard.navigation.dashboardGraph
 import az.kodcraft.dashboard.navigation.navigateToDashboard
 import az.kodcraft.onboarding.navigation.OnBoardingRouteConstants
@@ -34,6 +35,7 @@ fun MeshqNavHost(
         )
 
         dashboardGraph(
+            padding = padding,
             navigateToWorkoutDetails = navController::navigateToWorkoutDetails
         )
 

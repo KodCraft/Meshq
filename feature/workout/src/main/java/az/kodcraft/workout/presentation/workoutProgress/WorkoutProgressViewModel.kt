@@ -15,7 +15,6 @@ import az.kodcraft.workout.presentation.workoutProgress.contract.WorkoutProgress
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
@@ -46,14 +45,19 @@ class WorkoutProgressViewModel @Inject constructor(
                 )
             )
 
-            WorkoutProgressIntent.CompleteWorkout -> flowOf(
-                WorkoutProgressUiState.PartialState.CompleteWorkout
-            )
+            WorkoutProgressIntent.SaveFinishWorkout -> saveFinishedWorkout()
 
-            WorkoutProgressIntent.FinishWorkout -> saveFinishedWorkout()
+            WorkoutProgressIntent.SaveWorkoutProgress -> saveWorkout()
+            WorkoutProgressIntent.ResetTheWorkout -> resetTheWorkout()
             is WorkoutProgressIntent.ChangeExerciseSetStatus -> flowOf(
                 WorkoutProgressUiState.PartialState.ExerciseSetStatus(
                     intent.exerciseId, intent.setId
+                )
+            )
+
+            is WorkoutProgressIntent.ChangeWeightValueForSet -> flowOf(
+                WorkoutProgressUiState.PartialState.ExerciseSetWeight(
+                    intent.value, intent.setId
                 )
             )
         }
@@ -66,6 +70,22 @@ class WorkoutProgressViewModel @Inject constructor(
     ): WorkoutProgressUiState = when (partialState) {
         WorkoutProgressUiState.PartialState.Loading -> previousState.copy(
             isLoading = true, isError = false
+        )
+
+        WorkoutProgressUiState.PartialState.RestartWorkout -> previousState.copy(
+            isLoading = false,
+            isError = false,
+            workout = previousState.workout.copy(exercises = previousState.workout.exercises.map {
+                it.copy(
+                    sets = it.sets.map { set -> set.copy(isComplete = false) })
+            }, isFinished = false)
+        )
+
+        WorkoutProgressUiState.PartialState.WorkoutFinished -> previousState.copy(
+            isLoading = false, isError = false, workout = previousState.workout.copy(isFinished = true)
+        )
+        WorkoutProgressUiState.PartialState.WorkoutSaved -> previousState.copy(
+            isLoading = false, isError = false
         )
 
         is WorkoutProgressUiState.PartialState.WorkoutData -> previousState.copy(
@@ -86,17 +106,6 @@ class WorkoutProgressViewModel @Inject constructor(
             )
         )
 
-        WorkoutProgressUiState.PartialState.CompleteWorkout -> previousState.copy(
-            isLoading = false, isError = false,
-            workout = previousState.workout.copy(
-                exercises = previousState.workout.exercises.map { exercise ->
-                    exercise.copy(
-                        isCurrent = false,
-                        sets = exercise.sets.map { set -> set.copy(isComplete = true) })
-                }
-            )
-        )
-
         is WorkoutProgressUiState.PartialState.ToggleExercisePreview -> previousState.copy(
             workout = previousState.workout.copy(
                 exercises = previousState.workout.exercises.map { exercise ->
@@ -113,6 +122,20 @@ class WorkoutProgressViewModel @Inject constructor(
                 exercises = updateExerciseSetStatus(
                     previousState.workout.exercises, partialState.exerciseId, partialState.setId
                 )
+            )
+        )
+
+        is WorkoutProgressUiState.PartialState.ExerciseSetWeight -> previousState.copy(
+            isLoading = false, isError = false,
+            workout = previousState.workout.copy(
+                exercises = previousState.workout.exercises.map {
+                    if (it.sets.any { set -> set.id == partialState.setId })
+                        it.copy(sets = it.sets.map { set ->
+                            if (set.id == partialState.setId) set.copy(
+                                weight = partialState.value
+                            ) else set
+                        }) else it
+                }
             )
         )
     }
@@ -176,10 +199,11 @@ class WorkoutProgressViewModel @Inject constructor(
             getWorkoutUseCase.execute(
                 workoutId
             ).doOnSuccess { data ->
-                if (data != null)
+                if (data != null) {
                     emit(
                         WorkoutProgressUiState.PartialState.WorkoutData(data)
                     )
+                }
             }.doOnFailure {
                 // emit(WorkoutProgressUiState.PartialState.Error(it.message.orEmpty()))
             }.doOnLoading {
@@ -188,13 +212,14 @@ class WorkoutProgressViewModel @Inject constructor(
                 //  emit(WorkoutProgressUiState.PartialState.NetworkError)
             }.collect()
         }
+
     private fun saveFinishedWorkout(): Flow<WorkoutProgressUiState.PartialState> =
         flow {
             saveFinishedWorkoutUseCase.execute(
-                uiState.value.workout
+                uiState.value.workout.copy(isFinished = true)
             ).doOnSuccess { data ->
-                if (data)
-                    publishEvent(WorkoutProgressEvent.NavigateHome)
+                emit(WorkoutProgressUiState.PartialState.WorkoutFinished)
+                publishEvent(WorkoutProgressEvent.NavigateHome)
             }.doOnFailure {
                 // emit(WorkoutProgressUiState.PartialState.Error(it.message.orEmpty()))
             }.doOnLoading {
@@ -202,6 +227,27 @@ class WorkoutProgressViewModel @Inject constructor(
             }.doOnNetworkError {
                 //  emit(WorkoutProgressUiState.PartialState.NetworkError)
             }.collect()
+        }
+
+    private fun saveWorkout(): Flow<WorkoutProgressUiState.PartialState> =
+        flow {
+            saveFinishedWorkoutUseCase.execute(
+                uiState.value.workout
+            ).doOnSuccess { data ->
+                emit(WorkoutProgressUiState.PartialState.WorkoutSaved)
+                publishEvent(WorkoutProgressEvent.NavigateHome)
+            }.doOnFailure {
+                // emit(WorkoutProgressUiState.PartialState.Error(it.message.orEmpty()))
+            }.doOnLoading {
+                emit(WorkoutProgressUiState.PartialState.Loading)
+            }.doOnNetworkError {
+                //  emit(WorkoutProgressUiState.PartialState.NetworkError)
+            }.collect()
+        }
+
+    private fun resetTheWorkout(): Flow<WorkoutProgressUiState.PartialState> =
+        flow {
+            emit(WorkoutProgressUiState.PartialState.RestartWorkout)
         }
 
 
