@@ -199,7 +199,8 @@ fun PhoneNumberInput() {
                         .padding(horizontal = 16.dp)
                         .clip(RoundedCornerShape(4.dp))
                         .background(Color.Transparent)  // Set the background to transparent
-                , contentAlignment = Alignment.CenterStart) {
+                    , contentAlignment = Alignment.CenterStart
+                ) {
                     // Add a label that will disappear when text is typed
                     if (phoneNumber.isEmpty()) {
                         Text(
