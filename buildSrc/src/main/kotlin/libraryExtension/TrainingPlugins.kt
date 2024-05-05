@@ -1,8 +1,7 @@
 package libraryExtension
 
-object TrainingLibrary {
-    const val AUTH_NAME_SPACES = "az.kodcraft.auth"
+object TrainingPlugins {
+    const val APPLICATION = "meshq.android.application"
     const val DASHBOARD_NAME_SPACES = "az.kodcraft.dashboard"
     const val APPLICATION_NAME_SPACES = "az.kodcraft.meshq"
 }
-

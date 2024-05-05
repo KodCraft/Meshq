@@ -7,6 +7,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import az.kodcraft.auth.navigation.authGraph
+import az.kodcraft.auth.navigation.navigateToLoginScreen
 import az.kodcraft.dashboard.navigation.dashboardGraph
 import az.kodcraft.dashboard.navigation.navigateToDashboard
 import az.kodcraft.onboarding.navigation.OnBoardingRouteConstants
@@ -27,8 +28,7 @@ fun MeshqNavHost(
         startDestination = startDestination,
         modifier = modifier,
         route = NavGraphConstants.ROOT_GRAPH
-    )
-    {
+    ) {
         onBoardingGraph(
             navController = navController
         )
@@ -36,12 +36,11 @@ fun MeshqNavHost(
         dashboardGraph(
             navigateToWorkoutDetails = navController::navigateToWorkoutDetails
         )
-        authGraph(
-            navigateToDashboard = navController::navigateToDashboard,
-            navigateBack = { navController.popBackStack() }
-        )
-        workoutGraph(
-            navigateToWorkoutProgress = navController::navigateToWorkoutProgress,
+
+        authGraph(navigateToDashboard = navController::navigateToLoginScreen,
+            navigateBack = { navController.popBackStack() })
+
+        workoutGraph(navigateToWorkoutProgress = navController::navigateToWorkoutProgress,
             navigateBack = { navController.popBackStack() },
             navigateHome = { navController.navigateToDashboard() })
 

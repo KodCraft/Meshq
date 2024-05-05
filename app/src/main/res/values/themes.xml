@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.Meshq" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.App.Starting" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="windowSplashScreenBackground">@drawable/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/baseline_agriculture_24</item>
+        <item name="android:windowSplashScreenBehavior" tools:ignore="NewApi">icon_preferred</item>
+        <item name="android:windowSplashScreenIconBackgroundColor" tools:ignore="NewApi">@color/white</item>
+        <item name="android:windowSplashScreenAnimationDuration" tools:ignore="NewApi">1000</item>
+        <item name="windowSplashScreenIconBackgroundColor">@android:color/white</item>
+    </style>
+
 </resources>

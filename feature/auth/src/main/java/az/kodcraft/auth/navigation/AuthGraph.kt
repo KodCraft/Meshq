@@ -8,11 +8,13 @@ fun NavGraphBuilder.authGraph(
     navigateToDashboard: () -> Unit, navigateBack: () -> Unit
 ) {
     composable(route = AuthRouteConstants.LOGIN_SCREEN) { backStackEntry ->
-        backStackEntry.arguments?.getString("workoutId")?.let { id ->
+        LoginRoute(
+            navigateToDashboard = navigateToDashboard, userId = "id", navigateBack = navigateBack
+        )
+       /* backStackEntry.arguments?.getString("workoutId")?.let { id ->
             LoginRoute(
                 navigateToDashboard = navigateToDashboard, userId = id, navigateBack = navigateBack
             )
-        }
-
+        }*/
     }
 }

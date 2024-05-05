@@ -1,3 +1,5 @@
+import libraryExtension.TrainingLibrary.APPLICATION_NAME_SPACES
+
 plugins {
     id("meshq.android.application")
     kotlin("kapt")
@@ -6,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "az.kodcraft.meshq"
+    namespace = APPLICATION_NAME_SPACES
 
     defaultConfig {
         applicationId = "az.kodcraft.meshq"
@@ -67,6 +69,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.androidx.core.splashscreen)
 }
 kapt {
     correctErrorTypes = true

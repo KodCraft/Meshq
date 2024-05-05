@@ -15,7 +15,7 @@ data class LoginUiState(
     sealed class PartialState {
         data object Loading : PartialState()
         data object Init : PartialState()
-         class WeekData() : PartialState()
+        class WeekData() : PartialState()
         data class SelectedDay(val date: LocalDate, val index: Int) : PartialState()
         object LoginUserAccount : PartialState()
     }

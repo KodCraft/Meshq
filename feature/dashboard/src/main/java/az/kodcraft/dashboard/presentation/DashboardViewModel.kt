@@ -28,8 +28,7 @@ class DashboardViewModel @Inject constructor(
     private val getWeekDataUseCase: GetWeekDataUseCase,
     private val getWeekWorkoutsUseCase: GetWeekWorkoutsUseCase
 ) : BaseViewModel<DashboardUiState, DashboardUiState.PartialState, DashboardEvent, DashboardIntent>(
-    savedStateHandle,
-    initialState
+    savedStateHandle, initialState
 ) {
     init {
         acceptIntent(DashboardIntent.Init)
@@ -54,16 +53,14 @@ class DashboardViewModel @Inject constructor(
         }
 
     override fun reduceUiState(
-        previousState: DashboardUiState,
-        partialState: DashboardUiState.PartialState
+        previousState: DashboardUiState, partialState: DashboardUiState.PartialState
     ): DashboardUiState = when (partialState) {
         DashboardUiState.PartialState.Loading -> previousState.copy(
             isLoading = true, isError = false
         )
 
         DashboardUiState.PartialState.Init -> previousState.copy(
-            isLoading = false, isError = false,
-            selectedDay = LocalDate.now()
+            isLoading = false, isError = false, selectedDay = LocalDate.now()
         )
 
         is DashboardUiState.PartialState.WeekData -> previousState.copy(
@@ -75,8 +72,7 @@ class DashboardViewModel @Inject constructor(
         )
 
         is DashboardUiState.PartialState.SelectedDay -> previousState.copy(
-            selectedDay = partialState.date,
-            startIndex = partialState.index
+            selectedDay = partialState.date, startIndex = partialState.index
         )
     }
 
