@@ -12,7 +12,7 @@ data class LoginUiState(
     val isLoading: Boolean = true,
     val isError: Boolean = false,
     val phoneNumber: String = "",
-    val countryCode: String = "",
+    val countryCode: String = "+994",
     val deviceCountryCode: String = "",
 ) : Parcelable {
 
