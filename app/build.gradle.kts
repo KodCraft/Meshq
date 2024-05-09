@@ -8,6 +8,15 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        create("debug-sign") {
+            storeFile =
+                file("/Users/firuzaaliyeva/AndroidStudioProjects/Meshq/app/keystores/meshqkeystore")
+            storePassword = "mesh564"
+            keyAlias = "key0"
+            keyPassword = "mesh564"
+        }
+    }
     namespace = APPLICATION_NAME_SPACES
 
     defaultConfig {
@@ -21,12 +30,17 @@ android {
     }
 
     buildTypes {
+        debug{
+            signingConfig = signingConfigs.getByName("debug-sign")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            signingConfig = signingConfigs.getByName("debug-sign")
         }
     }
     buildFeatures {
@@ -77,11 +91,11 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
 
     // Import the BoM for the Firebase platform
-    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
+    implementation(platform(libs.firebase.bom))
 
     // Add the dependency for the Firebase Authentication library
     // When using the BoM, you don't specify versions in Firebase library dependencies
-    implementation("com.google.firebase:firebase-auth")
+    implementation(libs.firebase.auth)
 }
 kapt {
     correctErrorTypes = true
