@@ -43,6 +43,15 @@ val Typography.smallTitle: TextStyle
         letterSpacing = 0.sp
     )
 
+val Typography.largeHeadLine: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.Normal,
+        fontFamily = MeshqFont,
+        fontSize = 32.sp,
+        lineHeight = 36.sp,
+        letterSpacing = 0.sp
+    )
+
 val Typography.headLine: TextStyle
     get() = TextStyle(
         fontWeight = FontWeight.Normal,

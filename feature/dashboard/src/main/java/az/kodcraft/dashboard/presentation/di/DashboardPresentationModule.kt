@@ -1,6 +1,6 @@
 package az.kodcraft.dashboard.presentation.di
 
-import az.kodcraft.dashboard.presentation.contract.DashboardUiState
+import az.kodcraft.dashboard.presentation.traineeDashboard.contract.DashboardUiState
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

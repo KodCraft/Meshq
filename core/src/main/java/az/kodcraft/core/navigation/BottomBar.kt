@@ -21,14 +21,10 @@ fun BottomBar(
                 selected = selected,
                 onClick = { onNavigateToDestination(destination) },
                 selectedIcon = destination.selectedIconId,
-                icon = destination.unselectedIcon
+                icon = destination.unselectedIconId
             )
         }
     }
 }
 
-private fun NavDestination?.isTopLevelDestinationInHierarchy(destination: TopLevelDestination) =
-    this?.hierarchy?.any {
-        it.route?.contains(destination.name, true) ?: false
-    } ?: false
 

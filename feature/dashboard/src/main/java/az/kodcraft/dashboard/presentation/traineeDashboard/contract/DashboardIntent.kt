@@ -1,4 +1,4 @@
-package az.kodcraft.dashboard.presentation.contract
+package az.kodcraft.dashboard.presentation.traineeDashboard.contract
 
 import java.time.LocalDate
 

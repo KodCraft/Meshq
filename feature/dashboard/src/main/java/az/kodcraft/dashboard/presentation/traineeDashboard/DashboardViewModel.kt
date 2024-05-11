@@ -1,4 +1,4 @@
-package az.kodcraft.dashboard.presentation
+package az.kodcraft.dashboard.presentation.traineeDashboard
 
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
@@ -9,9 +9,9 @@ import az.kodcraft.core.domain.bases.model.doOnSuccess
 import az.kodcraft.core.presentation.bases.BaseViewModel
 import az.kodcraft.dashboard.domain.usecase.GetWeekDataUseCase
 import az.kodcraft.dashboard.domain.usecase.GetWeekWorkoutsUseCase
-import az.kodcraft.dashboard.presentation.contract.DashboardEvent
-import az.kodcraft.dashboard.presentation.contract.DashboardIntent
-import az.kodcraft.dashboard.presentation.contract.DashboardUiState
+import az.kodcraft.dashboard.presentation.traineeDashboard.contract.DashboardEvent
+import az.kodcraft.dashboard.presentation.traineeDashboard.contract.DashboardIntent
+import az.kodcraft.dashboard.presentation.traineeDashboard.contract.DashboardUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect

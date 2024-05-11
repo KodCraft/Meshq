@@ -1,5 +1,6 @@
 package az.kodcraft.workout.presentation.di
 
+import az.kodcraft.workout.presentation.createWorkout.contract.CreateWorkoutUiState
 import az.kodcraft.workout.presentation.workoutDetails.contract.WorkoutDetailsUiState
 import az.kodcraft.workout.presentation.workoutProgress.contract.WorkoutProgressUiState
 import dagger.Module
@@ -10,6 +11,9 @@ import dagger.hilt.android.components.ViewModelComponent
 @Module
 @InstallIn(ViewModelComponent::class)
 object WorkoutPresentationModule {
+    @Provides
+    fun provideCreateWorkoutUiState(): CreateWorkoutUiState =
+        CreateWorkoutUiState()
     @Provides
     fun provideWorkoutDetailsUiState(): WorkoutDetailsUiState =
         WorkoutDetailsUiState()
