@@ -40,7 +40,7 @@ fun ExercisePreviewCard(
     exercise: WorkoutDm.Exercise,
     isCompleteClick: () -> Unit,
     onClick: () -> Unit,
-    isEditable:Boolean,
+    isEditable: Boolean,
     onToggleExerciseSetStatus: (exerciseId: String, setId: String) -> Unit,
     onWeightValueChange: (value: String, setId: String) -> Unit,
 ) {
@@ -94,7 +94,7 @@ fun ExercisePreviewCard(
             painter = painterResource(id = if (isExerciseComplete) R.drawable.ic_done else R.drawable.ic_check),
             contentDescription = "exercise complete indicator",
             tint = if (isExerciseComplete) PrimaryTurq else Color.LightGray.copy(0.3f),
-            modifier = Modifier.noRippleClickable { if(isEditable) isCompleteClick() }
+            modifier = Modifier.noRippleClickable { if (isEditable) isCompleteClick() }
         )
     }
 }
@@ -103,9 +103,9 @@ fun ExercisePreviewCard(
 fun ExerciseSetsCard(
     exercise: WorkoutDm.Exercise,
     modifier: Modifier,
-    isEditable:Boolean,
-    onToggleExerciseSetStatus: (String) -> Unit,
-    onWeightValueChange: (value: String, setId: String) -> Unit
+    isEditable: Boolean = false,
+    onToggleExerciseSetStatus: (String) -> Unit = {},
+    onWeightValueChange: (value: String, setId: String) -> Unit = { _, _ -> }
 ) {
     Column(
         modifier = modifier
@@ -128,7 +128,7 @@ fun ExerciseSetsCard(
                 modifier = Modifier
                     .padding(horizontal = 3.dp)
                     .weight(1.5f),
-                style = MaterialTheme.typography.bodySmallLight.copy(fontWeight = FontWeight.Medium)
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium)
             )
 
             Text(
@@ -137,7 +137,7 @@ fun ExerciseSetsCard(
                 modifier = Modifier
                     .padding(horizontal = 3.dp)
                     .weight(1f),
-                style = MaterialTheme.typography.bodySmallLight.copy(fontWeight = FontWeight.Medium)
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium)
             )
 
             Text(
@@ -146,7 +146,7 @@ fun ExerciseSetsCard(
                 modifier = Modifier
                     .padding(horizontal = 3.dp)
                     .weight(1.5f),
-                style = MaterialTheme.typography.bodySmallLight.copy(fontWeight = FontWeight.Medium)
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium)
             )
 
             Text(
@@ -155,7 +155,7 @@ fun ExerciseSetsCard(
                 modifier = Modifier
                     .padding(horizontal = 3.dp)
                     .weight(1f),
-                style = MaterialTheme.typography.bodySmallLight.copy(fontWeight = FontWeight.Medium)
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium)
             )
 
             Text(
@@ -163,7 +163,7 @@ fun ExerciseSetsCard(
                 maxLines = 1,
                 modifier = Modifier
                     .width(24.dp),
-                style = MaterialTheme.typography.bodySmallLight.copy(fontWeight = FontWeight.Medium)
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium)
             )
         }
 
@@ -171,7 +171,7 @@ fun ExerciseSetsCard(
         exercise.sets.forEach {
             Row(
                 modifier = Modifier
-                    .noRippleClickable { if(isEditable) onToggleExerciseSetStatus(it.id) }
+                    .noRippleClickable { if (isEditable) onToggleExerciseSetStatus(it.id) }
                     .fillMaxWidth()
                     .padding(horizontal = 18.dp, vertical = 2.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,

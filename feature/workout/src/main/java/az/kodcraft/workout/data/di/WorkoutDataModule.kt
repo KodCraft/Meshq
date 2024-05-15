@@ -1,8 +1,11 @@
 package az.kodcraft.workout.data.di
 
 import az.kodcraft.workout.data.repository.AssignedWorkoutRepositoryImpl
+import az.kodcraft.workout.data.repository.ExerciseRepositoryImpl
 import az.kodcraft.workout.data.service.AssignedWorkoutService
+import az.kodcraft.workout.data.service.ExerciseService
 import az.kodcraft.workout.domain.repository.AssignedWorkoutRepository
+import az.kodcraft.workout.domain.repository.ExerciseRepository
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.firestore
@@ -15,7 +18,7 @@ import javax.inject.Qualifier
 const val WORKOUTS_COLLECTION = "workouts_collection"
 const val ASSIGNED_WORKOUTS_COLLECTION = "assigned_workouts_collection"
 const val EXERCISE_LOGS_COLLECTION = "exercise_logs_collection"
-const val EXERCISE_COLLECTION = "exercise_collection"
+const val EXERCISE_COLLECTION = "exercises_collection"
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -51,6 +54,16 @@ object WorkoutDataModule {
     fun provideWorkoutRepository(
         workoutService: AssignedWorkoutService
     ): AssignedWorkoutRepository = AssignedWorkoutRepositoryImpl(workoutService)
+
+    @Provides
+    fun provideExerciseService(
+        @ExerciseCollection exerciseRef: CollectionReference,
+    ): ExerciseService = ExerciseService(exerciseRef)
+
+    @Provides
+    fun provideExerciseRepository(
+        exerciseService: ExerciseService
+    ): ExerciseRepository = ExerciseRepositoryImpl(exerciseService)
 }
 
 @Qualifier

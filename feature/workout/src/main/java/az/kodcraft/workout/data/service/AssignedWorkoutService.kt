@@ -7,7 +7,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
-class AssignedWorkoutService(
+class  AssignedWorkoutService(
     private val assignedWorkoutRef: CollectionReference,
     private val exerciseRef: CollectionReference,
     private val exerciseLogRef: CollectionReference,

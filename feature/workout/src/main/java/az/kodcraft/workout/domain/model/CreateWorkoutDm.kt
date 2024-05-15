@@ -2,7 +2,7 @@ package az.kodcraft.workout.domain.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import java.util.Date
+import kotlin.random.Random
 
 @Parcelize
 data class CreateWorkoutDm(
@@ -14,17 +14,23 @@ data class CreateWorkoutDm(
     @Parcelize
     data class Exercise(
         val id: String,
-        val exerciseRef: String,
+        val exerciseRefId: String,
         val name: String,
         val sets: List<Set>,
     ) : Parcelable {
 
         companion object{
             val MOCK = Exercise(
-                id = "cu",
-                exerciseRef = "",
+                id = "123",
+                exerciseRefId = "",
                 name = "Squat",
                 sets = listOf(Set.MOCK, Set.MOCK),
+            )
+            val EMPTY = Exercise(
+                id = "",
+                exerciseRefId = "",
+                name = "",
+                sets = emptyList(),
             )
         }
         @Parcelize
@@ -32,7 +38,7 @@ data class CreateWorkoutDm(
             val id:String,
             val type: String,
             val reps: String,
-            val restSeconds: Int,
+            val restSeconds: String,
             val weight: String,
             val unit: String,
         ) : Parcelable{
@@ -41,9 +47,18 @@ data class CreateWorkoutDm(
                     id = "123",
                     type = "warmup",
                     reps = "8-10",
-                    restSeconds = 90,
+                    restSeconds = "90",
                     weight = "5",
                     unit = "kg",
+                )
+
+                val EMPTY = Set(
+                    id = Random.nextLong().toString(),
+                    type = "warmup",
+                    reps = "0",
+                    restSeconds = "0",
+                    weight = "0",
+                    unit = "kg"
                 )
             }
         }
@@ -81,7 +96,7 @@ data class CreateWorkoutDm(
             notes = "Agilli ol!",
             exercises = listOf(Exercise(
                 id = "123",
-                exerciseRef = "",
+                exerciseRefId = "",
                 name = "Glute Bridge",
                 sets = listOf(),
             ))
