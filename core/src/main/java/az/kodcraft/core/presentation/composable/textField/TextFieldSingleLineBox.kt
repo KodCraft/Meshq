@@ -29,7 +29,8 @@ import az.kodcraft.core.presentation.theme.PrimaryLight
 fun TextFieldSingleLineBox(
     modifier: Modifier = Modifier,
     value: String,
-    onValueChange: (String) -> Unit, textStyle: TextStyle,
+    onValueChange: (String) -> Unit,
+    textStyle: TextStyle,
     isEditable: Boolean = true,
 ) {
     val focusManager = LocalFocusManager.current
@@ -57,10 +58,7 @@ fun TextFieldSingleLineBox(
                     isFocused = focusState.isFocused
                 },
             singleLine = true,
-            textStyle = textStyle.copy(
-                color = if (!isFocused) PrimaryLight
-                else PrimaryBlue
-            ),
+            textStyle = textStyle,
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(onDone = {
                 focusManager.clearFocus()

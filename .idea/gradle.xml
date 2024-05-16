@@ -27,7 +27,6 @@
             <option value="$PROJECT_DIR$/feature/auth" />
             <option value="$PROJECT_DIR$/feature/dashboard" />
             <option value="$PROJECT_DIR$/feature/onBoarding" />
-            <option value="$PROJECT_DIR$/feature/trainerDashboard" />
             <option value="$PROJECT_DIR$/feature/workout" />
           </set>
         </option>

@@ -24,16 +24,14 @@ val ColorScheme.primaryTurq: Color
 private val DarkColorScheme = darkColorScheme(
     onBackground = Color.White ,
     secondary = PrimaryLight,
-    background = PrimaryBlue,
-    surface = PrimaryLight.copy(0.3f)
+    background = PrimaryBlue
 
 )
 
 private val LightColorScheme = lightColorScheme(
     onBackground = Color.White ,
     secondary = PrimaryLight,
-    background = PrimaryBlue,
-    surface = PrimaryLight.copy(0.3f)
+    background = PrimaryBlue
 )
 
 @Composable

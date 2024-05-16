@@ -113,6 +113,15 @@ val Typography.buttonTypo: TextStyle
         letterSpacing = 0.sp
     )
 
+val Typography.buttonTypoLight: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.Light,
+        fontFamily = MeshqFont,
+        fontSize = 16.sp,
+        lineHeight = 22.sp,
+        letterSpacing = 0.sp
+    )
+
 internal val MeshqTypography = Typography(
     titleLarge = TextStyle(
         fontWeight = FontWeight.Bold,

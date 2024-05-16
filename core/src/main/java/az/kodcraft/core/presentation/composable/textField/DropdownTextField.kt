@@ -80,7 +80,7 @@ fun DropdownTextField(
                                 if (value.isEmpty() && placeholder.isNotBlank()) {
                                     Text(
                                         text = placeholder,
-                                        style = MaterialTheme.typography.largeHeadLine.copy(Color.White),
+                                        style = MaterialTheme.typography.largeHeadLine.copy(Color.White.copy(0.5f)),
                                     )
                                 }
                                 innerTextField()

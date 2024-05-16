@@ -70,19 +70,12 @@ fun ExerciseSetsCard(
                 ) {
 
                     Text(
-                        text = set.weight,
+                        text = "${set.weight} ${set.unit}",
                         maxLines = 1,
                         style = MaterialTheme.typography.bodySmallLight,
                         modifier = Modifier
                             .padding(horizontal = 3.dp)
                             .weight(1f)
-                    )
-
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = set.unit,
-                        style = MaterialTheme.typography.bodySmallLight,
-                        modifier = Modifier
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                 }
@@ -96,19 +89,12 @@ fun ExerciseSetsCard(
                 ) {
 
                     Text(
-                        text = set.restSeconds,
+                        text = "${set.restSeconds} sec",
                         maxLines = 1,
                         style = MaterialTheme.typography.bodySmallLight,
                         modifier = Modifier
                             .padding(horizontal = 3.dp)
                             .weight(1f)
-                    )
-
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = "sec",
-                        style = MaterialTheme.typography.bodySmallLight,
-                        modifier = Modifier
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                 }

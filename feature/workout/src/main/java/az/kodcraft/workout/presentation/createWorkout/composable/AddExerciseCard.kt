@@ -12,10 +12,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,10 +53,19 @@ fun AddExercise(
     var setsInEdit by remember {
         mutableStateOf(exercise.sets)
     }
+
+    var lastSet by remember {
+        mutableStateOf(CreateWorkoutDm.Exercise.Set.EMPTY)
+    }
+    var lastSetApplied by remember { mutableStateOf(false) }
+
+    LaunchedEffect(lastSet) {
+        lastSetApplied = lastSet.reps != "0"
+    }
     Column(modifier = modifier) {
         Row(Modifier.padding(6.dp), verticalAlignment = Alignment.CenterVertically) {
             Icon(
-                painter = painterResource(id = az.kodcraft.core.R.drawable.ic_back),
+                painter = painterResource(id = R.drawable.ic_back),
                 contentDescription = "",
                 modifier = Modifier.noRippleClickable { onDismiss() }
             )
@@ -69,12 +81,15 @@ fun AddExercise(
                 contentDescription = "",
                 modifier = Modifier
                     .padding(8.dp)
-                    .noRippleClickable { onSaveExerciseSets(setsInEdit) }
+                    .noRippleClickable { onSaveExerciseSets(if (lastSetApplied) setsInEdit + lastSet else setsInEdit) }
             )
         }
         Spacer(modifier = Modifier.height(12.dp))
         AddExerciseSetsCard(
             setsInEdit,
+            lastSet = lastSet,
+            lastSetApplied = lastSetApplied,
+            updateLastSet = { lastSet = it },
             updateSets = { setsInEdit = it }
         )
     }
@@ -83,7 +98,10 @@ fun AddExercise(
 @Composable
 fun AddExerciseSetsCard(
     setsInEdit: List<CreateWorkoutDm.Exercise.Set>,
-    updateSets: (List<CreateWorkoutDm.Exercise.Set>) -> Unit
+    updateSets: (List<CreateWorkoutDm.Exercise.Set>) -> Unit,
+    lastSet: CreateWorkoutDm.Exercise.Set,
+    lastSetApplied: Boolean,
+    updateLastSet: (CreateWorkoutDm.Exercise.Set) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -93,9 +111,6 @@ fun AddExerciseSetsCard(
     ) {
 
         val isEditable = true
-        var lastSet by remember {
-            mutableStateOf(CreateWorkoutDm.Exercise.Set.EMPTY)
-        }
         ExerciseSetsHeader()
         Spacer(modifier = Modifier.height(18.dp))
         setsInEdit.forEach { set ->
@@ -106,12 +121,11 @@ fun AddExerciseSetsCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = set.type,
-                    maxLines = 1,
-                    style = MaterialTheme.typography.bodySmallLight,
-                    modifier = Modifier
-                        .padding(horizontal = 3.dp)
+                SetTypeDropdown(
+                    selectedType = set.type, onTypeSelected = { v ->
+                        updateSets(
+                            setsInEdit.map { if (it.id == set.id) it.copy(type = v) else it })
+                    }, modifier = Modifier
                         .weight(1.5f)
                 )
 
@@ -187,13 +201,16 @@ fun AddExerciseSetsCard(
                     Spacer(modifier = Modifier.width(8.dp))
                 }
 
-                Box(modifier = Modifier.noRippleClickable {
-                    updateSets(setsInEdit.filterNot { it.id == set.id })
-                }.width(24.dp)) {
+                Box(modifier = Modifier
+                    .noRippleClickable {
+                        updateSets(setsInEdit.filterNot { it.id == set.id })
+                    }
+                    .width(24.dp)) {
                     Icon(
                         painterResource(id = R.drawable.ic_remove_circle),
                         tint = Color.Red,
-                        modifier = Modifier.padding(4.dp)
+                        modifier = Modifier
+                            .padding(4.dp)
                             .size(16.dp)
                             .align(Alignment.Center),
                         contentDescription = "set complete"
@@ -209,20 +226,25 @@ fun AddExerciseSetsCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = lastSet.type,
-                maxLines = 1,
-                style = MaterialTheme.typography.bodySmallLight,
-                modifier = Modifier
-                    .padding(horizontal = 3.dp)
-                    .weight(1.5f)
+
+            SetTypeDropdown(
+                selectedType = lastSet.type, onTypeSelected = { v ->
+                    updateLastSet(lastSet.copy(type = v))
+                }, modifier = Modifier
+                    .weight(1.5f),
+                color = if (lastSetApplied) Color.White else Color.White.copy(0.5f)
             )
+
 
             TextFieldSingleLineBox(
                 isEditable = isEditable,
                 value = lastSet.reps,
-                onValueChange = { v -> lastSet = lastSet.copy(reps = v) },
-                textStyle = MaterialTheme.typography.bodySmallLight,
+                onValueChange = { v ->  updateLastSet(  lastSet.copy(reps = v)) },
+                textStyle = MaterialTheme.typography.bodySmallLight.copy(
+                    color = if (lastSetApplied) Color.White else Color.White.copy(
+                        0.5f
+                    )
+                ),
                 modifier = Modifier
                     .weight(1f)
                     .padding(horizontal = 6.dp)
@@ -239,8 +261,12 @@ fun AddExerciseSetsCard(
                 TextFieldSingleLineBox(
                     isEditable = isEditable,
                     value = lastSet.weight,
-                    onValueChange = { v -> lastSet = lastSet.copy(weight = v) },
-                    textStyle = MaterialTheme.typography.bodySmallLight,
+                    onValueChange = { v ->  updateLastSet(lastSet.copy(weight = v)) },
+                    textStyle = MaterialTheme.typography.bodySmallLight.copy(
+                        color = if (lastSetApplied) Color.White else Color.White.copy(
+                            0.5f
+                        )
+                    ),
                     modifier = Modifier
                         .weight(1f)
                         .padding(horizontal = 6.dp)
@@ -249,7 +275,11 @@ fun AddExerciseSetsCard(
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = lastSet.unit,
-                    style = MaterialTheme.typography.bodySmallLight,
+                    style = MaterialTheme.typography.bodySmallLight.copy(
+                        color = if (lastSetApplied) Color.White else Color.White.copy(
+                            0.5f
+                        )
+                    ),
                     modifier = Modifier
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -264,9 +294,13 @@ fun AddExerciseSetsCard(
             ) {
                 TextFieldSingleLineBox(
                     isEditable = isEditable,
-                    value = lastSet.restSeconds.toString(),
-                    onValueChange = { v -> lastSet = lastSet.copy(restSeconds = v) },
-                    textStyle = MaterialTheme.typography.bodySmallLight,
+                    value = lastSet.restSeconds,
+                    onValueChange = { v ->  updateLastSet(lastSet.copy(restSeconds = v)) },
+                    textStyle = MaterialTheme.typography.bodySmallLight.copy(
+                        color = if (lastSetApplied) Color.White else Color.White.copy(
+                            0.5f
+                        )
+                    ),
                     modifier = Modifier
                         .weight(1f)
                         .padding(horizontal = 6.dp)
@@ -275,17 +309,25 @@ fun AddExerciseSetsCard(
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = "sec",
-                    style = MaterialTheme.typography.bodySmallLight,
+                    style = MaterialTheme.typography.bodySmallLight.copy(
+                        if (lastSetApplied) Color.White else Color.White.copy(
+                            0.5f
+                        )
+                    ),
                     modifier = Modifier
                 )
                 Spacer(modifier = Modifier.width(8.dp))
             }
 
-            Box(modifier = Modifier.noRippleClickable {
-                val newId = Random.nextULong().toString()
-                updateSets(setsInEdit + lastSet.copy(id = newId))
-                lastSet = CreateWorkoutDm.Exercise.Set.EMPTY
-            }.width(24.dp)) {
+            Box(modifier = Modifier
+                .noRippleClickable {
+                    val newId = Random
+                        .nextULong()
+                        .toString()
+                    updateSets(setsInEdit + lastSet.copy(id = newId))
+                    // lastSet = CreateWorkoutDm.Exercise.Set.EMPTY
+                }
+                .width(24.dp)) {
                 Icon(
                     painterResource(id = R.drawable.ic_add_circle),
                     tint = PrimaryTurq.copy(0.7f),
@@ -354,6 +396,57 @@ fun ExerciseSetsHeader() {
         )
     }
 }
+
+
+@Composable
+fun SetTypeDropdown(
+    selectedType: String,
+    onTypeSelected: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    color: Color = Color.White
+) {
+    var expanded by remember { mutableStateOf(false) }
+    // Generate month names using LocalDate and the default locale
+    val types = listOf("warmup", "working", "failure")
+
+    Column(modifier = modifier) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = selectedType,
+                style = MaterialTheme.typography.bodySmallLight.copy(color = color),
+                modifier = Modifier
+                    .noRippleClickable { expanded = true }
+                    .padding(end = 4.dp)
+            )
+            Icon(
+                painter = painterResource(id = R.drawable.ic_dropdown),
+                contentDescription = "type dropdown",
+                modifier = Modifier.size(16.dp),
+                tint = color
+            )
+        }
+
+        // Dropdown menu that shows when expanded is true
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .height(160.dp)  // Adjust height to fit the UI design
+                .padding(top = 4.dp)
+        ) {
+            types.forEach { type ->
+                DropdownMenuItem(
+                    text = { Text(type, style = MaterialTheme.typography.bodySmall) },
+                    onClick = {
+                        onTypeSelected(type)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
 
 @Composable
 @Preview

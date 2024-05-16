@@ -7,6 +7,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
@@ -34,6 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import az.kodcraft.core.R
 import az.kodcraft.core.presentation.bases.BasePreviewContainer
 import az.kodcraft.core.presentation.composable.appBar.TopAppBar
+import az.kodcraft.core.presentation.composable.button.ButtonPrimaryLight
 import az.kodcraft.core.presentation.composable.dropdown.DropdownItem
 import az.kodcraft.core.presentation.composable.textField.DropdownTextField
 import az.kodcraft.core.presentation.theme.PrimaryBlue
@@ -143,7 +146,19 @@ fun CreateWorkoutScreen(
                 onItemSelected = { onExerciseSelected(it) }
             )
 
-            Spacer(modifier = Modifier.height(100.dp))
+            Spacer(modifier = Modifier.height(50.dp))
+            if (uiState.workout.exercises.any()) {
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp)) {
+                    ButtonPrimaryLight(
+                        text = "Save Workout",
+                        modifier = Modifier.align(Alignment.Center).width(300.dp)
+                    )
+                }
+            } else {
+                Spacer(modifier = Modifier.height(100.dp))
+            }
         }
     }
 
@@ -161,8 +176,11 @@ fun CreateWorkoutScreen(
             AddExercise(
                 modifier = Modifier.padding(horizontal = 28.dp),
                 onDismiss = { onExerciseUnSelected() },
-                exercise = uiState.workout.exercises.firstOrNull { it.exerciseRefId  == uiState.selectedExercise.id }
-                    ?: CreateWorkoutDm.Exercise.EMPTY.copy(exerciseRefId =  uiState.selectedExercise.id, name =  uiState.selectedExercise.name),
+                exercise = uiState.workout.exercises.firstOrNull { it.exerciseRefId == uiState.selectedExercise.id }
+                    ?: CreateWorkoutDm.Exercise.EMPTY.copy(
+                        exerciseRefId = uiState.selectedExercise.id,
+                        name = uiState.selectedExercise.name
+                    ),
                 onSaveExerciseSets = onSaveExerciseSets
             )
         }

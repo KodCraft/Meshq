@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import az.kodcraft.core.presentation.theme.PrimaryTurq
 import az.kodcraft.core.presentation.theme.buttonTypo
+import az.kodcraft.core.presentation.theme.buttonTypoLight
 
 
 @Composable
@@ -33,6 +34,26 @@ fun ButtonPrimary(
             modifier = Modifier.padding(12.dp),
             text = text,
             style = MaterialTheme.typography.buttonTypo.copy(color = Color.White)
+        )
+    }
+}
+
+@Composable
+fun ButtonPrimaryLight(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color = PrimaryTurq.copy(0.7f)
+) {
+    Column(
+        modifier = modifier
+            .clip(shape = RoundedCornerShape(12.dp))
+            .background(color = color),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            modifier = Modifier.padding(12.dp),
+            text = text,
+            style = MaterialTheme.typography.buttonTypoLight.copy(color = Color.White)
         )
     }
 }
