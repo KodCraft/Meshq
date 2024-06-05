@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -26,13 +27,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import az.kodcraft.core.R
 import az.kodcraft.core.presentation.bases.BasePreviewContainer
+import az.kodcraft.core.presentation.composable.textField.RangeSelectionTextField
 import az.kodcraft.core.presentation.composable.textField.TextFieldSingleLineBox
 import az.kodcraft.core.presentation.theme.PrimaryTurq
 import az.kodcraft.core.presentation.theme.bodySmallLight
@@ -60,7 +64,7 @@ fun AddExercise(
     var lastSetApplied by remember { mutableStateOf(false) }
 
     LaunchedEffect(lastSet) {
-        lastSetApplied = lastSet.reps != "0"
+        lastSetApplied = lastSet.reps != "0" && lastSet.reps.isNotBlank()
     }
     Column(modifier = modifier) {
         Row(Modifier.padding(6.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -114,231 +118,192 @@ fun AddExerciseSetsCard(
         ExerciseSetsHeader()
         Spacer(modifier = Modifier.height(18.dp))
         setsInEdit.forEach { set ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 18.dp, vertical = 2.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                SetTypeDropdown(
-                    selectedType = set.type, onTypeSelected = { v ->
-                        updateSets(
-                            setsInEdit.map { if (it.id == set.id) it.copy(type = v) else it })
-                    }, modifier = Modifier
-                        .weight(1.5f)
-                )
+            ExerciseSet(
+                isLastSet = false,
+                isEditable = isEditable,
+                set = set,
+                onUpdateSetType = { v ->
+                    updateSets(
+                        setsInEdit.map { if (it.id == set.id) it.copy(type = v) else it })
+                },
+                onUpdateReps = { v ->
+                    updateSets(setsInEdit.map { if (it.id == set.id) it.copy(reps = v) else it })
+                },
+                onUpdateWeight = { v ->
+                    updateSets(setsInEdit.map { if (it.id == set.id) it.copy(weight = v) else it })
+                },
+                onUpdateRestSeconds = { v ->
+                    updateSets(setsInEdit.map { if (it.id == set.id) it.copy(restSeconds = v) else it })
+                },
+                onIconClicked = { setsInEdit.filterNot { it.id == set.id } })
+        }
+        ExerciseSet(
+            isEditable = true,
+            set = lastSet,
+            onUpdateSetType = { v ->
+                updateLastSet(lastSet.copy(type = v))
+            },
+            onUpdateReps = { v -> updateLastSet(lastSet.copy(reps = v)) },
+            onUpdateWeight = { v -> updateLastSet(lastSet.copy(weight = v)) },
+            onUpdateRestSeconds = { v -> updateLastSet(lastSet.copy(restSeconds = v)) },
+            onIconClicked = {
+                val newId = Random
+                    .nextULong()
+                    .toString()
+                updateSets(setsInEdit + lastSet.copy(id = newId))
+            },
+            isLastSet = true,
+            lastSetApplied = lastSetApplied
+        )
+    }
+}
 
-                TextFieldSingleLineBox(
-                    isEditable = isEditable,
-                    value = set.reps,
-                    onValueChange = { v ->
-                        updateSets(
-                            setsInEdit.map { if (it.id == set.id) it.copy(reps = v) else it })
-                    },
-                    textStyle = MaterialTheme.typography.bodySmallLight,
+@Composable
+fun ExerciseSet(
+    isEditable: Boolean,
+    set: CreateWorkoutDm.Exercise.Set,
+    onUpdateSetType: (String) -> Unit,
+    onUpdateReps: (String) -> Unit,
+    onUpdateWeight: (String) -> Unit,
+    onUpdateRestSeconds: (String) -> Unit,
+    onIconClicked: () -> Unit,
+    isLastSet: Boolean,
+    lastSetApplied: Boolean = true
+) {
+    var isRepsInFocus by remember {
+        mutableStateOf(false)
+    }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 18.dp, vertical = 2.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        SetTypeDropdown(
+            selectedType = set.type, onTypeSelected = { v ->
+                onUpdateSetType(v)
+            }, modifier = Modifier
+                .weight(1.2f),
+            color = if (isLastSet && !lastSetApplied) Color.White.copy(0.5f) else Color.White
+        )
+
+        Box(
+            Modifier
+                .weight(1.2f)
+        ) {
+            TextFieldSingleLineBox(
+                isEditable = false,
+                value = set.reps,
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number ),
+                textStyle = MaterialTheme.typography.bodySmallLight.copy(
+                    color = if (isLastSet && !lastSetApplied) Color.White.copy(0.5f) else Color.White
+                ),
+                modifier = Modifier.noRippleClickable { isRepsInFocus = true }
+                    .padding(horizontal = 8.dp)
+            )
+
+            if (isRepsInFocus) {
+                Box(
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 6.dp)
-                )
-
-
-                Row(
-                    modifier = Modifier
-                        .padding(horizontal = 3.dp)
-                        .weight(1.5f),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(Color.LightGray)
+                        .padding(horizontal =  2.dp, vertical = 2.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    TextFieldSingleLineBox(
-                        isEditable = isEditable,
-                        value = set.weight,
-                        onValueChange = { v ->
-                            updateSets(
-                                setsInEdit.map { if (it.id == set.id) it.copy(weight = v) else it })
-                        },
+                    RangeSelectionTextField(
+                        set.reps,
                         textStyle = MaterialTheme.typography.bodySmallLight,
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(horizontal = 6.dp)
+                        onRangeChanged = { v -> onUpdateReps(v)},
+                        modifier = Modifier,
+                        onClearFocus = {isRepsInFocus = false}
                     )
-
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = set.unit,
-                        style = MaterialTheme.typography.bodySmallLight,
-                        modifier = Modifier
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                }
-
-                Row(
-                    modifier = Modifier
-                        .padding(horizontal = 3.dp)
-                        .weight(1.5f),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    TextFieldSingleLineBox(
-                        isEditable = isEditable,
-                        value = set.restSeconds,
-                        onValueChange = { v ->
-                            updateSets(
-                                setsInEdit.map { if (it.id == set.id) it.copy(restSeconds = v) else it })
-                        },
-                        textStyle = MaterialTheme.typography.bodySmallLight,
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(horizontal = 6.dp)
-                    )
-
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = "sec",
-                        style = MaterialTheme.typography.bodySmallLight,
-                        modifier = Modifier
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                }
-
-                Box(modifier = Modifier
-                    .noRippleClickable {
-                        updateSets(setsInEdit.filterNot { it.id == set.id })
-                    }
-                    .width(24.dp)) {
-                    Icon(
-                        painterResource(id = R.drawable.ic_remove_circle),
-                        tint = Color.Red,
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .size(16.dp)
-                            .align(Alignment.Center),
-                        contentDescription = "set complete"
-                    )
-
                 }
             }
         }
+
+
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 18.dp, vertical = 2.dp),
+                .padding(horizontal = 3.dp)
+                .weight(1.5f),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-
-            SetTypeDropdown(
-                selectedType = lastSet.type, onTypeSelected = { v ->
-                    updateLastSet(lastSet.copy(type = v))
-                }, modifier = Modifier
-                    .weight(1.5f),
-                color = if (lastSetApplied) Color.White else Color.White.copy(0.5f)
-            )
-
-
             TextFieldSingleLineBox(
                 isEditable = isEditable,
-                value = lastSet.reps,
-                onValueChange = { v ->  updateLastSet(  lastSet.copy(reps = v)) },
+                value = set.weight,
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number ),
+                onValueChange = { v ->
+                    onUpdateWeight(v)
+                },
                 textStyle = MaterialTheme.typography.bodySmallLight.copy(
-                    color = if (lastSetApplied) Color.White else Color.White.copy(
-                        0.5f
-                    )
+                    color = if (isLastSet && !lastSetApplied) Color.White.copy(0.5f) else Color.White
                 ),
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 6.dp)
+                    .padding(horizontal = 6.dp).onFocusChanged { if(it.isFocused) isRepsInFocus = false }
             )
 
-
-            Row(
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = set.unit,
+                style = MaterialTheme.typography.bodySmallLight.copy(
+                    color = if (isLastSet && !lastSetApplied) Color.White.copy(0.5f) else Color.White
+                ),
                 modifier = Modifier
-                    .padding(horizontal = 3.dp)
-                    .weight(1.5f),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextFieldSingleLineBox(
-                    isEditable = isEditable,
-                    value = lastSet.weight,
-                    onValueChange = { v ->  updateLastSet(lastSet.copy(weight = v)) },
-                    textStyle = MaterialTheme.typography.bodySmallLight.copy(
-                        color = if (lastSetApplied) Color.White else Color.White.copy(
-                            0.5f
-                        )
-                    ),
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 6.dp)
-                )
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+        }
 
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = lastSet.unit,
-                    style = MaterialTheme.typography.bodySmallLight.copy(
-                        color = if (lastSetApplied) Color.White else Color.White.copy(
-                            0.5f
-                        )
-                    ),
-                    modifier = Modifier
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-            }
-
-            Row(
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 3.dp)
+                .weight(1.5f),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            TextFieldSingleLineBox(
+                isEditable = isEditable,
+                value = set.restSeconds,
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number ),
+                onValueChange = { v ->
+                    onUpdateRestSeconds(v)
+                },
+                textStyle = MaterialTheme.typography.bodySmallLight.copy(
+                    color = if (isLastSet && !lastSetApplied) Color.White.copy(0.5f) else Color.White
+                ),
                 modifier = Modifier
-                    .padding(horizontal = 3.dp)
-                    .weight(1.5f),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextFieldSingleLineBox(
-                    isEditable = isEditable,
-                    value = lastSet.restSeconds,
-                    onValueChange = { v ->  updateLastSet(lastSet.copy(restSeconds = v)) },
-                    textStyle = MaterialTheme.typography.bodySmallLight.copy(
-                        color = if (lastSetApplied) Color.White else Color.White.copy(
-                            0.5f
-                        )
-                    ),
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 6.dp)
-                )
+                    .weight(1f)
+                    .padding(horizontal = 6.dp).onFocusChanged { if(it.isFocused) isRepsInFocus = false }
+            )
 
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "sec",
-                    style = MaterialTheme.typography.bodySmallLight.copy(
-                        if (lastSetApplied) Color.White else Color.White.copy(
-                            0.5f
-                        )
-                    ),
-                    modifier = Modifier
-                )
-                Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = "sec",
+                style = MaterialTheme.typography.bodySmallLight.copy(
+                    color = if (isLastSet && !lastSetApplied) Color.White.copy(0.5f) else Color.White
+                ),
+                modifier = Modifier
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+        }
+
+        Box(modifier = Modifier
+            .noRippleClickable {
+                onIconClicked()
             }
+            .width(24.dp)) {
+            Icon(
+                painterResource(id = if (isLastSet.not()) R.drawable.ic_remove_circle else R.drawable.ic_add_circle),
+                tint = if (isLastSet.not()) Color.Red else PrimaryTurq,
+                modifier = Modifier
+                    .padding(4.dp)
+                    .size(16.dp)
+                    .align(Alignment.Center),
+                contentDescription = "set action"
+            )
 
-            Box(modifier = Modifier
-                .noRippleClickable {
-                    val newId = Random
-                        .nextULong()
-                        .toString()
-                    updateSets(setsInEdit + lastSet.copy(id = newId))
-                    // lastSet = CreateWorkoutDm.Exercise.Set.EMPTY
-                }
-                .width(24.dp)) {
-                Icon(
-                    painterResource(id = R.drawable.ic_add_circle),
-                    tint = PrimaryTurq.copy(0.7f),
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .size(16.dp)
-                        .align(Alignment.Center),
-                    contentDescription = "set complete"
-                )
-
-            }
         }
     }
 }
@@ -356,7 +321,7 @@ fun ExerciseSetsHeader() {
             maxLines = 1,
             modifier = Modifier
                 .padding(horizontal = 3.dp)
-                .weight(1.5f),
+                .weight(1.2f),
             style = MaterialTheme.typography.bodySmallLight.copy(fontWeight = FontWeight.Medium)
         )
 
@@ -365,7 +330,7 @@ fun ExerciseSetsHeader() {
             maxLines = 1,
             modifier = Modifier
                 .padding(horizontal = 3.dp)
-                .weight(1f),
+                .weight(1.2f),
             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium)
         )
 

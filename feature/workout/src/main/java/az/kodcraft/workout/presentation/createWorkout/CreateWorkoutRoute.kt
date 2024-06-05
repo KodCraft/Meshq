@@ -1,6 +1,8 @@
 package az.kodcraft.workout.presentation.createWorkout
 
+import android.view.ViewTreeObserver
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -11,27 +13,39 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import az.kodcraft.core.R
 import az.kodcraft.core.presentation.bases.BasePreviewContainer
@@ -57,19 +71,8 @@ fun CreateWorkoutRoute(
     val uiState by viewModel.uiState.collectAsState()
     CreateWorkoutScreen(
         uiState = uiState,
-        onSaveWorkoutClicked = { },
-        onSearchValueChanged = { viewModel.acceptIntent(CreateWorkoutIntent.ChangeSearchValue(it)) },
         navigateBack = navigateBack,
-        onExerciseSelected = {
-            viewModel.acceptIntent(
-                CreateWorkoutIntent.NewExerciseSelected(
-                    id = it.id,
-                    name = it.name
-                )
-            )
-        },
-        onExerciseUnSelected = { viewModel.acceptIntent(CreateWorkoutIntent.UnselectExercise) },
-        onSaveExerciseSets = { viewModel.acceptIntent(CreateWorkoutIntent.SaveExerciseSets(it)) }
+        onIntent = viewModel::acceptIntent,
     )
 }
 
@@ -77,16 +80,19 @@ fun CreateWorkoutRoute(
 @Composable
 fun CreateWorkoutScreen(
     uiState: CreateWorkoutUiState,
-    onSaveWorkoutClicked: () -> Unit = {},
-    onSaveExerciseSets: (List<CreateWorkoutDm.Exercise.Set>) -> Unit = {},
-    onExerciseSelected: (DropdownItem) -> Unit = {},
-    onExerciseUnSelected: () -> Unit = {},
-    onSearchValueChanged: (String) -> Unit = {},
-    navigateBack: () -> Unit = {}
+    navigateBack: () -> Unit = {},
+    onIntent: (CreateWorkoutIntent) -> Unit = {}
 ) {
+    val imeState = rememberImeState()
+    val scrollState = rememberScrollState()
+    LaunchedEffect(imeState.value) {
+        if (imeState.value)
+            scrollState.animateScrollTo(scrollState.maxValue, tween(300))
+    }
     Column(
         Modifier
             .fillMaxSize()
+            .verticalScroll(scrollState)
     ) {
         TopAppBar(
             content = {
@@ -99,14 +105,15 @@ fun CreateWorkoutScreen(
             }
         )
         Column(
-            Modifier
+            modifier = Modifier
                 .fillMaxSize()
         ) {
             LazyColumn(
                 modifier = Modifier
-                    .fillMaxHeight(0.7f)
+                    .height(500.dp)
                     .fillMaxWidth()
             ) {
+                item { Text(text = "") }
                 items(uiState.workout.exercises) {
                     Column(Modifier.padding(22.dp)) {
                         Row(
@@ -124,6 +131,11 @@ fun CreateWorkoutScreen(
                                 contentDescription = "",
                                 tint = Color.Red.copy(0.7f),
                                 modifier = Modifier
+                                    .noRippleClickable {
+                                        onIntent.invoke(
+                                            CreateWorkoutIntent.RemoveExercise(it.id)
+                                        )
+                                    }
                                     .padding(start = 12.dp)
                                     .size(28.dp)
                             )
@@ -139,21 +151,40 @@ fun CreateWorkoutScreen(
                 modifier = Modifier
                     .padding(horizontal = 60.dp),
                 value = uiState.searchValue,
-                onValueChange = onSearchValueChanged,
+                onValueChange = {onIntent.invoke(CreateWorkoutIntent.ChangeSearchValue(it))},
                 list = uiState.exercises.map { DropdownItem(it.name, it.id) },
                 placeholder = "Exercise",
                 isLoading = uiState.isLoading,
-                onItemSelected = { onExerciseSelected(it) }
+                onItemSelected = {
+                    onIntent.invoke(
+                        CreateWorkoutIntent.NewExerciseSelected(
+                            id = it.id,
+                            name = it.name
+                        )
+                    )
+                }
             )
+
+            Spacer(
+                Modifier.windowInsetsBottomHeight(
+                    WindowInsets.ime
+                )
+            )
+
 
             Spacer(modifier = Modifier.height(50.dp))
             if (uiState.workout.exercises.any()) {
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp)) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                ) {
                     ButtonPrimaryLight(
                         text = "Save Workout",
-                        modifier = Modifier.align(Alignment.Center).width(300.dp)
+                        modifier = Modifier
+                            .noRippleClickable { onIntent.invoke(CreateWorkoutIntent.SaveWorkout)}
+                            .align(Alignment.Center)
+                            .width(300.dp)
                     )
                 }
             } else {
@@ -175,13 +206,19 @@ fun CreateWorkoutScreen(
         ) {
             AddExercise(
                 modifier = Modifier.padding(horizontal = 28.dp),
-                onDismiss = { onExerciseUnSelected() },
+                onDismiss = { onIntent.invoke(CreateWorkoutIntent.UnselectExercise) },
                 exercise = uiState.workout.exercises.firstOrNull { it.exerciseRefId == uiState.selectedExercise.id }
                     ?: CreateWorkoutDm.Exercise.EMPTY.copy(
                         exerciseRefId = uiState.selectedExercise.id,
                         name = uiState.selectedExercise.name
                     ),
-                onSaveExerciseSets = onSaveExerciseSets
+                onSaveExerciseSets = {
+                    if (it.any { set -> set.isSetEmpty().not() })
+                        onIntent.invoke(CreateWorkoutIntent.SaveExerciseSets(it.filter { set ->
+                            set.isSetEmpty().not()
+                        }))
+                    else onIntent.invoke(CreateWorkoutIntent.UnselectExercise)
+                }
             )
         }
     }
@@ -197,3 +234,25 @@ fun CreateWorkoutPreview() = BasePreviewContainer {
     )
 }
 
+
+@Composable
+fun rememberImeState(): State<Boolean> {
+    val imeState = remember {
+        mutableStateOf(false)
+    }
+
+    val view = LocalView.current
+    DisposableEffect(view) {
+        val listener = ViewTreeObserver.OnGlobalLayoutListener {
+            val isKeyboardOpen = ViewCompat.getRootWindowInsets(view)
+                ?.isVisible(WindowInsetsCompat.Type.ime()) ?: true
+            imeState.value = isKeyboardOpen
+        }
+
+        view.viewTreeObserver.addOnGlobalLayoutListener(listener)
+        onDispose {
+            view.viewTreeObserver.removeOnGlobalLayoutListener(listener)
+        }
+    }
+    return imeState
+}

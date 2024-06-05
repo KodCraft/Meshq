@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.BasicTextField
@@ -26,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -70,6 +72,7 @@ fun DropdownTextField(
                         }
                     ),
                     singleLine = true,
+                    cursorBrush = SolidColor(Color.White),
                     decorationBox = { innerTextField ->
                         Row(
                             modifier = Modifier
@@ -115,7 +118,7 @@ fun DropdownTextField(
                     CustomDropdownMenu(
                         expanded = expanded,
                         //onDismissRequest = { expanded = false },
-                        modifier = Modifier
+                        modifier = Modifier.heightIn(max = 100.dp)
                             .fillMaxWidth()
                     ) {
                         items(list) { item ->

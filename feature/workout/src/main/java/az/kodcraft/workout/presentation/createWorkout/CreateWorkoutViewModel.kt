@@ -50,6 +50,12 @@ class CreateWorkoutViewModel @Inject constructor(
                     intent.sets
                 )
             )
+
+            is CreateWorkoutIntent.RemoveExercise ->  flowOf(
+                CreateWorkoutUiState.PartialState.RemoveWorkoutExercise(
+                    intent.id
+                )
+            )
         }
 
     private fun fetchExercises(searchValue: String = ""): Flow<CreateWorkoutUiState.PartialState> =
@@ -108,6 +114,11 @@ class CreateWorkoutViewModel @Inject constructor(
             workout = upsertWorkoutExercise(previousState.workout, partialState.sets),
             selectedExercise = CreateWorkoutDm.Exercise.EMPTY,
             searchValue = ""
+        )
+
+        is CreateWorkoutUiState.PartialState.RemoveWorkoutExercise -> previousState.copy(
+            isLoading = false, isError = false,
+            workout = previousState.workout.copy(exercises =  previousState.workout.exercises.filterNot { it.id == partialState.id })
         )
     }
 

@@ -19,6 +19,7 @@ data class CreateWorkoutUiState(
         data class Exercises(val data: List<ExerciseDm>) : PartialState()
         data class WorkoutExercise(val sets: List<CreateWorkoutDm.Exercise.Set>) : PartialState()
         data class SearchText(val value: String) : PartialState()
+        data class RemoveWorkoutExercise(val id: String) : PartialState()
         data class SelectedExercise(val exercise: CreateWorkoutDm.Exercise) : PartialState()
     }
 }

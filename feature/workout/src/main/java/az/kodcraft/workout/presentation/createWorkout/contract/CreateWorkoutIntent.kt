@@ -9,5 +9,6 @@ sealed class CreateWorkoutIntent {
     data object UnselectExercise : CreateWorkoutIntent()
     data class ChangeSearchValue(val value:String) : CreateWorkoutIntent()
     data class NewExerciseSelected(val id: String, val name:String) : CreateWorkoutIntent()
+    data class RemoveExercise(val id: String) : CreateWorkoutIntent()
     data class SaveExerciseSets(val sets: List<CreateWorkoutDm.Exercise.Set>) : CreateWorkoutIntent()
 }

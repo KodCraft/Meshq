@@ -19,7 +19,7 @@ data class CreateWorkoutDm(
         val sets: List<Set>,
     ) : Parcelable {
 
-        companion object{
+        companion object {
             val MOCK = Exercise(
                 id = "123",
                 exerciseRefId = "",
@@ -33,20 +33,23 @@ data class CreateWorkoutDm(
                 sets = emptyList(),
             )
         }
+
         @Parcelize
         data class Set(
-            val id:String,
+            val id: String,
             val type: String,
             val reps: String,
             val restSeconds: String,
             val weight: String,
             val unit: String,
-        ) : Parcelable{
-            companion object{
+        ) : Parcelable {
+            fun isSetEmpty() = (reps == "0" || reps.isBlank())
+
+            companion object {
                 val MOCK = Set(
                     id = "123",
                     type = "warmup",
-                    reps = "8-10",
+                    reps = "10-17",
                     restSeconds = "90",
                     weight = "5",
                     unit = "kg",
@@ -94,12 +97,14 @@ data class CreateWorkoutDm(
             id = "",
             title = "Push and Glutes",
             notes = "Agilli ol!",
-            exercises = listOf(Exercise(
-                id = "123",
-                exerciseRefId = "",
-                name = "Glute Bridge",
-                sets = listOf(),
-            ))
+            exercises = listOf(
+                Exercise(
+                    id = "123",
+                    exerciseRefId = "",
+                    name = "Glute Bridge",
+                    sets = listOf(),
+                )
+            )
         )
     }
 }
