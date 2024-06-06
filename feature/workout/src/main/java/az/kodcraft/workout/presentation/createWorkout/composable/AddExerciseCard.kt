@@ -235,7 +235,8 @@ fun ExerciseSet(
                 value = set.weight,
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number ),
                 onValueChange = { v ->
-                    onUpdateWeight(v)
+                    val numericValue = v.filter { char -> char.isDigit() }.trimStart { char -> char == '0' }
+                    onUpdateWeight(numericValue)
                 },
                 textStyle = MaterialTheme.typography.bodySmallLight.copy(
                     color = if (isLastSet && !lastSetApplied) Color.White.copy(0.5f) else Color.White
@@ -268,7 +269,8 @@ fun ExerciseSet(
                 value = set.restSeconds,
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number ),
                 onValueChange = { v ->
-                    onUpdateRestSeconds(v)
+                    val numericValue = v.filter { char -> char.isDigit() }.trimStart { char -> char == '0' }
+                    onUpdateRestSeconds(numericValue)
                 },
                 textStyle = MaterialTheme.typography.bodySmallLight.copy(
                     color = if (isLastSet && !lastSetApplied) Color.White.copy(0.5f) else Color.White

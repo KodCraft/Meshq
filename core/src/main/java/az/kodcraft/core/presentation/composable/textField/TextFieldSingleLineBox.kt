@@ -116,9 +116,20 @@ fun RangeSelectionTextField(
                 value = startValue,
                 textStyle = textStyle,
                 onValueChange = {
-                    startValue = it
+                    val numericValue = it.filter { char -> char.isDigit() }.trimStart { char -> char == '0' }
+
+                    startValue = numericValue
+                    if (endValue != "0" && endValue.isNotBlank() && startValue != "0" && startValue.isNotBlank()) {
+                        onRangeChanged("$startValue-$endValue")
+                    } else if(startValue != "0" && startValue.isNotBlank())
+                        onRangeChanged(startValue)
+                    else if(endValue != "0" && endValue.isNotBlank())
+                        onRangeChanged(endValue)
                 },
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next, keyboardType = KeyboardType.Number ),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Number
+                ),
                 modifier = Modifier.weight(1f),
                 onClearFocus = onClearFocus,
                 isFocused = true,
@@ -129,12 +140,19 @@ fun RangeSelectionTextField(
                 value = endValue,
                 textStyle = textStyle,
                 onValueChange = {
-                    endValue = it
-                    onRangeChanged("$startValue-$endValue")
+                    val numericValue = it.filter { char -> char.isDigit() }.trimStart { char -> char == '0' }
+
+                    endValue = numericValue
+                    if (endValue != "0" && endValue.isNotBlank() && startValue != "0" && startValue.isNotBlank()) {
+                        onRangeChanged("$startValue-$endValue")
+                    } else if(startValue != "0" && startValue.isNotBlank())
+                        onRangeChanged(startValue)
+                    else if(endValue != "0" && endValue.isNotBlank())
+                        onRangeChanged(endValue)
                 },
                 modifier = Modifier.weight(1f),
                 onClearFocus = { onClearFocus() },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number ),
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 keyboardController = keyboardController
             )
         }
