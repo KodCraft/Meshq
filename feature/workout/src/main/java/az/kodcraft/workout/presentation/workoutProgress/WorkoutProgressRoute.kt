@@ -41,7 +41,7 @@ import az.kodcraft.core.presentation.theme.largeTitle
 import az.kodcraft.core.utils.collectWithLifecycle
 import az.kodcraft.core.utils.noRippleClickable
 import az.kodcraft.workout.R
-import az.kodcraft.workout.domain.model.WorkoutDm
+import az.kodcraft.workout.domain.model.AssignedWorkoutDm
 import az.kodcraft.workout.presentation.workoutProgress.composable.CompleteButton
 import az.kodcraft.workout.presentation.workoutProgress.composable.ExerciseDropDownCard
 import az.kodcraft.workout.presentation.workoutProgress.composable.ExercisePreviewCard
@@ -201,7 +201,7 @@ fun WorkoutProgressScreen(
 
 @Composable
 fun WorkoutProgressContent(
-    workout: WorkoutDm,
+    workout: AssignedWorkoutDm,
     exerciseCompleteClick: (String) -> Unit,
     exerciseClick: (String) -> Unit,
     onWorkoutFinish: () -> Unit,
@@ -259,7 +259,7 @@ fun WorkoutProgressContent(
 fun PreviewExercisePreviewCard() = BasePreviewContainer {
     WorkoutProgressScreen(
         navigateBack = {},
-        uiState = WorkoutProgressUiState(workout = WorkoutDm.MOCK.copy(isFinished = true))
+        uiState = WorkoutProgressUiState(workout = AssignedWorkoutDm.MOCK.copy(isFinished = true))
     )
 }
 

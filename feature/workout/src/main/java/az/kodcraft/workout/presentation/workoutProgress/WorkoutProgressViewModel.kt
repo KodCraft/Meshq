@@ -6,7 +6,7 @@ import az.kodcraft.core.domain.bases.model.doOnLoading
 import az.kodcraft.core.domain.bases.model.doOnNetworkError
 import az.kodcraft.core.domain.bases.model.doOnSuccess
 import az.kodcraft.core.presentation.bases.BaseViewModel
-import az.kodcraft.workout.domain.model.WorkoutDm
+import az.kodcraft.workout.domain.model.AssignedWorkoutDm
 import az.kodcraft.workout.domain.usecase.GetWorkoutUseCase
 import az.kodcraft.workout.domain.usecase.SaveFinishedWorkoutUseCase
 import az.kodcraft.workout.presentation.workoutProgress.contract.WorkoutProgressEvent
@@ -141,9 +141,9 @@ class WorkoutProgressViewModel @Inject constructor(
     }
 
     private fun updateExerciseStatus(
-        exercises: List<WorkoutDm.Exercise>,
+        exercises: List<AssignedWorkoutDm.Exercise>,
         exerciseId: String
-    ): List<WorkoutDm.Exercise> {
+    ): List<AssignedWorkoutDm.Exercise> {
         // Toggle completion status of the specified exercise and determine new current
         val updatedExercises = exercises.map { exercise ->
             if (exercise.id == exerciseId) {
@@ -166,10 +166,10 @@ class WorkoutProgressViewModel @Inject constructor(
     }
 
     private fun updateExerciseSetStatus(
-        exercises: List<WorkoutDm.Exercise>,
+        exercises: List<AssignedWorkoutDm.Exercise>,
         exerciseId: String,
         setId: String,
-    ): List<WorkoutDm.Exercise> {
+    ): List<AssignedWorkoutDm.Exercise> {
         // Toggle completion status of the specified exercise and determine new current
         val updatedExercises = exercises.map { exercise ->
             if (exercise.id == exerciseId) {

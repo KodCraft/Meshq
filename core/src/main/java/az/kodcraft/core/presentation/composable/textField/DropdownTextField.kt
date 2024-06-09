@@ -128,6 +128,7 @@ fun DropdownTextField(
                                 onClick = {
                                     onItemSelected(item)
                                     expanded = false
+                                    localSoftwareKeyboardController?.hide()
                                 }, text = {
                                     Text(
                                         text = item.name,

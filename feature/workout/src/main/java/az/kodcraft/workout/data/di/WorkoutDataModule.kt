@@ -2,10 +2,13 @@ package az.kodcraft.workout.data.di
 
 import az.kodcraft.workout.data.repository.AssignedWorkoutRepositoryImpl
 import az.kodcraft.workout.data.repository.ExerciseRepositoryImpl
+import az.kodcraft.workout.data.repository.WorkoutRepositoryImpl
 import az.kodcraft.workout.data.service.AssignedWorkoutService
 import az.kodcraft.workout.data.service.ExerciseService
+import az.kodcraft.workout.data.service.WorkoutService
 import az.kodcraft.workout.domain.repository.AssignedWorkoutRepository
 import az.kodcraft.workout.domain.repository.ExerciseRepository
+import az.kodcraft.workout.domain.repository.WorkoutRepository
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.firestore
@@ -47,11 +50,21 @@ object WorkoutDataModule {
     fun provideAssignedWorkoutService(
         @AssignedWorkoutCollection workoutDataRef: CollectionReference,
         @ExerciseLogCollection exerciseLogRef: CollectionReference,
+    ): AssignedWorkoutService = AssignedWorkoutService(workoutDataRef, exerciseLogRef)
+
+    @Provides
+    fun provideWorkoutService(
+        @WorkoutCollection workoutDataRef: CollectionReference,
         @ExerciseCollection exerciseRef: CollectionReference,
-    ): AssignedWorkoutService = AssignedWorkoutService(workoutDataRef,exerciseRef, exerciseLogRef)
+    ): WorkoutService = WorkoutService(workoutDataRef, exerciseRef)
 
     @Provides
     fun provideWorkoutRepository(
+        workoutService: WorkoutService
+    ): WorkoutRepository = WorkoutRepositoryImpl(workoutService)
+
+    @Provides
+    fun provideAssignedWorkoutRepository(
         workoutService: AssignedWorkoutService
     ): AssignedWorkoutRepository = AssignedWorkoutRepositoryImpl(workoutService)
 

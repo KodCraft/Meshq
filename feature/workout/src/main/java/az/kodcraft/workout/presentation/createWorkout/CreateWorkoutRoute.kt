@@ -55,10 +55,12 @@ import az.kodcraft.core.presentation.composable.dropdown.DropdownItem
 import az.kodcraft.core.presentation.composable.textField.DropdownTextField
 import az.kodcraft.core.presentation.theme.PrimaryBlue
 import az.kodcraft.core.presentation.theme.mediumTitle
+import az.kodcraft.core.utils.collectWithLifecycle
 import az.kodcraft.core.utils.noRippleClickable
 import az.kodcraft.workout.domain.model.CreateWorkoutDm
 import az.kodcraft.workout.presentation.createWorkout.composable.AddExercise
 import az.kodcraft.workout.presentation.createWorkout.composable.ExerciseSetsCard
+import az.kodcraft.workout.presentation.createWorkout.contract.CreateWorkoutEvent
 import az.kodcraft.workout.presentation.createWorkout.contract.CreateWorkoutIntent
 import az.kodcraft.workout.presentation.createWorkout.contract.CreateWorkoutUiState
 
@@ -69,6 +71,12 @@ fun CreateWorkoutRoute(
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
+    viewModel.event.collectWithLifecycle {
+        when (it) {
+            CreateWorkoutEvent.NavigateToDashboard -> navigateBack()
+        }
+    }
+
     CreateWorkoutScreen(
         uiState = uiState,
         navigateBack = navigateBack,
@@ -123,9 +131,7 @@ fun CreateWorkoutScreen(
                         ) {
                             Text(
                                 it.name,
-                                style = MaterialTheme.typography.mediumTitle,
-
-                                )
+                                style = MaterialTheme.typography.mediumTitle)
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_remove_circle),
                                 contentDescription = "",

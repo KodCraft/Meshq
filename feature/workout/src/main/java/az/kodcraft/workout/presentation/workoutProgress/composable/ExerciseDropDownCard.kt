@@ -22,12 +22,12 @@ import az.kodcraft.core.R
 import az.kodcraft.core.presentation.theme.PrimaryTurq
 import az.kodcraft.core.presentation.theme.body
 import az.kodcraft.core.utils.noRippleClickable
-import az.kodcraft.workout.domain.model.WorkoutDm
+import az.kodcraft.workout.domain.model.AssignedWorkoutDm
 
 
 @Composable
 fun ExerciseDropDownCard(
-    exercise: WorkoutDm.Exercise,
+    exercise: AssignedWorkoutDm.Exercise,
     isCompleteClick: () -> Unit,
     onClick: () -> Unit
 ) {

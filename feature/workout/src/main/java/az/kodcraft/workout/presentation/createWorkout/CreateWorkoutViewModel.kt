@@ -9,13 +9,14 @@ import az.kodcraft.core.domain.bases.model.doOnSuccess
 import az.kodcraft.core.presentation.bases.BaseViewModel
 import az.kodcraft.workout.domain.model.CreateWorkoutDm
 import az.kodcraft.workout.domain.usecase.GetExercisesUseCase
+import az.kodcraft.workout.domain.usecase.SaveWorkoutUseCase
 import az.kodcraft.workout.presentation.createWorkout.contract.CreateWorkoutEvent
 import az.kodcraft.workout.presentation.createWorkout.contract.CreateWorkoutIntent
 import az.kodcraft.workout.presentation.createWorkout.contract.CreateWorkoutUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 import kotlin.random.Random
@@ -24,9 +25,8 @@ import kotlin.random.Random
 class CreateWorkoutViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     initialState: CreateWorkoutUiState,
-//    private val saveWorkoutUseCase: SaveWorkoutUseCase
+    private val saveWorkoutUseCase: SaveWorkoutUseCase,
     private val getExerciseUseCase: GetExercisesUseCase
-//    private val getExerciseUseCase: GetExerciseUseCase
 ) : BaseViewModel<CreateWorkoutUiState, CreateWorkoutUiState.PartialState, CreateWorkoutEvent, CreateWorkoutIntent>(
     savedStateHandle,
     initialState
@@ -34,29 +34,41 @@ class CreateWorkoutViewModel @Inject constructor(
 
     override fun mapIntents(intent: CreateWorkoutIntent): Flow<CreateWorkoutUiState.PartialState> =
         when (intent) {
-            CreateWorkoutIntent.SaveWorkout -> TODO()
+            CreateWorkoutIntent.SaveWorkout -> saveWorkout()
             CreateWorkoutIntent.GetExercises -> fetchExercises()
             is CreateWorkoutIntent.ChangeSearchValue -> fetchExercises(intent.value)
             is CreateWorkoutIntent.NewExerciseSelected -> flowOf(
                 CreateWorkoutUiState.PartialState.SelectedExercise(
-                     CreateWorkoutDm.Exercise.EMPTY.copy(id = intent.id, name =intent.name ))
+                    CreateWorkoutDm.Exercise.EMPTY.copy(id = intent.id, name = intent.name)
+                )
             )
+
             CreateWorkoutIntent.UnselectExercise -> flowOf(
                 CreateWorkoutUiState.PartialState.SelectedExercise(
-                    CreateWorkoutDm.Exercise.EMPTY)
+                    CreateWorkoutDm.Exercise.EMPTY
+                )
             )
+
             is CreateWorkoutIntent.SaveExerciseSets -> flowOf(
                 CreateWorkoutUiState.PartialState.WorkoutExercise(
                     intent.sets
                 )
             )
 
-            is CreateWorkoutIntent.RemoveExercise ->  flowOf(
+            is CreateWorkoutIntent.RemoveExercise -> flowOf(
                 CreateWorkoutUiState.PartialState.RemoveWorkoutExercise(
                     intent.id
                 )
             )
         }
+
+    private fun saveWorkout(): Flow<CreateWorkoutUiState.PartialState> = flow {
+        saveWorkoutUseCase.execute(uiState.value.workout).doOnSuccess {
+            publishEvent(CreateWorkoutEvent.NavigateToDashboard)
+        }.doOnLoading {
+            emit(CreateWorkoutUiState.PartialState.Loading)
+        }.collect()
+    }
 
     private fun fetchExercises(searchValue: String = ""): Flow<CreateWorkoutUiState.PartialState> =
         flow {
@@ -118,7 +130,7 @@ class CreateWorkoutViewModel @Inject constructor(
 
         is CreateWorkoutUiState.PartialState.RemoveWorkoutExercise -> previousState.copy(
             isLoading = false, isError = false,
-            workout = previousState.workout.copy(exercises =  previousState.workout.exercises.filterNot { it.id == partialState.id })
+            workout = previousState.workout.copy(exercises = previousState.workout.exercises.filterNot { it.id == partialState.id })
         )
     }
 

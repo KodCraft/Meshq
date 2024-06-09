@@ -46,7 +46,7 @@ import az.kodcraft.core.presentation.theme.primaryTurq
 import az.kodcraft.core.utils.formatDateToStringDatAndMonth
 import az.kodcraft.core.utils.noRippleClickable
 import az.kodcraft.workout.R
-import az.kodcraft.workout.domain.model.WorkoutDm
+import az.kodcraft.workout.domain.model.AssignedWorkoutDm
 import az.kodcraft.workout.presentation.workoutDetails.composable.CardTabs
 import az.kodcraft.workout.presentation.workoutDetails.composable.WorkoutTab
 import az.kodcraft.workout.presentation.workoutDetails.contract.WorkoutDetailsIntent
@@ -135,7 +135,7 @@ fun WorkoutDetailsScreen(
 }
 
 @Composable
-fun WorkoutContentCard(modifier: Modifier, workout: WorkoutDm, onStartWorkoutClicked: () -> Unit) {
+fun WorkoutContentCard(modifier: Modifier, workout: AssignedWorkoutDm, onStartWorkoutClicked: () -> Unit) {
     var selectedTab by remember { mutableStateOf(WorkoutTab.Program) }
     Column(
         modifier = modifier
@@ -164,7 +164,7 @@ fun WorkoutContentCard(modifier: Modifier, workout: WorkoutDm, onStartWorkoutCli
 }
 
 @Composable
-fun CardContent(selectedTab: WorkoutTab, workout: WorkoutDm) {
+fun CardContent(selectedTab: WorkoutTab, workout: AssignedWorkoutDm) {
     Column(
         Modifier
             .fillMaxWidth()
@@ -209,7 +209,7 @@ fun WorkoutDate(date: String) {
 @Composable
 fun WorkoutDetailsPreview() = BasePreviewContainer {
     WorkoutDetailsScreen(
-        uiState = WorkoutDetailsUiState(workout = WorkoutDm.MOCK.copy(isFinished = true)),
+        uiState = WorkoutDetailsUiState(workout = AssignedWorkoutDm.MOCK.copy(isFinished = true)),
         onStartWorkoutClicked = { /*TODO*/ }) {
 
     }
