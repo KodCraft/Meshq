@@ -1,16 +1,12 @@
 package az.kodcraft.workout.data.dto
 
-import az.kodcraft.workout.domain.model.WorkoutDm
-import com.google.firebase.Timestamp
+import az.kodcraft.workout.domain.model.CreateWorkoutDm
 import com.google.firebase.firestore.PropertyName
 
 data class WorkoutDto(
     var id: String = "",
     val title: String = "",
     val notes: String = "",
-    @field:JvmField
-    val isFinished: Boolean = false,
-    val date: Timestamp = Timestamp.now(),
     val labels: List<String> = emptyList(),
     var exercises: List<Exercise> = emptyList()
 ) {
@@ -31,53 +27,46 @@ data class WorkoutDto(
             val weight: String= "",
             @get:PropertyName("weight_unit")
             val unit: String= "kg",
-            @field:JvmField
-            val isComplete: Boolean= false,
         )
     }
 
-    fun toDm() = WorkoutDm(
+    fun toDm() = CreateWorkoutDm(
         id = id,
-        date = date.toDate(),
         title = title,
-        isFinished = isFinished,
         notes = notes,
         exercises = exercises.map {
-            WorkoutDm.Exercise(id = it.id, name = it.name,exerciseRef = it.exerciseRefId, sets = it.sets.map { set ->
-                WorkoutDm.Exercise.Set(
+            CreateWorkoutDm.Exercise(id = it.id, name = it.name,exerciseRefId = it.exerciseRefId, sets = it.sets.map { set ->
+                CreateWorkoutDm.Exercise.Set(
                     id = set.id,
                     type = set.type,
                     reps = set.reps,
-                    restSeconds = set.restSeconds,
+                    restSeconds = set.restSeconds.toString(),
                     weight = set.weight,
                     unit = set.unit,
-                    isComplete = set.isComplete,
                 )
             })
         }
     )
 companion object{
 
-    fun WorkoutDm.toDto() = WorkoutDto(
+    fun CreateWorkoutDm.toDto() = WorkoutDto(
         id = id,
-        date = Timestamp(date),
         title = title,
-        isFinished = isFinished,
         notes = notes,
         exercises = exercises.map {
-            Exercise(id = it.id, name = it.name, exerciseRefId = it.exerciseRef, sets = it.sets.map { set ->
+            Exercise(id = it.id, name = it.name, exerciseRefId = it.exerciseRefId, sets = it.sets.map { set ->
                 Exercise.Set(
                     id = set.id,
                     type = set.type,
                     reps = set.reps,
-                    restSeconds = set.restSeconds,
+                    restSeconds = set.restSeconds.toIntOrNull()?:0,
                     weight = set.weight,
                     unit = set.unit,
-                    isComplete = set.isComplete
                 )
             })
         }
     )
+
 }
 
 }

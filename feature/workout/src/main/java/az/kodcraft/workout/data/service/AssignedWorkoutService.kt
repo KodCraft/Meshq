@@ -1,7 +1,7 @@
 package az.kodcraft.workout.data.service
 
 import android.util.Log
-import az.kodcraft.workout.data.dto.WorkoutDto
+import az.kodcraft.workout.data.dto.AssignedWorkoutDto
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -9,12 +9,11 @@ import kotlinx.coroutines.tasks.await
 
 class AssignedWorkoutService(
     private val assignedWorkoutRef: CollectionReference,
-    private val exerciseRef: CollectionReference,
     private val exerciseLogRef: CollectionReference,
 ) {
 
-    suspend fun getWorkout(workoutId: String): WorkoutDto? {
-        return assignedWorkoutRef.document(workoutId).get().await().toObject(WorkoutDto::class.java)
+    suspend fun getWorkout(workoutId: String): AssignedWorkoutDto? {
+        return assignedWorkoutRef.document(workoutId).get().await().toObject(AssignedWorkoutDto::class.java)
             ?.apply {
                 id = workoutId
                 val exercisesQuerySnapshot =
@@ -23,14 +22,14 @@ class AssignedWorkoutService(
                         .await()
 
                 val exercises = exercisesQuerySnapshot.map { document ->
-                    document.toObject(WorkoutDto.Exercise::class.java).apply {
+                    document.toObject(AssignedWorkoutDto.Exercise::class.java).apply {
                         id = document.id  // Set the document ID
                         val setsSnapshot =
                             assignedWorkoutRef.document(workoutId).collection("exercises")
                                 .document(document.id).collection("sets").orderBy("order").get()
                                 .await()
                         sets = setsSnapshot.map { setDoc ->
-                            setDoc.toObject(WorkoutDto.Exercise.Set::class.java).apply {
+                            setDoc.toObject(AssignedWorkoutDto.Exercise.Set::class.java).apply {
 
                                 Log.d("SET_FETCHING", setDoc.data.toString())
                                 id = setDoc.id  // Set the set ID
@@ -45,7 +44,7 @@ class AssignedWorkoutService(
             }
     }
 
-    suspend fun saveFinishedWorkout(assignedWorkout: WorkoutDto): Boolean {
+    suspend fun saveFinishedWorkout(assignedWorkout: AssignedWorkoutDto): Boolean {
         val workoutDoc = assignedWorkoutRef.document(assignedWorkout.id)
 
         val existingExerciseLogs =

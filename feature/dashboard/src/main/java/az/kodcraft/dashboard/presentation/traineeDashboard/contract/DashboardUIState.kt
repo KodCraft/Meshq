@@ -1,10 +1,10 @@
-package az.kodcraft.dashboard.presentation.contract
+package az.kodcraft.dashboard.presentation.traineeDashboard.contract
 
 import android.os.Parcelable
 import androidx.compose.runtime.Immutable
 import az.kodcraft.dashboard.domain.model.DashboardWeekDm
 import az.kodcraft.dashboard.domain.model.DashboardWeekWorkoutDm
-import az.kodcraft.dashboard.presentation.StartIndex
+import az.kodcraft.dashboard.presentation.traineeDashboard.StartIndex
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
 import java.time.temporal.WeekFields

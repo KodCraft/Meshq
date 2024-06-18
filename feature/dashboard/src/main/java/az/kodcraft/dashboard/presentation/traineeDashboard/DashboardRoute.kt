@@ -1,4 +1,4 @@
-package az.kodcraft.dashboard.presentation
+package az.kodcraft.dashboard.presentation.traineeDashboard
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -60,10 +60,10 @@ import az.kodcraft.core.presentation.theme.smallTitle
 import az.kodcraft.core.utils.noRippleClickable
 import az.kodcraft.dashboard.R
 import az.kodcraft.dashboard.domain.model.DashboardWeekWorkoutDm
-import az.kodcraft.dashboard.presentation.composables.WeekRow
-import az.kodcraft.dashboard.presentation.contract.DashboardIntent
-import az.kodcraft.dashboard.presentation.contract.DashboardUiState
-import az.kodcraft.dashboard.presentation.utils.getWeekData
+import az.kodcraft.dashboard.presentation.traineeDashboard.composables.WeekRow
+import az.kodcraft.dashboard.presentation.traineeDashboard.contract.DashboardIntent
+import az.kodcraft.dashboard.presentation.traineeDashboard.contract.DashboardUiState
+import az.kodcraft.dashboard.presentation.traineeDashboard.utils.getWeekData
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
@@ -73,14 +73,18 @@ import java.util.Locale
 fun DashboardRoute(
     viewModel: DashboardViewModel = hiltViewModel(),
     padding: PaddingValues,
-    navigateToWorkoutDetails: (id: String) -> Unit = {}
+    navigateToWorkoutDetails: (id: String) -> Unit = {},
+    switchMode:()-> Unit = {},
+    onMenuClick:()-> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     DashboardScreen(
         uiState,
         padding = padding,
         onIntent = { viewModel.acceptIntent(it) },
-        onWorkoutClick = { navigateToWorkoutDetails(it) })
+        onWorkoutClick = { navigateToWorkoutDetails(it) },
+        switchMode = switchMode,
+        onMenuClick = onMenuClick)
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -89,6 +93,8 @@ fun DashboardScreen(
     uiState: DashboardUiState,
     onIntent: (DashboardIntent) -> Unit = {},
     onWorkoutClick: (id: String) -> Unit = {},
+    switchMode: () -> Unit = {},
+    onMenuClick: () -> Unit = {},
     padding: PaddingValues
 ) {
     Column(
@@ -97,7 +103,15 @@ fun DashboardScreen(
             .padding(padding)
             .background(MaterialTheme.colorScheme.background)
     ) {
-        TopAppBar(showMenuIcon = true)
+        TopAppBar(showMenuIcon = true, onMenuClick = onMenuClick) {
+            Spacer(modifier = Modifier.weight(1f))
+            Icon(
+                painter = painterResource(id = az.kodcraft.core.R.drawable.ic_profile),
+                tint = Color.White,
+                contentDescription ="go to profile",
+                modifier = Modifier.noRippleClickable {switchMode(); }
+            )
+        }
         Column(
             Modifier
                 .fillMaxWidth()
@@ -282,7 +296,8 @@ fun Workouts(
                     .height(185.dp)
                     .noRippleClickable { onWorkoutClick(it.id) },
                 colors = if (it.isSelected) CardDefaults.cardColors()
-                    .copy(containerColor = PrimaryTurq) else CardDefaults.cardColors().copy(containerColor = PrimaryLight)
+                    .copy(containerColor = PrimaryTurq) else CardDefaults.cardColors()
+                    .copy(containerColor = PrimaryLight)
             ) {
                 Box(Modifier.fillMaxSize()) {
                     Column(modifier = Modifier.padding(16.dp)) {

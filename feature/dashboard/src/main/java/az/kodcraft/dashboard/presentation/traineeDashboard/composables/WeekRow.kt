@@ -1,4 +1,4 @@
-package az.kodcraft.dashboard.presentation.composables
+package az.kodcraft.dashboard.presentation.traineeDashboard.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

@@ -11,6 +11,7 @@ import az.kodcraft.dashboard.navigation.dashboardGraph
 import az.kodcraft.dashboard.navigation.navigateToDashboard
 import az.kodcraft.onboarding.navigation.OnBoardingRouteConstants
 import az.kodcraft.onboarding.navigation.onBoardingGraph
+import az.kodcraft.workout.navigation.navigateToCreateWorkout
 import az.kodcraft.workout.navigation.navigateToWorkoutDetails
 import az.kodcraft.workout.navigation.navigateToWorkoutProgress
 import az.kodcraft.workout.navigation.workoutGraph
@@ -20,7 +21,9 @@ fun MeshqNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     padding: PaddingValues = PaddingValues(0.dp),
-    startDestination: String = OnBoardingRouteConstants.SPLASH_SCREEN
+    startDestination: String = OnBoardingRouteConstants.SPLASH_SCREEN,
+    switchMode:() -> Unit,
+    onMenuClick:() -> Unit
 ) {
     NavHost(
         navController = navController,
@@ -30,12 +33,15 @@ fun MeshqNavHost(
     )
     {
         onBoardingGraph(
-            navController = navController
+            navController = navController,
         )
 
         dashboardGraph(
             padding = padding,
-            navigateToWorkoutDetails = navController::navigateToWorkoutDetails
+            navigateToWorkoutDetails = navController::navigateToWorkoutDetails,
+            navigateToCreateWorkout = navController::navigateToCreateWorkout,
+            switchMode = switchMode,
+            onMenuClick = onMenuClick
         )
 
         workoutGraph(

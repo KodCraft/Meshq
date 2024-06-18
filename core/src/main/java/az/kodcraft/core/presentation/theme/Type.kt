@@ -31,7 +31,7 @@ val Typography.mediumTitle: TextStyle
         fontWeight = FontWeight.Bold,
         fontFamily = MeshqFont,
         fontSize = 38.sp,
-        lineHeight = 42.sp,
+        lineHeight = 40.sp,
         letterSpacing = 0.sp
     )
 val Typography.smallTitle: TextStyle
@@ -40,6 +40,15 @@ val Typography.smallTitle: TextStyle
         fontFamily = MeshqFont,
         fontSize = 24.sp,
         lineHeight = 28.sp,
+        letterSpacing = 0.sp
+    )
+
+val Typography.largeHeadLine: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.Normal,
+        fontFamily = MeshqFont,
+        fontSize = 32.sp,
+        lineHeight = 36.sp,
         letterSpacing = 0.sp
     )
 
@@ -68,6 +77,14 @@ val Typography.bodyLight: TextStyle
         lineHeight = 18.sp,
         letterSpacing = 0.sp
     )
+val Typography.bodySmall: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.Normal,
+        fontFamily = MeshqFont,
+        fontSize = 14.sp,
+        lineHeight = 18.sp,
+        letterSpacing = 0.sp
+    )
 val Typography.bodySmallLight: TextStyle
     get() = TextStyle(
         fontWeight = FontWeight.ExtraLight,
@@ -90,6 +107,15 @@ val Typography.footNote: TextStyle
 val Typography.buttonTypo: TextStyle
     get() = TextStyle(
         fontWeight = FontWeight.Bold,
+        fontFamily = MeshqFont,
+        fontSize = 16.sp,
+        lineHeight = 22.sp,
+        letterSpacing = 0.sp
+    )
+
+val Typography.buttonTypoLight: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.Light,
         fontFamily = MeshqFont,
         fontSize = 16.sp,
         lineHeight = 22.sp,

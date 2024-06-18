@@ -1,4 +1,4 @@
-package az.kodcraft.dashboard.presentation.utils
+package az.kodcraft.dashboard.presentation.traineeDashboard.utils
 
 import az.kodcraft.dashboard.domain.model.DashboardWeekDm
 import az.kodcraft.dashboard.domain.model.DayOfWeekDm
