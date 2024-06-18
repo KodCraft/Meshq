@@ -1,4 +1,5 @@
 // createFeatureModule.gradle.kts
+// !! USAGE: ./gradlew createCleanArchitectureFolders -PmoduleName=notification
 
 tasks.register("createCleanArchitectureFolders") {
     val moduleName = if (project.hasProperty("moduleName")) project.property("moduleName") as String else "defaultModule"
