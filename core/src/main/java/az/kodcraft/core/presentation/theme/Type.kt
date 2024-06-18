@@ -69,6 +69,19 @@ val Typography.body: TextStyle
         lineHeight = 18.sp,
         letterSpacing = 0.sp
     )
+
+val bodyLarge: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.Normal,
+        fontFamily = MeshqFont,
+        fontSize = 22.sp
+    )
+val bodyLargeLight: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.Light,
+        fontFamily = MeshqFont,
+        fontSize = 22.sp
+    )
 val Typography.bodyLight: TextStyle
     get() = TextStyle(
         fontWeight = FontWeight.ExtraLight,
@@ -95,9 +108,19 @@ val Typography.bodySmallLight: TextStyle
     )
 
 
+
 val Typography.footNote: TextStyle
     get() = TextStyle(
         fontWeight = FontWeight.Normal,
+        fontFamily = MeshqFont,
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.sp
+    )
+
+val Typography.footNoteLight: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.ExtraLight,
         fontFamily = MeshqFont,
         fontSize = 12.sp,
         lineHeight = 16.sp,
@@ -118,7 +141,7 @@ val Typography.buttonTypoLight: TextStyle
         fontWeight = FontWeight.Light,
         fontFamily = MeshqFont,
         fontSize = 16.sp,
-        lineHeight = 22.sp,
+        lineHeight = 18.sp,
         letterSpacing = 0.sp
     )
 

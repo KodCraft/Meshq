@@ -3,7 +3,6 @@ package az.kodcraft.dashboard.presentation.trainerDashboard
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,9 +23,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import az.kodcraft.core.domain.UserManager
 import az.kodcraft.core.presentation.bases.BasePreviewContainer
 import az.kodcraft.core.presentation.composable.appBar.TopAppBar
 import az.kodcraft.core.presentation.theme.PrimaryLight
+import az.kodcraft.core.presentation.theme.body
 import az.kodcraft.core.utils.noRippleClickable
 import az.kodcraft.dashboard.presentation.traineeDashboard.contract.DashboardIntent
 import az.kodcraft.dashboard.presentation.traineeDashboard.contract.DashboardUiState
@@ -36,6 +37,7 @@ import az.kodcraft.dashboard.presentation.traineeDashboard.contract.DashboardUiS
 fun TrainerDashboardRoute(
     viewModel: TrainerDashboardViewModel = hiltViewModel(),
     onNavigateToCreateWorkout: () -> Unit = {},
+    onNavigateToNotifications: () -> Unit = {},
     switchMode: () -> Unit = {},
     onMenuClick: () -> Unit = {},
 ) {
@@ -43,9 +45,11 @@ fun TrainerDashboardRoute(
     TrainerDashboardScreen(
         uiState,
         onIntent = { viewModel.acceptIntent(it) },
-        onNavigateToCreateWorkout =  onNavigateToCreateWorkout ,
+        onNavigateToCreateWorkout = onNavigateToCreateWorkout,
+        onNavigateToNotifications = onNavigateToNotifications,
         switchMode = switchMode,
-        onMenuClick = onMenuClick)
+        onMenuClick = onMenuClick
+    )
 }
 
 @Composable
@@ -53,6 +57,7 @@ fun TrainerDashboardScreen(
     uiState: DashboardUiState,
     onIntent: (DashboardIntent) -> Unit = {},
     onNavigateToCreateWorkout: () -> Unit = {},
+    onNavigateToNotifications: () -> Unit = {},
     switchMode: () -> Unit = {},
     onMenuClick: () -> Unit = {}
 ) {
@@ -63,6 +68,12 @@ fun TrainerDashboardScreen(
     ) {
         TopAppBar(showMenuIcon = true, onMenuClick = onMenuClick) {
             Spacer(modifier = Modifier.weight(1f))
+            Text(
+                UserManager.getUserFullName(),
+                style = MaterialTheme.typography.body,
+                modifier = Modifier.padding(end = 12.dp)
+            )
+            NotificationIcon(onNavigateToNotifications)
             Icon(
                 painter = painterResource(id = az.kodcraft.core.R.drawable.ic_profile),
                 tint = Color.White,
@@ -89,9 +100,11 @@ fun TrainerDashboardScreen(
             }
 
             FloatingActionButton(
-                onClick =  onNavigateToCreateWorkout,
+                onClick = onNavigateToCreateWorkout,
                 shape = CircleShape,
-                modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp),
                 containerColor = PrimaryLight
             ) {
                 Icon(
@@ -102,6 +115,19 @@ fun TrainerDashboardScreen(
             }
         }
     }
+}
+
+@Composable
+fun NotificationIcon(onClick: () -> Unit) {
+
+    Icon(
+        painter = painterResource(id = az.kodcraft.core.R.drawable.ic_notification_bell),
+        tint = Color.White,
+        contentDescription = "go to notifications",
+        modifier = Modifier
+            .noRippleClickable { onClick() }
+            .padding(end = 6.dp)
+    )
 }
 
 

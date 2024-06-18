@@ -40,6 +40,9 @@ dependencies {
     implementation(project(":feature:onBoarding"))
     implementation(project(":feature:workout"))
     implementation(project(":feature:dashboard"))
+    implementation(project(":feature:client"))
+    implementation(project(":feature:profile"))
+    implementation(project(":feature:trainer"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

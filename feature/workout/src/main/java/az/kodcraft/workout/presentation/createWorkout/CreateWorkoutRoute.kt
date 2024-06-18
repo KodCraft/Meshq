@@ -131,7 +131,8 @@ fun CreateWorkoutScreen(
                         ) {
                             Text(
                                 it.name,
-                                style = MaterialTheme.typography.mediumTitle)
+                                style = MaterialTheme.typography.mediumTitle
+                            )
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_remove_circle),
                                 contentDescription = "",
@@ -157,7 +158,7 @@ fun CreateWorkoutScreen(
                 modifier = Modifier
                     .padding(horizontal = 60.dp),
                 value = uiState.searchValue,
-                onValueChange = {onIntent.invoke(CreateWorkoutIntent.ChangeSearchValue(it))},
+                onValueChange = { onIntent.invoke(CreateWorkoutIntent.ChangeSearchValue(it)) },
                 list = uiState.exercises.map { DropdownItem(it.name, it.id) },
                 placeholder = "Exercise",
                 isLoading = uiState.isLoading,
@@ -188,9 +189,9 @@ fun CreateWorkoutScreen(
                     ButtonPrimaryLight(
                         text = "Save Workout",
                         modifier = Modifier
-                            .noRippleClickable { onIntent.invoke(CreateWorkoutIntent.SaveWorkout)}
                             .align(Alignment.Center)
-                            .width(300.dp)
+                            .width(300.dp),
+                        onClick = { onIntent.invoke(CreateWorkoutIntent.SaveWorkout) }
                     )
                 }
             } else {

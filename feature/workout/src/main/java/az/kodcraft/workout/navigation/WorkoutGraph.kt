@@ -1,5 +1,11 @@
 package az.kodcraft.workout.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import az.kodcraft.workout.presentation.createWorkout.CreateWorkoutRoute
@@ -33,5 +39,18 @@ fun NavGraphBuilder.workoutGraph(
         CreateWorkoutRoute(
             navigateBack = navigateBack,
         )
+    }
+    composable(route = WorkoutRouteConstants.FINISHED_WORKOUTS_SCREEN) {
+        Box(
+            Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) { Text("FINISHED WORKOUTS LIST UNDER CONSTRUCTION ... ", textAlign = TextAlign.Center) }
+    }
+
+        composable(route = WorkoutRouteConstants.WORKOUTS_LIBRARY_SCREEN) {
+        Box(
+            Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) { Text("WORKOUT LIBRARY UNDER CONSTRUCTION ... ", textAlign = TextAlign.Center) }
     }
 }

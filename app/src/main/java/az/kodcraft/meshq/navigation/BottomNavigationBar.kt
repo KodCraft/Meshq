@@ -1,4 +1,4 @@
-package az.kodcraft.core.navigation
+package az.kodcraft.meshq.navigation
 
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility

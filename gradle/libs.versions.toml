@@ -1,5 +1,6 @@
 [versions]
 agp = "8.3.1"
+coilCompose = "2.2.2"
 firebase-bom = "32.8.0"
 kotlin = "1.9.0"
 coreKtx = "1.12.0"
@@ -49,6 +50,8 @@ hilt-ext-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "hi
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 
+# Hilt
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 
 #Firebase
 

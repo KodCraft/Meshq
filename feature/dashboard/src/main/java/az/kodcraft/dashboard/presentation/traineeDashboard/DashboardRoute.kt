@@ -48,6 +48,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import az.kodcraft.core.domain.UserManager
 import az.kodcraft.core.presentation.bases.BasePreviewContainer
 import az.kodcraft.core.presentation.composable.appBar.TopAppBar
 import az.kodcraft.core.presentation.theme.PrimaryLight
@@ -74,8 +75,7 @@ fun DashboardRoute(
     viewModel: DashboardViewModel = hiltViewModel(),
     padding: PaddingValues,
     navigateToWorkoutDetails: (id: String) -> Unit = {},
-    switchMode:()-> Unit = {},
-    onMenuClick:()-> Unit = {}
+    switchMode: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     DashboardScreen(
@@ -83,8 +83,8 @@ fun DashboardRoute(
         padding = padding,
         onIntent = { viewModel.acceptIntent(it) },
         onWorkoutClick = { navigateToWorkoutDetails(it) },
-        switchMode = switchMode,
-        onMenuClick = onMenuClick)
+        switchMode = switchMode
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -94,7 +94,6 @@ fun DashboardScreen(
     onIntent: (DashboardIntent) -> Unit = {},
     onWorkoutClick: (id: String) -> Unit = {},
     switchMode: () -> Unit = {},
-    onMenuClick: () -> Unit = {},
     padding: PaddingValues
 ) {
     Column(
@@ -103,13 +102,18 @@ fun DashboardScreen(
             .padding(padding)
             .background(MaterialTheme.colorScheme.background)
     ) {
-        TopAppBar(showMenuIcon = true, onMenuClick = onMenuClick) {
+        TopAppBar {
             Spacer(modifier = Modifier.weight(1f))
+            Text(
+                UserManager.getUserFullName(),
+                style = MaterialTheme.typography.body,
+                modifier = Modifier.padding(end = 12.dp)
+            )
             Icon(
                 painter = painterResource(id = az.kodcraft.core.R.drawable.ic_profile),
                 tint = Color.White,
-                contentDescription ="go to profile",
-                modifier = Modifier.noRippleClickable {switchMode(); }
+                contentDescription = "go to profile",
+                modifier = Modifier.noRippleClickable { switchMode(); }
             )
         }
         Column(

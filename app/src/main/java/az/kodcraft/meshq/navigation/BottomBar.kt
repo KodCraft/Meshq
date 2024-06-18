@@ -1,9 +1,8 @@
-package az.kodcraft.core.navigation
+package az.kodcraft.meshq.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination
-import androidx.navigation.NavDestination.Companion.hierarchy
 
 @Composable
 fun BottomBar(

@@ -24,6 +24,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,22 +41,24 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import az.kodcraft.core.navigation.BottomBar
-import az.kodcraft.core.navigation.TopLevelDestination
-import az.kodcraft.core.navigation.TopLevelDestinationTrainee
-import az.kodcraft.core.navigation.TopLevelDestinationTrainer
-import az.kodcraft.core.navigation.isTopLevelDestinationInHierarchy
+import az.kodcraft.client.navigation.navigateToClientList
+import az.kodcraft.core.domain.UserManager
+import az.kodcraft.core.domain.UserManager.UserRole.TRAINER
+import az.kodcraft.core.domain.UserManager.userRole
 import az.kodcraft.core.presentation.theme.AccentBlue
 import az.kodcraft.core.presentation.theme.body
 import az.kodcraft.core.utils.noRippleClickable
-import az.kodcraft.dashboard.navigation.navigateToClientsList
 import az.kodcraft.dashboard.navigation.navigateToDashboard
-import az.kodcraft.dashboard.navigation.navigateToExerciseLibrary
-import az.kodcraft.dashboard.navigation.navigateToFinishedWorkouts
 import az.kodcraft.dashboard.navigation.navigateToTrainerDashboard
-import az.kodcraft.dashboard.navigation.navigateToTrainerExerciseLibrary
-import az.kodcraft.dashboard.navigation.navigateToWorkoutsLibrary
+import az.kodcraft.meshq.navigation.BottomBar
 import az.kodcraft.meshq.navigation.MeshqNavHost
+import az.kodcraft.meshq.navigation.TopLevelDestination
+import az.kodcraft.meshq.navigation.TopLevelDestinationTrainee
+import az.kodcraft.meshq.navigation.TopLevelDestinationTrainer
+import az.kodcraft.meshq.navigation.isTopLevelDestinationInHierarchy
+import az.kodcraft.meshq.navigation.topLevelNavOptions
+import az.kodcraft.trainer.navigation.navigateToTrainersList
+import az.kodcraft.workout.navigation.navigateToWorkoutsLibrary
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -73,7 +76,7 @@ class MainActivity : ComponentActivity() {
                 val scope = rememberCoroutineScope()
 
                 val navController = rememberNavController()
-                var isTrainer by remember { mutableStateOf(true) }//TODO: fetch from firebase in MainViewModel on init
+                val userRole by userRole.collectAsState() //TODO: fetch from firebase in MainViewModel on init
 
                 val currentDestination: NavDestination? = navController
                     .currentBackStackEntryAsState().value?.destination
@@ -106,9 +109,9 @@ class MainActivity : ComponentActivity() {
                                 navController,
                                 padding = PaddingValues(bottom = 76.dp),
                                 startDestination = TopLevelDestination.getStartDestinationForRole(
-                                    isTrainer
+                                    userRole == TRAINER
                                 ).route,
-                                switchMode = { isTrainer = !isTrainer },
+                                switchMode = { UserManager.switchUserRole() },
                                 onMenuClick = { scope.launch { drawerState.open() } }
                             )
 
@@ -196,15 +199,18 @@ fun NavController.navigateToTopLevelDestination(topLevelDestination: TopLevelDes
     )
 
     when (topLevelDestination) {
-        TopLevelDestinationTrainee.DASHBOARD -> navigateToDashboard()
-        TopLevelDestinationTrainee.FINISHED_WORKOUTS -> navigateToFinishedWorkouts()
-        TopLevelDestinationTrainee.EXERCISE_LIBRARY -> navigateToExerciseLibrary()
+        TopLevelDestinationTrainee.DASHBOARD -> navigateToDashboard(topLevelNavOptions)
+        TopLevelDestinationTrainee.EXPLORE_TRAINERS -> navigateToTrainersList(topLevelNavOptions)
+        TopLevelDestinationTrainee.MY_PROGRESS -> {}// navigateToExerciseLibrary()
 
 
-        TopLevelDestinationTrainer.TRAINER_DASHBOARD -> navigateToTrainerDashboard()
-        TopLevelDestinationTrainer.WORKOUTS_LIBRARY -> navigateToWorkoutsLibrary()
-        TopLevelDestinationTrainer.EXERCISE_LIBRARY -> navigateToTrainerExerciseLibrary()
-        TopLevelDestinationTrainer.CLIENTS_LIST -> navigateToClientsList()
+        TopLevelDestinationTrainer.TRAINER_DASHBOARD -> navigateToTrainerDashboard(
+            topLevelNavOptions
+        )
+
+        TopLevelDestinationTrainer.WORKOUTS_LIBRARY -> navigateToWorkoutsLibrary(topLevelNavOptions)
+        TopLevelDestinationTrainer.EXERCISE_LIBRARY -> {}// navigateToTrainerExerciseLibrary()
+        TopLevelDestinationTrainer.CLIENTS_LIST -> navigateToClientList(topLevelNavOptions)
     }
 }
 

@@ -1,6 +1,5 @@
-package az.kodcraft.core.navigation
+package az.kodcraft.meshq.navigation
 
-import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -18,15 +17,8 @@ interface TopLevelDestination {
      val selectedIconId: Int
      val unselectedIconId: Int
      companion object {
-         fun getDestinationsForRole(isTrainer: Boolean): List<TopLevelDestination> {
-             return if (isTrainer) {
-                 TopLevelDestinationTrainer.entries.toList()
-             } else {
-                 TopLevelDestinationTrainee.entries.toList()
-             }
-         }
 
-         fun getStartDestinationForRole(isTrainer: Boolean): TopLevelDestination{
+         fun getStartDestinationForRole(isTrainer: Boolean): TopLevelDestination {
              return if (isTrainer) {
                  TopLevelDestinationTrainer.TRAINER_DASHBOARD
              } else {
@@ -41,20 +33,20 @@ enum class TopLevelDestinationTrainee(
     @DrawableRes override val selectedIconId: Int,
     @DrawableRes override val unselectedIconId: Int
 ): TopLevelDestination {
-    FINISHED_WORKOUTS(
-        route = "FINISHED_WORKOUTS",
-        unselectedIconId = az.kodcraft.core.R.drawable.ic_checked_list,
-        selectedIconId = az.kodcraft.core.R.drawable.ic_checked_list,
+    EXPLORE_TRAINERS(
+        route = "EXPLORE_TRAINERS",
+        unselectedIconId = az.kodcraft.core.R.drawable.ic_search,
+        selectedIconId = az.kodcraft.core.R.drawable.ic_search,
     ),
     DASHBOARD(
         route = "DASHBOARD",
         unselectedIconId = az.kodcraft.core.R.drawable.ic_dashboard,
         selectedIconId = az.kodcraft.core.R.drawable.ic_dashboard,
     ),
-    EXERCISE_LIBRARY(
-        route = "EXERCISE_LIBRARY",
-        unselectedIconId = az.kodcraft.core.R.drawable.ic_dumbbell,
-        selectedIconId = az.kodcraft.core.R.drawable.ic_dumbbell,
+    MY_PROGRESS(
+        route = "MY_PROGRESS",
+        unselectedIconId = az.kodcraft.core.R.drawable.ic_checked_list,
+        selectedIconId = az.kodcraft.core.R.drawable.ic_checked_list,
     ),
 }
 
