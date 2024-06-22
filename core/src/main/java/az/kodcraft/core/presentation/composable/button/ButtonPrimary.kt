@@ -5,11 +5,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -27,6 +24,7 @@ import az.kodcraft.core.R
 import az.kodcraft.core.presentation.theme.PrimaryTurq
 import az.kodcraft.core.presentation.theme.buttonTypo
 import az.kodcraft.core.presentation.theme.buttonTypoLight
+import az.kodcraft.core.presentation.theme.buttonTypoLightSmall
 import az.kodcraft.core.utils.noRippleClickable
 
 
@@ -73,6 +71,28 @@ fun ButtonPrimaryLight(
 }
 
 @Composable
+fun ButtonPrimaryLightSmall(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color = PrimaryTurq.copy(0.7f),
+    onClick: () -> Unit
+) {
+    Column(
+        modifier = modifier
+            .noRippleClickable { onClick() }
+            .clip(shape = RoundedCornerShape(6.dp))
+            .background(color = color),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            modifier = Modifier.padding(vertical = 6.dp, horizontal = 16.dp),
+            text = text,
+            style = MaterialTheme.typography.buttonTypoLightSmall.copy(color = Color.White)
+        )
+    }
+}
+
+@Composable
 fun ButtonPrimaryLightWithLoader(
     text: String,
     modifier: Modifier = Modifier,
@@ -107,6 +127,16 @@ fun ButtonPrimaryLightWithLoader(
 @Preview
 fun PreviewButtonPrimary() {
     ButtonPrimary("meow")
+}
+@Composable
+@Preview
+fun PreviewButtonPrimaryLight() {
+    ButtonPrimaryLight("meow",onClick = {})
+}
+@Composable
+@Preview
+fun PreviewButtonPrimaryLightSmall() {
+    ButtonPrimaryLightSmall("small meow",onClick = {})
 }
 
 @Composable

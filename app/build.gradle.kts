@@ -43,6 +43,7 @@ dependencies {
     implementation(project(":feature:client"))
     implementation(project(":feature:profile"))
     implementation(project(":feature:trainer"))
+    implementation(project(":feature:notification"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

@@ -9,6 +9,8 @@ import androidx.navigation.compose.NavHost
 import az.kodcraft.client.navigation.clientGraph
 import az.kodcraft.dashboard.navigation.dashboardGraph
 import az.kodcraft.dashboard.navigation.navigateToDashboard
+import az.kodcraft.notification.navigation.navigateToNotificationsList
+import az.kodcraft.notification.navigation.notificationGraph
 import az.kodcraft.onboarding.navigation.OnBoardingRouteConstants
 import az.kodcraft.onboarding.navigation.onBoardingGraph
 import az.kodcraft.trainer.navigation.navigateToTrainerDetails
@@ -42,7 +44,7 @@ fun MeshqNavHost(
             padding = padding,
             navigateToWorkoutDetails = navController::navigateToWorkoutDetails,
             navigateToCreateWorkout = navController::navigateToCreateWorkout,
-            navigateToNotifications = {},// navController::navigateToNotifications,
+            navigateToNotifications =  navController::navigateToNotificationsList,
             switchMode = switchMode,
             onMenuClick = onMenuClick
         )
@@ -58,6 +60,9 @@ fun MeshqNavHost(
         trainerGraph(
             navigateBack = { navController.popBackStack() },
             navigateToUserProfile = navController::navigateToTrainerDetails
+        )
+        notificationGraph(
+            navigateBack = { navController.popBackStack() }
         )
     }
 }
