@@ -1,9 +1,14 @@
 package az.kodcraft.meshq
 
+import android.Manifest
+import android.app.AlertDialog
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,10 +31,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,6 +39,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -59,6 +62,8 @@ import az.kodcraft.meshq.navigation.isTopLevelDestinationInHierarchy
 import az.kodcraft.meshq.navigation.topLevelNavOptions
 import az.kodcraft.trainer.navigation.navigateToTrainersList
 import az.kodcraft.workout.navigation.navigateToWorkoutsLibrary
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -67,6 +72,24 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                showPermissionRationale()
+            }
+        }
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w("FIREBASE_NOTIFICATIONS", "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+
+            Log.d("FIREBASE_NOTIFICATIONS", token)
+        })
+
 
         setContent {
 
@@ -132,6 +155,33 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun showPermissionRationale() {
+        AlertDialog.Builder(this)
+            .setTitle("Notification Permission Needed")
+            .setMessage("This app needs the notification permission to send you important updates.")
+            .setPositiveButton("OK") { dialog, _ ->
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
+    }
+
+    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+        if (isGranted) {
+            // Permission is granted
+        } else {
+            // Permission is denied
+        }
+    }
+
+    companion object {
+        private const val REQUEST_CODE_NOTIFICATION = 1001
     }
 }
 
