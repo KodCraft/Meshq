@@ -10,6 +10,8 @@ class TrainerService(
     private val usersRef: CollectionReference,
     private val userStatsRef: CollectionReference,
     private val subscriptionRequestsRef: CollectionReference,
+    private val notificationsRef: CollectionReference
+
 ) {
     suspend fun getTrainers( searchText: String): List<TrainerDto> {
 
@@ -83,5 +85,18 @@ class TrainerService(
         for (document in querySnapshot.documents) {
             subscriptionRequestsRef.document(document.id).delete().await()
         }
+
+
+        // Check and delete corresponding notification
+        val notificationSnapshot = notificationsRef
+            .whereEqualTo("trainer_id", trainerId)
+            .whereEqualTo("subscription_request_id", querySnapshot.documents.firstOrNull()?.id)
+            .get()
+            .await()
+
+        for (document in notificationSnapshot.documents) {
+            notificationsRef.document(document.id).delete().await()
+        }
+
     }
 }
