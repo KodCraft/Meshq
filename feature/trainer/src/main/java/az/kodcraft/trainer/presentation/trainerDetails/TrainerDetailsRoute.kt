@@ -33,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -95,12 +94,12 @@ fun TrainerDetailsScreen(
     Column(
         Modifier.fillMaxSize()
     ) {
-        if(uiState.isLoading.not())
-        ProfileHeader(
-            uiState.trainer,
-            isButtonLoading = uiState.isSendRequestLoading,
-            onSendRequest = { onIntent.invoke(TrainerDetailsIntent.SendSubscriptionRequest) },
-            onUnSendRequest = { onIntent.invoke(TrainerDetailsIntent.UnSendSubscriptionRequest) })
+        if (uiState.isLoading.not())
+            ProfileHeader(
+                uiState.trainer,
+                isButtonLoading = uiState.isSendRequestLoading,
+                onSendRequest = { onIntent.invoke(TrainerDetailsIntent.SendSubscriptionRequest) },
+                onUnSendRequest = { onIntent.invoke(TrainerDetailsIntent.UnSendSubscriptionRequest) })
     }
 }
 
@@ -169,17 +168,16 @@ fun ProfileHeader(
         )
         Spacer(modifier = Modifier.height(21.dp))
         ButtonPrimaryLightWithLoader(
-            text = if (trainer.isRequestSent) "Request sent" else "Send request",
-            onClick = {
-                if (trainer.isRequestSent) {
-                    onUnSendRequest()
-                } else {
-                    onSendRequest()
-                }
+            text = trainer.subState.btnTitle,
+            onClick = { when(trainer.subState){
+                TrainerDm.SubStatus.REQUEST_SENT -> onUnSendRequest()
+                TrainerDm.SubStatus.SUBSCRIBED -> onUnSendRequest()
+                TrainerDm.SubStatus.NONE -> onSendRequest()
+            }
             },
             isLoading = isButtonLoading,
-            color =  if(trainer.isRequestSent) Color.LightGray.copy(0.7f) else PrimaryTurq.copy(0.7f) ,
-            iconResId = if(trainer.isRequestSent) az.kodcraft.core.R.drawable.ic_done else az.kodcraft.core.R.drawable.ic_add_circle
+            color = trainer.subState.color ,
+            iconResId = trainer.subState.icon
         )
     }
 }

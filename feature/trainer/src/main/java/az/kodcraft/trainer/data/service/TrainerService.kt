@@ -10,7 +10,8 @@ class TrainerService(
     private val usersRef: CollectionReference,
     private val userStatsRef: CollectionReference,
     private val subscriptionRequestsRef: CollectionReference,
-    private val notificationsRef: CollectionReference
+    private val notificationsRef: CollectionReference,
+    private val trainerSubsRef: CollectionReference
 
 ) {
     suspend fun getTrainers( searchText: String): List<TrainerDto> {
@@ -50,7 +51,16 @@ class TrainerService(
             .get()
             .await()
 
+
+
+        val trainerSubsSnapshot = trainerSubsRef
+            .whereEqualTo("trainer_id", id)
+            .whereEqualTo("trainee_id", UserManager.getUserId())
+            .get()
+            .await()
+
         val isRequestSent = !subscriptionRequestSnapshot.isEmpty
+        val isSubscribed = !trainerSubsSnapshot.isEmpty
 
 
         return trainerDto?.let {
@@ -60,7 +70,8 @@ class TrainerService(
                 bio = it.bio,
                 imageUrl = it.imageUrl,
                 stats = trainerStatsDto,
-                isRequestSent = isRequestSent
+                isRequestSent = isRequestSent,
+                isSubscribed = isSubscribed
             )
         }
     }

@@ -1,6 +1,8 @@
 package az.kodcraft.trainer.domain.model
 
 import android.os.Parcelable
+import androidx.compose.ui.graphics.Color
+import az.kodcraft.core.presentation.theme.PrimaryTurq
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -10,10 +12,10 @@ data class TrainerDm(
     val bio: String,
     val imageUrl: String,
     val stats: TrainerStatsDm,
-    val isRequestSent: Boolean = false,
+    val subState: SubStatus = SubStatus.NONE
 ) : Parcelable {
     companion object {
-        val EMPTY = TrainerDm("","", "", "", TrainerStatsDm.EMPTY)
+        val EMPTY = TrainerDm("", "", "", "", TrainerStatsDm.EMPTY)
         val MOCK = TrainerDm(
             id = "123",
             "firuza.alee",
@@ -34,4 +36,11 @@ data class TrainerDm(
             val MOCK = TrainerStatsDm(4.8, 3.5, 5)
         }
     }
+
+    enum class SubStatus(val btnTitle: String, val color: Color, val icon:Int) {
+        REQUEST_SENT("Unsend request", Color.LightGray.copy(0.7f), az.kodcraft.core.R.drawable.ic_done),
+        SUBSCRIBED("Unsubscribe", Color.LightGray.copy(0.7f), az.kodcraft.core.R.drawable.ic_done),
+        NONE("Send request", PrimaryTurq.copy(0.7f), az.kodcraft.core.R.drawable.ic_add_circle)
+    }
 }
+
