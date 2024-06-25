@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class ClientListUiState(
     val clientList: List<ClientListItemDm> = emptyList(),
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
     val isError: Boolean = false,
     val searchValue: String = "",
 ) : Parcelable {
