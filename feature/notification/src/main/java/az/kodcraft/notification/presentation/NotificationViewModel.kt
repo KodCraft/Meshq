@@ -7,6 +7,7 @@ import az.kodcraft.core.domain.bases.model.doOnLoading
 import az.kodcraft.core.domain.bases.model.doOnSuccess
 import az.kodcraft.core.presentation.bases.BaseViewModel
 import az.kodcraft.notification.domain.usecase.AcceptSubscriptionRequestUseCase
+import az.kodcraft.notification.domain.usecase.DeleteNotificationUseCase
 import az.kodcraft.notification.domain.usecase.GetNotificationsListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -23,7 +24,8 @@ class NotificationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     initialState: NotificationUiState,
     private val getNotificationsUseCase: GetNotificationsListUseCase,
-    private val acceptSubscriptionRequestUseCase: AcceptSubscriptionRequestUseCase
+    private val acceptSubscriptionRequestUseCase: AcceptSubscriptionRequestUseCase,
+    private val deleteNotificationUseCase: DeleteNotificationUseCase
 ) : BaseViewModel<
         NotificationUiState,
         NotificationUiState.PartialState,
@@ -42,6 +44,7 @@ class NotificationViewModel @Inject constructor(
         when (intent) {
             is NotificationIntent.GetNotifications -> fetchNotifications()
             is NotificationIntent.AcceptSubscription -> acceptSubscription(intent.notificationId)
+            is NotificationIntent.DeleteNotification -> deleteNotification(intent.notificationId)
         }
 
     private fun fetchNotifications(): Flow<NotificationUiState.PartialState> =
@@ -60,12 +63,24 @@ class NotificationViewModel @Inject constructor(
             acceptSubscriptionRequestUseCase.execute(
                 Pair(
                     notificationId,
-                    uiState.value.notificationList.first{ it.id == notificationId }.subscriptionId
+                    uiState.value.notificationList.first { it.id == notificationId }.subscriptionId
                 )
             ).doOnSuccess {
                 emit(NotificationUiState.PartialState.AcceptSubscription(notificationId))
             }.doOnLoading {
                 emit(NotificationUiState.PartialState.AcceptSubscriptionLoading)
+            }.doOnFailure {
+                emit(NotificationUiState.PartialState.Error(it))
+            }.collect()
+        }
+
+    private fun deleteNotification(notificationId: String): Flow<NotificationUiState.PartialState> =
+        flow {
+            emit(NotificationUiState.PartialState.DeleteNotification(notificationId))
+            deleteNotificationUseCase.execute(
+                notificationId
+            ).doOnSuccess {
+            }.doOnLoading {
             }.doOnFailure {
                 emit(NotificationUiState.PartialState.Error(it))
             }.collect()
@@ -80,6 +95,7 @@ class NotificationViewModel @Inject constructor(
             isError = false,
             errorMessage = ""
         )
+
         NotificationUiState.PartialState.AcceptSubscriptionLoading -> previousState.copy(
             isAcceptSubscriptionLoading = true,
             isError = false,
@@ -88,6 +104,12 @@ class NotificationViewModel @Inject constructor(
 
         is NotificationUiState.PartialState.AcceptSubscription -> previousState.copy(
             isAcceptSubscriptionLoading = false,
+            isError = false,
+            notificationList = previousState.notificationList.filterNot { it.id == partialState.notificationId },
+            errorMessage = ""
+        )
+
+        is NotificationUiState.PartialState.DeleteNotification -> previousState.copy(
             isError = false,
             notificationList = previousState.notificationList.filterNot { it.id == partialState.notificationId },
             errorMessage = ""

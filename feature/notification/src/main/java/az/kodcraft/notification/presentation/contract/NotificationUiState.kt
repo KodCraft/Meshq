@@ -17,6 +17,7 @@ data class NotificationUiState(
         data object Loading : PartialState()
         data object AcceptSubscriptionLoading : PartialState()
         data class AcceptSubscription(val notificationId:String) : PartialState()
+        data class DeleteNotification(val notificationId:String) : PartialState()
         data class Notifications(val value: List<NotificationListItemDm>) : PartialState()
     }
 }

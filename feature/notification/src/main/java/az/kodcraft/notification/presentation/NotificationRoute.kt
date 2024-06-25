@@ -1,6 +1,7 @@
 package az.kodcraft.notification.presentation
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -34,10 +36,12 @@ import az.kodcraft.core.R
 import az.kodcraft.core.presentation.bases.BasePreviewContainer
 import az.kodcraft.core.presentation.composable.appBar.TopAppBar
 import az.kodcraft.core.presentation.composable.button.ButtonPrimaryLightSmall
+import az.kodcraft.core.presentation.theme.PrimaryBlue
 import az.kodcraft.core.presentation.theme.PrimaryTurq
 import az.kodcraft.core.presentation.theme.bodyLight
 import az.kodcraft.core.presentation.theme.largeHeadLine
 import az.kodcraft.notification.domain.model.NotificationListItemDm
+import az.kodcraft.notification.presentation.composable.SwipeableNotificationItem
 import az.kodcraft.notification.presentation.contract.NotificationIntent
 import az.kodcraft.notification.presentation.contract.NotificationUiState
 
@@ -64,6 +68,7 @@ fun NotificationRoute(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationScreen(
     uiState: NotificationUiState,
@@ -105,20 +110,28 @@ fun NotificationScreen(
                         .padding(24.dp)
                 ) {
                     items(uiState.notificationList) { notification ->
-                        if (notification.isSubscriptionRequest)
-                            SubscriptionRequestNotificationItem(
-                                notification = notification,
-                                isLoading = uiState.isAcceptSubscriptionLoading,
-                                onAcceptClick = {
-                                    onIntent(
-                                        NotificationIntent.AcceptSubscription(notification.id)
-                                    )
-                                })
-                        else
-                            NotificationItem(notification)
+                        SwipeableNotificationItem(content = {
+                            if (notification.isSubscriptionRequest)
+                                SubscriptionRequestNotificationItem(
+                                    notification = notification,
+                                    isLoading = uiState.isAcceptSubscriptionLoading,
+                                    onAcceptClick = {
+                                        onIntent(
+                                            NotificationIntent.AcceptSubscription(notification.id)
+                                        )
+                                    })
+                            else
+                                NotificationItem(notification)
 
-                        HorizontalDivider(Modifier.fillMaxWidth(), thickness = 0.5.dp)
-                        Spacer(modifier = Modifier.height(16.dp))
+                            HorizontalDivider(Modifier.fillMaxWidth(), thickness = 0.5.dp)
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }, onSwipeDelete = {
+                            onIntent(
+                                NotificationIntent.DeleteNotification(notification.id)
+                            )
+                        },
+                            enableDismissFromStartToEnd = false
+                        )
                     }
                 }
             }
@@ -143,6 +156,7 @@ fun SubscriptionRequestNotificationItem(
         Box(modifier = Modifier.height(0.5.dp))
     Row(
         modifier = Modifier
+            .background(PrimaryBlue)
             .fillMaxWidth()
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -156,6 +170,7 @@ fun SubscriptionRequestNotificationItem(
         ButtonPrimaryLightSmall(text = "Accept", modifier = Modifier.padding(start = 16.dp)) {
             onAcceptClick()
         }
+        Spacer(modifier = Modifier.width(6.dp))
     }
 }
 
@@ -163,6 +178,7 @@ fun SubscriptionRequestNotificationItem(
 fun NotificationItem(notification: NotificationListItemDm) {
     Row(
         modifier = Modifier
+            .background(PrimaryBlue)
             .fillMaxWidth()
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -172,6 +188,7 @@ fun NotificationItem(notification: NotificationListItemDm) {
             style = MaterialTheme.typography.bodyLight,
             modifier = Modifier.padding(start = 16.dp)
         )
+        Spacer(modifier = Modifier.width(6.dp))
     }
 }
 

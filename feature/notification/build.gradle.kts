@@ -28,6 +28,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.androidx.lifecycle.viewModelCompose)
+    implementation (libs.androidx.foundation)
 
     // Import the Firebase
     implementation(platform(libs.firebase.bom))
