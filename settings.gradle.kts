@@ -33,3 +33,5 @@ include(":feature:onBoarding")
 include(":feature:profile")
 include(":feature:client")
 include(":feature:trainer")
+
+include(":feature:notification")

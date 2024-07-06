@@ -13,29 +13,56 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Qualifier
 
 
+const val trainer_subscriptions_collection = "trainer_subscriptions_collection"
 const val USERS_COLLECTION = "users_collection"
 const val USER_STATS_COLLECTION = "users_stats_collection"
 const val subscription_requests_collection = "subscription_requests_collection"
+const val notifications_collection = "notifications_collection"
+
 @Module
 @InstallIn(SingletonComponent::class)
 object ClientDataModule {
 
+
     @UsersCollection
     @Provides
     fun provideUserDataRef() = Firebase.firestore.collection(USERS_COLLECTION)
+
     @UserStatsCollection
     @Provides
     fun provideUserStatsDataRef() = Firebase.firestore.collection(USER_STATS_COLLECTION)
+
     @SubscriptionRequestsCollection
     @Provides
-    fun provideSubscriptionRequestsDataRef() = Firebase.firestore.collection(subscription_requests_collection)
+    fun provideSubscriptionRequestsDataRef() =
+        Firebase.firestore.collection(subscription_requests_collection)
+
+    @NotificationsCollection
+    @Provides
+    fun provideNotificationRequestsDataRef() =
+        Firebase.firestore.collection(notifications_collection)
+
+
+    @TrainerSubsCollection
+    @Provides
+    fun provideTrainerSubsDataRef() =
+        Firebase.firestore.collection(trainer_subscriptions_collection)
+
 
     @Provides
     fun provideTrainerService(
         @UsersCollection usersDataRef: CollectionReference,
+        @TrainerSubsCollection trainerSubscriptionsRef: CollectionReference,
         @UserStatsCollection userStatsRef: CollectionReference,
         @SubscriptionRequestsCollection subscriptionRequestsRef: CollectionReference,
-    ): TrainerService = TrainerService(usersDataRef,  userStatsRef, subscriptionRequestsRef )
+        @NotificationsCollection notificationsRequestsRef: CollectionReference,
+    ): TrainerService = TrainerService(
+        usersRef = usersDataRef,
+        userStatsRef = userStatsRef,
+        subscriptionRequestsRef = subscriptionRequestsRef,
+        notificationsRef = notificationsRequestsRef,
+        trainerSubsRef = trainerSubscriptionsRef
+    )
 
     @Provides
     fun provideTrainerRepository(
@@ -47,10 +74,21 @@ object ClientDataModule {
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class UsersCollection
+
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class UserStatsCollection
+
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class SubscriptionRequestsCollection
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class NotificationsCollection
+
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class TrainerSubsCollection
 

@@ -8,6 +8,9 @@ tasks.register("createCleanArchitectureFolders") {
     val baseDir = file("$featureDir/src/main/java/${packageName.replace('.', '/')}")
 
     doLast {
+
+        println("Creating the module...")
+        println("Name: $moduleName ")
         // Ensure the base directory is created
         baseDir.mkdirs()
 
@@ -29,6 +32,7 @@ tasks.register("createCleanArchitectureFolders") {
         // Create each folder
         folders.forEach { folder ->
             file("$baseDir/$folder").mkdirs()
+            println(" -> creating folder : $folder ")
         }
 
         // Example template for a ViewModel
@@ -103,6 +107,7 @@ tasks.register("createCleanArchitectureFolders") {
         file("$baseDir/presentation/${moduleName.capitalize()}ViewModel.kt").apply {
             parentFile.mkdirs()
             writeText(viewModelTemplate)
+            println(" -> creating class : /presentation/${moduleName.capitalize()}ViewModel.kt ")
         }
 
         // Create the DI module file
@@ -128,6 +133,7 @@ tasks.register("createCleanArchitectureFolders") {
         file("$baseDir/presentation/di/${moduleName.capitalize()}PresentationModule.kt").apply {
             parentFile.mkdirs()
             writeText(diModuleTemplate)
+            println(" -> creating class : /presentation/di/${moduleName.capitalize()}PresentationModule.kt")
         }
 
         // Create the Route class file
@@ -159,7 +165,6 @@ tasks.register("createCleanArchitectureFolders") {
             fun ${moduleName.capitalize()}Route(
                 viewModel: ${moduleName.capitalize()}ViewModel = hiltViewModel(),
                 navigateBack: () -> Unit,
-                navigateToUserProfile: (id: String) -> Unit,
             ) {
                 val uiState by viewModel.uiState.collectAsState()
                 val context = LocalContext.current
@@ -196,6 +201,54 @@ tasks.register("createCleanArchitectureFolders") {
         file("$baseDir/presentation/${moduleName.capitalize()}Route.kt").apply {
             parentFile.mkdirs()
             writeText(routeTemplate)
+            println(" -> creating class : /presentation/${moduleName.capitalize()}Route.kt")
+        }
+
+        // Create the Navigation class file
+        val navigationGraphTemplate = """
+            package $packageName.navigation
+
+            import androidx.navigation.NavController
+            import androidx.navigation.NavOptions
+
+            object ${moduleName.capitalize()}RouteConstants {
+                const val ${moduleName.toUpperCase()}_SCREEN = "${moduleName.toUpperCase()}_SCREEN"
+            }
+
+            fun NavController.navigateTo${moduleName.capitalize()}List(navOptions: NavOptions? = null) {
+                navigate(${moduleName.capitalize()}RouteConstants.${moduleName.toUpperCase()}_SCREEN, navOptions = navOptions)
+            }
+        """.trimIndent()
+
+        file("$baseDir/navigation/${moduleName.capitalize()}Graph.kt").apply {
+            parentFile.mkdirs()
+            writeText(navigationGraphTemplate)
+            println(" -> creating class : /navigation/${moduleName.capitalize()}Graph.kt")
+        }
+
+        // Create the NavigationGraph class file
+        val navigationTemplate = """
+            package $packageName.navigation
+
+            import androidx.navigation.NavGraphBuilder
+            import androidx.navigation.compose.composable
+            import az.kodcraft.${moduleName}.presentation.${moduleName.capitalize()}Route
+
+            fun NavGraphBuilder.${moduleName}Graph(
+                navigateBack: () -> Unit
+            ) {
+                composable(route = ${moduleName.capitalize()}RouteConstants.${moduleName.toUpperCase()}_SCREEN) {
+                  ${moduleName.capitalize()}Route(
+                        navigateBack = navigateBack
+                    )
+                }
+            }
+        """.trimIndent()
+
+        file("$baseDir/navigation/${moduleName.capitalize()}GraphNavigation.kt").apply {
+            parentFile.mkdirs()
+            writeText(navigationTemplate)
+            println(" -> creating class : /navigation/${moduleName.capitalize()}GraphNavigation.kt")
         }
 
 
@@ -249,6 +302,7 @@ tasks.register("createCleanArchitectureFolders") {
         file("$featureDir/build.gradle.kts").apply {
             parentFile.mkdirs()
             writeText(buildGradleContent)
+            println(" -> creating class : $featureDir/build.gradle.kts")
         }
 
         // Create the AndroidManifest.xml file
@@ -262,6 +316,7 @@ tasks.register("createCleanArchitectureFolders") {
         file("$featureDir/src/main/AndroidManifest.xml").apply {
             parentFile.mkdirs()
             writeText(androidManifestContent)
+            println(" -> creating class : $featureDir/src/main/AndroidManifest.xml")
         }
 
         // Create the proguard-rules.pro file
@@ -276,6 +331,7 @@ tasks.register("createCleanArchitectureFolders") {
         file("$featureDir/proguard-rules.pro").apply {
             parentFile.mkdirs()
             writeText(proguardRulesContent)
+            println(" -> creating class : $featureDir/proguard-rules.pro")
         }
 
         // Create the .gitignore file
@@ -286,12 +342,14 @@ tasks.register("createCleanArchitectureFolders") {
         file("$featureDir/.gitignore").apply {
             parentFile.mkdirs()
             writeText(gitignoreContent)
+            println(" -> creating class : $featureDir/.gitignore")
         }
 
         // Append to settings.gradle.kts file
         val settingsGradleFile = file("${project.projectDir}/settings.gradle.kts")
         if (settingsGradleFile.exists()) {
             settingsGradleFile.appendText("\ninclude(\":feature:$moduleName\")\n")
+            println("*Append new module to settings.gradle file")
         }
     }
 }
@@ -328,6 +386,7 @@ tasks.register("populateContractFolder") {
         file("$baseDir/presentation/contract/${moduleName.capitalize()}UiState.kt").apply {
             parentFile.mkdirs()
             writeText(uiStateTemplate)
+            println(" -> creating class : /presentation/contract/${moduleName.capitalize()}UiState.kt")
         }
 
         // Create Event class
@@ -342,6 +401,7 @@ tasks.register("populateContractFolder") {
         file("$baseDir/presentation/contract/${moduleName.capitalize()}Event.kt").apply {
             parentFile.mkdirs()
             writeText(eventTemplate)
+            println(" -> creating class : /presentation/contract/${moduleName.capitalize()}Event.kt")
         }
 
         // Create Intent class
@@ -356,13 +416,51 @@ tasks.register("populateContractFolder") {
         file("$baseDir/presentation/contract/${moduleName.capitalize()}Intent.kt").apply {
             parentFile.mkdirs()
             writeText(intentTemplate)
+            println(" -> creating class : /presentation/contract/${moduleName.capitalize()}Intent.kt")
+        }
+    }
+}
+
+// Subtask to populate domain module
+tasks.register("populateDomainModule") {
+    val moduleName = if (project.hasProperty("moduleName")) project.property("moduleName") as String else "defaultModule"
+    val packageName = if (project.hasProperty("moduleName")) "az.kodcraft.${project.property("moduleName")}" else "az.kodcraft.default"
+    val baseDir = file("${project.projectDir}/feature/$moduleName/src/main/java/${packageName.replace('.', '/')}")
+
+    doLast {
+        println(" ----- DOMAIN MODULE ----- ")
+
+        // Create UiState class
+        val domainModelTemplate = """
+            package $packageName.domain.model
+
+            import android.os.Parcelable
+            import kotlinx.parcelize.Parcelize
+
+            @Parcelize
+            data class ${moduleName.capitalize()}Dm(val id: String, val title: String) : Parcelable {
+                companion object {
+                  val EMPTY = ${moduleName.capitalize()}Dm(
+                        id = "", title = ""
+                    )
+                    val MOCK = ${moduleName.capitalize()}Dm(
+                      id = "123", title = "mock title"
+                    )
+                }
+            }
+        """.trimIndent()
+
+        file("$baseDir/domain/model/${moduleName.capitalize()}Dm").apply {
+            parentFile.mkdirs()
+            writeText(domainModelTemplate)
+            println(" -> creating class : /domain/model/${moduleName.capitalize()}Dm")
         }
     }
 }
 
 // Ensure populateContractFolder runs after createCleanArchitectureFolders
 tasks.named("createCleanArchitectureFolders").configure {
-    finalizedBy("populateContractFolder", "syncProject")
+    finalizedBy("populateContractFolder", "populateDomainModule", "syncProject")
 }
 
 // Task to sync the project

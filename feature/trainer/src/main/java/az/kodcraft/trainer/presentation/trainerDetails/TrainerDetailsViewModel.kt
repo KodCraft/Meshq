@@ -5,6 +5,7 @@ import az.kodcraft.core.domain.bases.model.doOnFailure
 import az.kodcraft.core.domain.bases.model.doOnLoading
 import az.kodcraft.core.domain.bases.model.doOnSuccess
 import az.kodcraft.core.presentation.bases.BaseViewModel
+import az.kodcraft.trainer.domain.model.TrainerDm
 import az.kodcraft.trainer.domain.usecase.GetTrainerDetailsUseCase
 import az.kodcraft.trainer.domain.usecase.SendSubscriptionRequestUseCase
 import az.kodcraft.trainer.domain.usecase.UnsendSubscriptionRequestUseCase
@@ -14,7 +15,6 @@ import az.kodcraft.trainer.presentation.trainerDetails.contract.TrainerDetailsUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
@@ -101,12 +101,12 @@ class TrainerDetailsViewModel @Inject constructor(
         TrainerDetailsUiState.PartialState.SendRequestComplete -> previousState.copy(
             isLoading = false,
             isSendRequestLoading = false,
-            trainer = previousState.trainer.copy(isRequestSent = true)
+            trainer = previousState.trainer.copy(subState = TrainerDm.SubStatus.REQUEST_SENT)
         )
         TrainerDetailsUiState.PartialState.UnSendRequestComplete -> previousState.copy(
             isLoading = false,
             isSendRequestLoading = false,
-            trainer = previousState.trainer.copy(isRequestSent = false)
+            trainer = previousState.trainer.copy(subState = TrainerDm.SubStatus.NONE)
         )
     }
 }

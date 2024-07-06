@@ -10,6 +10,9 @@ class TrainerService(
     private val usersRef: CollectionReference,
     private val userStatsRef: CollectionReference,
     private val subscriptionRequestsRef: CollectionReference,
+    private val notificationsRef: CollectionReference,
+    private val trainerSubsRef: CollectionReference
+
 ) {
     suspend fun getTrainers( searchText: String): List<TrainerDto> {
 
@@ -48,7 +51,16 @@ class TrainerService(
             .get()
             .await()
 
+
+
+        val trainerSubsSnapshot = trainerSubsRef
+            .whereEqualTo("trainer_id", id)
+            .whereEqualTo("trainee_id", UserManager.getUserId())
+            .get()
+            .await()
+
         val isRequestSent = !subscriptionRequestSnapshot.isEmpty
+        val isSubscribed = !trainerSubsSnapshot.isEmpty
 
 
         return trainerDto?.let {
@@ -58,7 +70,8 @@ class TrainerService(
                 bio = it.bio,
                 imageUrl = it.imageUrl,
                 stats = trainerStatsDto,
-                isRequestSent = isRequestSent
+                isRequestSent = isRequestSent,
+                isSubscribed = isSubscribed
             )
         }
     }
@@ -83,5 +96,18 @@ class TrainerService(
         for (document in querySnapshot.documents) {
             subscriptionRequestsRef.document(document.id).delete().await()
         }
+
+
+        // Check and delete corresponding notification
+        val notificationSnapshot = notificationsRef
+            .whereEqualTo("trainer_id", trainerId)
+            .whereEqualTo("subscription_request_id", querySnapshot.documents.firstOrNull()?.id)
+            .get()
+            .await()
+
+        for (document in notificationSnapshot.documents) {
+            notificationsRef.document(document.id).delete().await()
+        }
+
     }
 }

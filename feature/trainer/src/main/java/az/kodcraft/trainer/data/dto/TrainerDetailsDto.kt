@@ -10,14 +10,15 @@ data class TrainerDetailsDto(
     val imageUrl: String = "",
     val stats: TrainerStatsDto? = null,
     val isRequestSent: Boolean = false,
-){
+    val isSubscribed: Boolean = false,
+) {
 
     data class TrainerStatsDto(
         val averageRating: Double,
         val experienceYears: Double,
         val studentsCount: Int
-    )  {
-        fun toDm()= TrainerStatsDm(
+    ) {
+        fun toDm() = TrainerStatsDm(
             averageRating = averageRating,
             experienceYears = experienceYears,
             studentsCount = studentsCount
@@ -31,7 +32,8 @@ data class TrainerDetailsDto(
         username = username,
         bio = bio,
         imageUrl = imageUrl,
-        stats = stats?.toDm()?: TrainerStatsDm.EMPTY,
-        isRequestSent = isRequestSent
+        stats = stats?.toDm() ?: TrainerStatsDm.EMPTY,
+        subState = if (isSubscribed) TrainerDm.SubStatus.SUBSCRIBED else if (isRequestSent)
+            TrainerDm.SubStatus.REQUEST_SENT else TrainerDm.SubStatus.NONE,
     )
 }

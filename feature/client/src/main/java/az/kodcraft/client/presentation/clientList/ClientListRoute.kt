@@ -1,5 +1,6 @@
 package az.kodcraft.client.presentation.clientList
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -31,7 +33,9 @@ import az.kodcraft.client.presentation.clientList.contract.ClientListUiState
 import az.kodcraft.core.R
 import az.kodcraft.core.presentation.bases.BasePreviewContainer
 import az.kodcraft.core.presentation.composable.appBar.TopAppBar
+import az.kodcraft.core.presentation.theme.PrimaryTurq
 import az.kodcraft.core.presentation.theme.bodyLargeLight
+import az.kodcraft.core.presentation.theme.bodyLight
 import az.kodcraft.core.presentation.theme.largeHeadLine
 import az.kodcraft.core.utils.collectWithLifecycle
 
@@ -78,31 +82,43 @@ fun ClientListScreen(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            LazyColumn(
-                Modifier
-                    .fillMaxSize()
-                    .padding(24.dp)
-            ) {
-                items(uiState.clientList) { client ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_profile),
-                            contentDescription = "",
-                            tint = Color.White
-                        )
-                        Text(
-                            text = client.name,
-                            style = bodyLargeLight,
-                            modifier = Modifier.padding(start = 16.dp)
-                        )
+            if (uiState.isLoading)
+                Box(contentAlignment = Alignment.Center,modifier = Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(color = PrimaryTurq)
+                }
+            else {
+                if (uiState.clientList.isEmpty())
+                    Text(
+                        text = "You have no clients",
+                        style = MaterialTheme.typography.bodyLight,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                LazyColumn(
+                    Modifier
+                        .fillMaxSize()
+                        .padding(24.dp)
+                ) {
+                    items(uiState.clientList) { client ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_profile),
+                                contentDescription = "",
+                                tint = Color.White
+                            )
+                            Text(
+                                text = client.name,
+                                style = bodyLargeLight,
+                                modifier = Modifier.padding(start = 16.dp)
+                            )
+                        }
+                        HorizontalDivider(Modifier.fillMaxWidth())
+                        Spacer(modifier = Modifier.height(16.dp))
                     }
-                    HorizontalDivider(Modifier.fillMaxWidth())
-                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }
