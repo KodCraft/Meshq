@@ -15,6 +15,8 @@ import javax.inject.Qualifier
 
 const val USERS_COLLECTION = "users_collection"
 const val trainer_subscriptions_collection = "trainer_subscriptions_collection"
+const val workouts_collection = "workouts_collection"
+const val assigned_workouts_collection = "assigned_workouts_collection"
 @Module
 @InstallIn(SingletonComponent::class)
 object ClientDataModule {
@@ -22,15 +24,26 @@ object ClientDataModule {
     @ClientsCollection
     @Provides
     fun provideClientDataRef() = Firebase.firestore.collection(trainer_subscriptions_collection)
+
     @UsersCollection
     @Provides
     fun provideUserDataRef() = Firebase.firestore.collection(USERS_COLLECTION)
+
+    @WorkoutsCollection
+    @Provides
+    fun provideWorkoutsDataRef() = Firebase.firestore.collection(workouts_collection)
+
+    @AssignedWorkoutsCollection
+    @Provides
+    fun provideAssignedWorkoutsDataRef() = Firebase.firestore.collection(assigned_workouts_collection)
 
     @Provides
     fun provideClientService(
         @UsersCollection usersDataRef: CollectionReference,
         @ClientsCollection clientsDataRef: CollectionReference,
-    ): ClientService = ClientService(usersDataRef, clientsDataRef)
+        @AssignedWorkoutsCollection assignedWorkoutsRef: CollectionReference,
+        @WorkoutsCollection workoutsRef: CollectionReference,
+    ): ClientService = ClientService(usersRef = usersDataRef, clientsRef = clientsDataRef, assignedWorkoutsRef = assignedWorkoutsRef, workoutsRef = workoutsRef )
 
     @Provides
     fun provideClientRepository(
@@ -39,6 +52,12 @@ object ClientDataModule {
 
 }
 
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class WorkoutsCollection
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class AssignedWorkoutsCollection
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class UsersCollection

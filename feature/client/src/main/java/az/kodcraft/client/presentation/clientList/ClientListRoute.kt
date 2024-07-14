@@ -38,11 +38,13 @@ import az.kodcraft.core.presentation.theme.bodyLargeLight
 import az.kodcraft.core.presentation.theme.bodyLight
 import az.kodcraft.core.presentation.theme.largeHeadLine
 import az.kodcraft.core.utils.collectWithLifecycle
+import az.kodcraft.core.utils.noRippleClickable
 
 @Composable
 fun ClientListRoute(
     viewModel: ClientListViewModel = hiltViewModel(),
-    navigateBack: () -> Unit
+    navigateBack: () -> Unit,
+    navigateToClient: (String) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     viewModel.event.collectWithLifecycle {
@@ -53,6 +55,7 @@ fun ClientListRoute(
     ClientListScreen(
         uiState = uiState,
         navigateBack = navigateBack,
+        onItemClicked = navigateToClient,
         onIntent = viewModel::acceptIntent,
     )
 }
@@ -62,6 +65,7 @@ fun ClientListRoute(
 fun ClientListScreen(
     uiState: ClientListUiState,
     navigateBack: () -> Unit = {},
+    onItemClicked: (String) -> Unit = {},
     onIntent: (ClientListIntent) -> Unit = {}
 ) {
     //SearchBar
@@ -100,7 +104,7 @@ fun ClientListScreen(
                 ) {
                     items(uiState.clientList) { client ->
                         Row(
-                            modifier = Modifier
+                            modifier = Modifier.noRippleClickable { onItemClicked(client.id) }
                                 .fillMaxWidth()
                                 .padding(vertical = 8.dp),
                             verticalAlignment = Alignment.CenterVertically
@@ -114,6 +118,13 @@ fun ClientListScreen(
                                 text = client.name,
                                 style = bodyLargeLight,
                                 modifier = Modifier.padding(start = 16.dp)
+                            )
+                            Spacer(Modifier.weight(1f))
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_options),
+                                contentDescription = "",
+                                tint = Color.White,
+                                modifier = Modifier.noRippleClickable {  }
                             )
                         }
                         HorizontalDivider(Modifier.fillMaxWidth())
@@ -154,7 +165,8 @@ fun ClientListPreview() = BasePreviewContainer {
                 ClientListItemDm.MOCK,
                 ClientListItemDm.MOCK.copy(name = "Mahammad"),
                 ClientListItemDm.MOCK.copy(name = "Ilhama"),
-            )
+            ),
+            isLoading = false
         )
     )
 }

@@ -38,13 +38,13 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import az.kodcraft.core.R
 import az.kodcraft.core.presentation.bases.BasePreviewContainer
+import az.kodcraft.core.presentation.composable.image.ShimmerEffect
 import az.kodcraft.core.presentation.theme.AccentBlue
 import az.kodcraft.core.presentation.theme.body
 import az.kodcraft.core.presentation.theme.footNoteLight
 import az.kodcraft.core.utils.collectWithLifecycle
 import az.kodcraft.core.utils.noRippleClickable
 import az.kodcraft.trainer.domain.model.TrainerListItemDm
-import az.kodcraft.trainer.presentation.trainerDetails.ShimmerEffect
 import az.kodcraft.trainer.presentation.trainerList.contract.TrainerListEvent
 import az.kodcraft.trainer.presentation.trainerList.contract.TrainerListIntent
 import az.kodcraft.trainer.presentation.trainerList.contract.TrainerListUiState
@@ -122,7 +122,7 @@ fun TrainerListScreen(
                             },
                             error = {
                                 Image(
-                                    painter = painterResource(id = az.kodcraft.trainer.R.drawable.profile_image_placeholder),
+                                    painter = painterResource(id = R.drawable.profile_image_placeholder),
                                     contentDescription = "Profile Image",
                                     modifier = Modifier
                                         .fillMaxSize()
@@ -134,7 +134,7 @@ fun TrainerListScreen(
                                 .clip(CircleShape)
                         )
                     } ?: Image(
-                        painter = painterResource(id = az.kodcraft.trainer.R.drawable.profile_image_placeholder),
+                        painter = painterResource(id = R.drawable.profile_image_placeholder),
                         contentDescription = "Profile Image",
                         modifier = Modifier
                             .size(40.dp)

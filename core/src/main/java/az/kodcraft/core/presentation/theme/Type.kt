@@ -70,6 +70,15 @@ val Typography.body: TextStyle
         letterSpacing = 0.sp
     )
 
+val Typography.header: TextStyle
+    get() = TextStyle(
+        fontWeight = FontWeight.Bold,
+        fontFamily = MeshqFont,
+        fontSize = 16.sp,
+        lineHeight = 18.sp,
+        letterSpacing = 0.sp
+    )
+
 val bodyLarge: TextStyle
     get() = TextStyle(
         fontWeight = FontWeight.Normal,

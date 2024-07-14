@@ -43,7 +43,7 @@ import az.kodcraft.core.presentation.theme.body
 import az.kodcraft.core.presentation.theme.bodySmallLight
 import az.kodcraft.core.presentation.theme.mediumTitle
 import az.kodcraft.core.presentation.theme.primaryTurq
-import az.kodcraft.core.utils.formatDateToStringDatAndMonth
+import az.kodcraft.core.utils.formatDateToStringDayAndMonth
 import az.kodcraft.core.utils.noRippleClickable
 import az.kodcraft.workout.R
 import az.kodcraft.workout.domain.model.AssignedWorkoutDm
@@ -110,7 +110,7 @@ fun WorkoutDetailsScreen(
                 )
                // if (uiState.workout.isFinished.not()) {
                     Spacer(modifier = Modifier.width(12.dp))
-                    WorkoutDate(uiState.workout.date.formatDateToStringDatAndMonth())
+                    WorkoutDate(uiState.workout.date.formatDateToStringDayAndMonth())
               //  }
             }
         )

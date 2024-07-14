@@ -7,10 +7,12 @@ import az.kodcraft.client.presentation.clientList.ClientListRoute
 
 fun NavGraphBuilder.clientGraph(
     navigateBack: () -> Unit,
+    navigateToClient: (String) -> Unit,
 ) {
     composable(route = ClientRouteConstants.CLIENT_LIST_SCREEN) {
         ClientListRoute(
-            navigateBack = navigateBack
+            navigateBack = navigateBack,
+            navigateToClient = navigateToClient
         )
 
     }
@@ -18,7 +20,7 @@ fun NavGraphBuilder.clientGraph(
         backStackEntry.arguments?.getString("userId")?.let { id ->
             ClientDetailsRoute(
                 userId = id,
-                navigateBack
+                navigateBack = navigateBack
             )
         }
     }
