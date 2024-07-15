@@ -2,6 +2,7 @@ package az.kodcraft.client.presentation.clientDetails
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,14 +12,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -37,7 +37,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,11 +53,14 @@ import az.kodcraft.core.presentation.composable.calendar.MonthlyCalendar
 import az.kodcraft.core.presentation.composable.image.ShimmerEffect
 import az.kodcraft.core.presentation.theme.AccentBlue
 import az.kodcraft.core.presentation.theme.PrimaryBlue
+import az.kodcraft.core.presentation.theme.PrimaryRed
+import az.kodcraft.core.presentation.theme.PrimaryTurq
 import az.kodcraft.core.presentation.theme.body
 import az.kodcraft.core.presentation.theme.header
 import az.kodcraft.core.utils.formatDateToWeeklyStringDayAndMonth
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -68,7 +75,13 @@ fun ClientDetailsRoute(
         viewModel.acceptIntent(ClientDetailsIntent.GetClientDetails(userId))
     }
     val uiState by viewModel.uiState.collectAsState()
-    ClientDetailsScreen(uiState.clientDetails, uiState.selectedDay, viewModel::acceptIntent)
+    ClientDetailsScreen(
+        clientDetails = uiState.clientDetails,
+        selectedDate = uiState.selectedDay,
+        isLoading = uiState.isLoading,
+        isScheduleLoading = uiState.isScheduleLoading,
+        onIntent = viewModel::acceptIntent
+    )
 }
 
 
@@ -76,6 +89,8 @@ fun ClientDetailsRoute(
 fun ClientDetailsScreen(
     clientDetails: ClientDm,
     selectedDate: LocalDate,
+    isLoading: Boolean = false,
+    isScheduleLoading: Boolean = false,
     onIntent: (ClientDetailsIntent) -> Unit = {}
 ) {
     Column(
@@ -83,13 +98,12 @@ fun ClientDetailsScreen(
             .fillMaxSize()
     ) {
         // Header Section
-        HeaderSection(clientDetails)
+        HeaderSection(clientDetails, isLoading)
 
         // Tabs
         var selectedTabIndex by remember { mutableIntStateOf(0) }
         val tabs = listOf("Calendar", "Progress", "Goals")
 
-        HorizontalDivider()
         TabRow(
             selectedTabIndex = selectedTabIndex,
             contentColor = Color.White,
@@ -112,7 +126,6 @@ fun ClientDetailsScreen(
             }
         }
 
-
         // Content
         Spacer(modifier = Modifier.height(10.dp))
         when (selectedTabIndex) {
@@ -131,21 +144,43 @@ fun ClientDetailsScreen(
             1 -> ProgressSection()  // Implement this based on your progress data
             2 -> GoalsSection()     // Implement this based on your goals data
         }
-        HorizontalDivider()
-        WeeklyWorkoutsSection(clientDetails.filterWorkoutScheduleForWeek(selectedDate))
+        Box {
+            HorizontalDivider()
+            if (isScheduleLoading)
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(2.dp),
+                    color = PrimaryTurq,
+                    trackColor = AccentBlue
+                )
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        WeeklyWorkoutsSection(
+            clientDetails.filterWorkoutScheduleForWeek(selectedDate),
+            selectedDate
+        )
     }
 }
 
 @Composable
-fun HeaderSection(clientDetails: ClientDm) {
+fun HeaderSection(clientDetails: ClientDm, isLoading: Boolean) {
     Box {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(120.dp)
-                .background(AccentBlue)
+                .height(100.dp)
+                .background(AccentBlue),
+            verticalArrangement = Arrangement.Bottom
         ) {
-
+            if (isLoading)
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(2.dp),
+                    color = PrimaryTurq,
+                    trackColor = AccentBlue
+                )
         }
         Column(
             horizontalAlignment = Alignment.Start,
@@ -153,7 +188,7 @@ fun HeaderSection(clientDetails: ClientDm) {
                 .fillMaxWidth()
                 .padding(25.dp)
         ) {
-            Spacer(modifier = Modifier.height(45.dp))
+            Spacer(modifier = Modifier.height(25.dp))
             clientDetails.profilePicUrl.ifEmpty { null }?.let { imageUrl ->
                 SubcomposeAsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
@@ -190,12 +225,17 @@ fun HeaderSection(clientDetails: ClientDm) {
                 color = Color.White,
                 style = MaterialTheme.typography.header
             )
+
             Text(
-                text = "@" + clientDetails.username,
+                text = if (isLoading) "" else {
+                    "@" + clientDetails.username
+                },
                 color = Color.Gray,
                 style = MaterialTheme.typography.body,
                 modifier = Modifier.padding(top = 2.dp)
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
@@ -215,43 +255,88 @@ fun CalendarSection(
     }
 }
 
+
 @Composable
-fun WeeklyWorkoutsSection(workoutSchedule: List<ClientDm.WorkoutSessionDm>) {
-    // A simple list of workouts for now. You can expand this to a full calendar view.
+fun WeeklyWorkoutsSection(
+    workoutSchedule: List<ClientDm.WorkoutSessionDm>,
+    selectedDate: LocalDate
+) {
+    // Map workouts to corresponding DayOfWeek
+    val workoutsByDay = DayOfWeek.entries.associateWith { day ->
+        workoutSchedule.firstOrNull { it.date.dayOfWeek == day }
+    }
+
     LazyColumn(
         modifier = Modifier.fillMaxSize()
     ) {
-        items(workoutSchedule) { workout ->
-            WorkoutItem(workout)
+        items(workoutsByDay.entries.toList()) { (day, workout) ->
+            val today = selectedDate.with(day)
+            val formattedDate = today.formatDateToWeeklyStringDayAndMonth()
+            DayWithWorkoutItem(formattedDate, workout)
         }
     }
 }
 
 @Composable
-fun WorkoutItem(workout: ClientDm.WorkoutSessionDm) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = workout.date.formatDateToWeeklyStringDayAndMonth(),
-            color = Color.White,
-            fontSize = 16.sp,
-            modifier = Modifier.weight(1f)
-        )
-        Text(
-            text = workout.workoutName,
-            color = Color.White,
-            fontSize = 16.sp,
-            modifier = Modifier.weight(2f)
-        )
-        Icon(
-            imageVector = if (workout.isCompleted) Icons.Default.Check else Icons.Default.Close,
-            contentDescription = null,
-            tint = if (workout.isCompleted) Color.Green else Color.Red
-        )
+fun DayWithWorkoutItem(formattedDate: String, workout: ClientDm.WorkoutSessionDm?) {
+    Column(Modifier.padding(horizontal = 6.dp)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 5.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.Bottom,
+            ) {
+                DateDisplay(formattedDate)
+                Text(
+                    text = workout?.workoutName ?: "",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(horizontal = 6.dp)
+                )
+            }
+            Icon(
+                painter = if (workout == null) painterResource(id = az.kodcraft.core.R.drawable.ic_add_circle) else painterResource(
+                    id = az.kodcraft.core.R.drawable.ic_remove_circle
+                ),
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+                tint = if (workout == null) PrimaryTurq.copy(0.7f) else PrimaryRed
+            )
+
+        }
+        HorizontalDivider(color = Color.White.copy(0.5f))
     }
+}
+
+
+@Composable
+fun DateDisplay(dateString: String) {
+    val parts = dateString.split(" ")
+    val dayOfWeek = parts[0]
+    val date = parts.subList(1, parts.size).joinToString(" ")
+
+    Text(
+        modifier = Modifier.width(80.dp),
+        style = MaterialTheme.typography.body,
+        maxLines = 1,
+        color = Color.White.copy(0.5f),
+        text = buildAnnotatedString {
+            withStyle(
+                style = SpanStyle(
+                    fontWeight = FontWeight.Bold,
+                ),
+            ) {
+                append(dayOfWeek)
+            }
+            append("  ")
+            append(date)
+        }
+    )
 }
 
 // Dummy composable functions for the other tabs
@@ -283,9 +368,14 @@ fun GoalsSection() {
 @Composable
 fun ClientDetailsScreenPreview() = BasePreviewContainer {
     val sampleWorkouts = listOf(
-        ClientDm.WorkoutSessionDm(LocalDate.of(2024, 7, 14), "Legs", true),
-        ClientDm.WorkoutSessionDm(LocalDate.of(2024, 7, 16), "Arms", false),
-        ClientDm.WorkoutSessionDm(LocalDate.of(2024, 7, 17), "Back", true)
+        ClientDm.WorkoutSessionDm(LocalDate.of(2024, 7, 15), "Legs (Glute focused)", true),
+        ClientDm.WorkoutSessionDm(LocalDate.of(2024, 7, 17), "Arms and Back", false),
+        ClientDm.WorkoutSessionDm(
+            LocalDate.of(2024, 7, 19),
+            "Upper body Chest Focused Workout template 2",
+            false
+        ),
+        ClientDm.WorkoutSessionDm(LocalDate.of(2024, 7, 21), "Legs and Core", true)
     )
     val sampleClient = ClientDm.MOCK.copy(workoutSchedule = sampleWorkouts)
     ClientDetailsScreen(clientDetails = sampleClient, selectedDate = LocalDate.now())

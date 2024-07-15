@@ -60,7 +60,7 @@ class ClientDetailsViewModel @Inject constructor(
             ).doOnSuccess {
                 emit(ClientDetailsUiState.PartialState.ClientWorkouts(it))
             }.doOnLoading {
-                emit(ClientDetailsUiState.PartialState.Loading)
+                emit(ClientDetailsUiState.PartialState.ScheduleLoading)
             }.collect()
         }
 
@@ -71,15 +71,19 @@ class ClientDetailsViewModel @Inject constructor(
         ClientDetailsUiState.PartialState.Loading -> previousState.copy(
             isLoading = true, isError = false
         )
+        ClientDetailsUiState.PartialState.ScheduleLoading -> previousState.copy(
+            isScheduleLoading = true, isError = false
+        )
 
         is ClientDetailsUiState.PartialState.ClientsDetails -> previousState.copy(
             isLoading = false,
+            isScheduleLoading = false,
             isError = false,
             clientDetails = partialState.value
         )
 
         is ClientDetailsUiState.PartialState.ClientWorkouts -> previousState.copy(
-            isLoading = false,
+            isScheduleLoading = false,
             isError = false,
             clientDetails = previousState.clientDetails.copy(workoutSchedule = partialState.data)
         )

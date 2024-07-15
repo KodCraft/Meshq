@@ -104,7 +104,7 @@ class ClientService(
 
             // Get the workout details from workouts collection
             val workoutDoc = workoutsRef.document(workoutId).get().await()
-            val workoutName = workoutDoc.getString("workoutName") ?: return@mapNotNull null
+            val workoutName = workoutDoc.getString("title") ?: return@mapNotNull null
 
             ClientDetailsDto.WorkoutSession(
                 date = date,
