@@ -4,6 +4,7 @@ import android.os.Parcelable
 import az.kodcraft.client.domain.model.ClientDm
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
+import java.time.YearMonth
 
 @Parcelize
 data class ClientDetailsUiState(
@@ -17,7 +18,10 @@ data class ClientDetailsUiState(
         data object Loading : PartialState()
         data object ScheduleLoading : PartialState()
         data class ClientsDetails(val value: ClientDm) : PartialState()
-        data class ClientWorkouts(val data: List<ClientDm.WorkoutSessionDm>) : PartialState()
+        data class ClientWorkouts(
+            val data: List<ClientDm.WorkoutSessionDm>,
+            val yearMonth: YearMonth
+        ) : PartialState()
         data class SelectDate(val value:LocalDate) : PartialState()
     }
 }

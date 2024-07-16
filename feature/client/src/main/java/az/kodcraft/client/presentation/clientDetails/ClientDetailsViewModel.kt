@@ -58,7 +58,7 @@ class ClientDetailsViewModel @Inject constructor(
                     yearMonth = yearMonth
                 )
             ).doOnSuccess {
-                emit(ClientDetailsUiState.PartialState.ClientWorkouts(it))
+                emit(ClientDetailsUiState.PartialState.ClientWorkouts(it, yearMonth))
             }.doOnLoading {
                 emit(ClientDetailsUiState.PartialState.ScheduleLoading)
             }.collect()
@@ -85,7 +85,8 @@ class ClientDetailsViewModel @Inject constructor(
         is ClientDetailsUiState.PartialState.ClientWorkouts -> previousState.copy(
             isScheduleLoading = false,
             isError = false,
-            clientDetails = previousState.clientDetails.copy(workoutSchedule = partialState.data)
+            clientDetails = previousState.clientDetails.copy(workoutSchedule = partialState.data),
+            selectedDay = previousState.selectedDay.withYear(partialState.yearMonth.year).withMonth(partialState.yearMonth.monthValue)
         )
 
         is ClientDetailsUiState.PartialState.SelectDate -> previousState.copy(selectedDay = partialState.value)

@@ -24,6 +24,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -34,6 +38,7 @@ import az.kodcraft.core.presentation.bases.BasePreviewContainer
 import az.kodcraft.core.presentation.composable.calendar.contract.CalendarEvent
 import az.kodcraft.core.presentation.composable.calendar.contract.CalendarIntent
 import az.kodcraft.core.presentation.composable.calendar.contract.CalendarUiState
+import az.kodcraft.core.presentation.theme.AccentBlue
 import az.kodcraft.core.presentation.theme.Gray100
 import az.kodcraft.core.presentation.theme.HighlightBlue
 import az.kodcraft.core.utils.noRippleClickable
@@ -41,6 +46,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
+import java.time.temporal.TemporalAdjusters
 import java.util.Locale
 
 @Composable
@@ -48,7 +54,8 @@ fun MonthlyCalendar(
     viewModel: CalendarViewModel = hiltViewModel(),
     onDateClick: (LocalDate) -> Unit = {},
     onMonthChanged: (YearMonth) -> Unit = {},
-    labels: List<LocalDate> = emptyList()
+    labels: List<LocalDate> = emptyList(),
+    selectedDate: LocalDate
 ) {
     val uiState by viewModel.uiState.collectAsState()
     LaunchedEffect(key1 = Unit) {
@@ -58,11 +65,14 @@ fun MonthlyCalendar(
             }
         }
     }
-    Calendar(uiState = uiState,
+    Calendar(
+        uiState = uiState,
         onDateClick = onDateClick,
         labels = labels,
         onPreviousMonthButtonClicked = { viewModel.acceptIntent(CalendarIntent.PreviousMonthClicked) },
-        onNextMonthButtonClicked = { viewModel.acceptIntent(CalendarIntent.NextMonthClicked) })
+        onNextMonthButtonClicked = { viewModel.acceptIntent(CalendarIntent.NextMonthClicked) },
+        selectedDate = selectedDate
+    )
 }
 
 @Composable
@@ -71,7 +81,8 @@ fun Calendar(
     onPreviousMonthButtonClicked: () -> Unit = {},
     onNextMonthButtonClicked: () -> Unit = {},
     onDateClick: (LocalDate) -> Unit = {},
-    labels: List<LocalDate> = emptyList()
+    labels: List<LocalDate> = emptyList(),
+    selectedDate: LocalDate
 ) {
     Column {
         Header(
@@ -83,7 +94,9 @@ fun Calendar(
         Content(
             uiState.dates,
             onDateClickListener = onDateClick,
-            labels = labels.filter { YearMonth.from(it) == uiState.yearMonth })
+            labels = labels.filter { YearMonth.from(it) == uiState.yearMonth },
+            selectedDate = selectedDate
+        )
     }
 }
 
@@ -91,17 +104,20 @@ fun Calendar(
 fun Content(
     dates: List<CalendarUiState.Date>,
     onDateClickListener: (LocalDate) -> Unit,
-    labels: List<LocalDate> = emptyList()
+    labels: List<LocalDate> = emptyList(),
+    selectedDate: LocalDate
 ) {
-    val dayOfWeekNames = listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su")
+    // Calculate the start and end dates of the week containing the selected date
+    val startOfWeek = selectedDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+    val endOfWeek = selectedDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
 
 
     Column {
         Row {
-            dayOfWeekNames.forEach { dayName ->
+            DayOfWeek.entries.forEach { day ->
                 Text(
-                    text = dayName,
-                    style = MaterialTheme.typography.bodyMedium.copy(color = Gray100),
+                    text = day.getDisplayName(TextStyle.SHORT, Locale.getDefault()).take(2),
+                    style = MaterialTheme.typography.bodyMedium.copy(color = if (day == DayOfWeek.SUNDAY || day == DayOfWeek.SATURDAY) HighlightBlue else Gray100),
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center
                 )
@@ -109,11 +125,30 @@ fun Content(
         }
         var index = 0
         repeat(6) {
-            if (index >= dates.size) return@repeat
 
-            Row {
+            if (index >= dates.size) return@repeat
+            // Check if the current week is the selected week
+            val isSelectedWeek = dates.subList(index, (index + 7).coerceAtMost(dates.size)).any {
+                val date = it.localDate
+                !date.isBefore(startOfWeek) && !date.isAfter(endOfWeek)
+            }
+
+            Row(modifier = Modifier.drawBehind {
+                if (isSelectedWeek) {
+                    val padding = 4.dp.toPx()
+                    val width = size.width
+                    val height = size.height
+                    drawRoundRect(
+                        color = AccentBlue,
+                        size = Size(width, height),
+                        topLeft = Offset(0f, padding),
+                        cornerRadius = CornerRadius(18f)
+                    )
+                }
+            }) {
                 repeat(7) {
-                    val item = if (index < dates.size) dates[index] else CalendarUiState.Date.Empty
+                    val item =
+                        if (index < dates.size) dates[index] else CalendarUiState.Date.Empty
                     val hasLabel =
                         labels.any { it.dayOfMonth == item.dayOfMonth }
 
@@ -125,6 +160,7 @@ fun Content(
                     )
                     index++
                 }
+
             }
         }
     }
@@ -153,7 +189,7 @@ fun ContentItem(
                 color = if (date.localDate.dayOfWeek == DayOfWeek.SATURDAY || date.localDate.dayOfWeek == DayOfWeek.SUNDAY) HighlightBlue else Gray100
             ),
             modifier = Modifier
-                .padding( top = 11.dp, bottom = 2.dp)
+                .padding(top = 11.dp, bottom = 2.dp)
         )
         if (hasLabel)
             Box(
@@ -223,5 +259,5 @@ fun Header(
 @Preview
 @Composable
 fun PreviewCalendar() = BasePreviewContainer {
-    Calendar(uiState = CalendarUiState(), labels = emptyList())
+    Calendar(uiState = CalendarUiState(), labels = emptyList(), selectedDate = LocalDate.now())
 }

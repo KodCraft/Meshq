@@ -138,7 +138,8 @@ fun ClientDetailsScreen(
                         )
                     )
                 },
-                workoutSchedule = clientDetails.workoutSchedule
+                workoutSchedule = clientDetails.workoutSchedule,
+                selectedDate = selectedDate
             )
 
             1 -> ProgressSection()  // Implement this based on your progress data
@@ -189,36 +190,45 @@ fun HeaderSection(clientDetails: ClientDm, isLoading: Boolean) {
                 .padding(25.dp)
         ) {
             Spacer(modifier = Modifier.height(25.dp))
-            clientDetails.profilePicUrl.ifEmpty { null }?.let { imageUrl ->
-                SubcomposeAsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(imageUrl)
-                        .build(),
-                    contentDescription = "Profile image",
-                    contentScale = ContentScale.FillWidth,
-                    loading = {
-                        ShimmerEffect()
-                    },
-                    error = {
-                        Image(
-                            painter = painterResource(id = az.kodcraft.core.R.drawable.profile_image_placeholder),
-                            contentDescription = "Profile Image",
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clip(CircleShape)
-                        )
-                    },
+            if (isLoading)
+                Box(
                     modifier = Modifier
                         .clip(CircleShape)
                         .size(100.dp)
+                ) {
+                    ShimmerEffect()
+                }
+            else
+                clientDetails.profilePicUrl.ifEmpty { null }?.let { imageUrl ->
+                    SubcomposeAsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(imageUrl)
+                            .build(),
+                        contentDescription = "Profile image",
+                        contentScale = ContentScale.FillWidth,
+                        loading = {
+                            ShimmerEffect()
+                        },
+                        error = {
+                            Image(
+                                painter = painterResource(id = az.kodcraft.core.R.drawable.profile_image_placeholder),
+                                contentDescription = "Profile Image",
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(CircleShape)
+                            )
+                        },
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(100.dp)
+                    )
+                } ?: Image(
+                    painter = painterResource(id = az.kodcraft.core.R.drawable.profile_image_placeholder),
+                    contentDescription = "ProfileImage",
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(CircleShape)
                 )
-            } ?: Icon(
-                painter = painterResource(id = az.kodcraft.core.R.drawable.profile_image_placeholder),
-                contentDescription = "ProfileImage",
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(CircleShape)
-            )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = clientDetails.name,
@@ -244,13 +254,15 @@ fun HeaderSection(clientDetails: ClientDm, isLoading: Boolean) {
 fun CalendarSection(
     onMonthChanged: (YearMonth) -> Unit,
     onDateClick: (LocalDate) -> Unit,
-    workoutSchedule: List<ClientDm.WorkoutSessionDm>
+    workoutSchedule: List<ClientDm.WorkoutSessionDm>,
+    selectedDate: LocalDate
 ) {
-    Column(modifier = Modifier.height(300.dp)) {
+    Column(modifier = Modifier.padding(horizontal = 26.dp).height(300.dp)) {
         MonthlyCalendar(
             onDateClick = onDateClick,
             onMonthChanged = onMonthChanged,
-            labels = workoutSchedule.map { it.date }
+            labels = workoutSchedule.map { it.date },
+            selectedDate = selectedDate
         )
     }
 }
@@ -279,7 +291,7 @@ fun WeeklyWorkoutsSection(
 
 @Composable
 fun DayWithWorkoutItem(formattedDate: String, workout: ClientDm.WorkoutSessionDm?) {
-    Column(Modifier.padding(horizontal = 6.dp)) {
+    Column(Modifier.padding(horizontal = 16.dp)) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
