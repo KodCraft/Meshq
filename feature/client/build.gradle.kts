@@ -16,7 +16,6 @@ android {
 dependencies {
 
     implementation(project(":core"))
-    implementation(project(":feature:workout"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

@@ -1,12 +1,14 @@
 package az.kodcraft.dashboard.data.service
 
+import az.kodcraft.core.domain.UserManager
 import az.kodcraft.core.utils.localDateToTimestamp
 import az.kodcraft.dashboard.data.dto.DashboardWeekWorkoutDto
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.Filter
 import kotlinx.coroutines.tasks.await
 import java.time.LocalDate
 
-class DashboardService(private val workoutRef: CollectionReference) {
+class DashboardService(private val assignedWorkoutRef: CollectionReference) {
 
     suspend fun fetchWeekWorkouts(
         startDate: String,
@@ -18,9 +20,10 @@ class DashboardService(private val workoutRef: CollectionReference) {
             LocalDate.parse(endDate).plusDays(1)
         )
 
-        val documents = workoutRef
+        val documents = assignedWorkoutRef
             .whereGreaterThanOrEqualTo("date", startTimestamp)
             .whereLessThanOrEqualTo("date", endTimestamp)
+            .where(Filter.equalTo("traineeId", UserManager.getUserId()))
             .get()
             .await()
 

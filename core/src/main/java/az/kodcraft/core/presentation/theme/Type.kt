@@ -83,7 +83,7 @@ val bodyLarge: TextStyle
     get() = TextStyle(
         fontWeight = FontWeight.Normal,
         fontFamily = MeshqFont,
-        fontSize = 22.sp
+        fontSize = 18.sp
     )
 val bodyLargeLight: TextStyle
     get() = TextStyle(
@@ -99,7 +99,7 @@ val Typography.bodyLight: TextStyle
         lineHeight = 18.sp,
         letterSpacing = 0.sp
     )
-val Typography.bodySmall: TextStyle
+val bodySmall: TextStyle
     get() = TextStyle(
         fontWeight = FontWeight.Normal,
         fontFamily = MeshqFont,

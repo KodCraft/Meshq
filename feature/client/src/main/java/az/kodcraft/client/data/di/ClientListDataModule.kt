@@ -1,8 +1,11 @@
 package az.kodcraft.client.data.di
 
 import az.kodcraft.client.data.repository.ClientRepositoryImpl
+import az.kodcraft.client.data.repository.WorkoutRepositoryImpl
 import az.kodcraft.client.data.service.ClientService
+import az.kodcraft.client.data.service.WorkoutService
 import az.kodcraft.client.domain.repository.ClientRepository
+import az.kodcraft.client.domain.repository.WorkoutRepository
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.firestore
@@ -46,9 +49,20 @@ object ClientDataModule {
     ): ClientService = ClientService(usersRef = usersDataRef, clientsRef = clientsDataRef, assignedWorkoutsRef = assignedWorkoutsRef, workoutsRef = workoutsRef )
 
     @Provides
+    fun provideWorkoutService(
+        @AssignedWorkoutsCollection assignedWorkoutsRef: CollectionReference,
+        @WorkoutsCollection workoutsRef: CollectionReference,
+    ): WorkoutService = WorkoutService( assignedWorkoutRef = assignedWorkoutsRef, workoutRef = workoutsRef )
+
+    @Provides
     fun provideClientRepository(
         clientService: ClientService
     ): ClientRepository = ClientRepositoryImpl(clientService)
+
+    @Provides
+    fun provideWorkoutRepository(
+        workoutService: WorkoutService
+    ): WorkoutRepository = WorkoutRepositoryImpl(workoutService)
 
 }
 

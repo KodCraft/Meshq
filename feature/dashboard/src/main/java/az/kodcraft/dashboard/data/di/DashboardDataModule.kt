@@ -12,19 +12,19 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Qualifier
 
-const val WORKOUTS_COLLECTION = "workouts_collection"
+const val ASSIGNED_WORKOUTS_COLLECTION = "assigned_workouts_collection"
 @Module
 @InstallIn(SingletonComponent::class)
 object DashboardDataModule {
 
-    @DashboardWorkoutCollection
+    @AssignedWorkoutCollection
     @Provides
-    fun provideDashboardDataRef() = Firebase.firestore.collection(WORKOUTS_COLLECTION)
+    fun provideDashboardDataRef() = Firebase.firestore.collection(ASSIGNED_WORKOUTS_COLLECTION)
 
     @Provides
     fun provideDashboardService(
-        @DashboardWorkoutCollection dashboardDataRef: CollectionReference
-    ): DashboardService = DashboardService(dashboardDataRef)
+        @AssignedWorkoutCollection assignedWorkoutDataRef: CollectionReference
+    ): DashboardService = DashboardService(assignedWorkoutDataRef)
 
     @Provides
     fun provideDashboardRepository(
@@ -33,4 +33,4 @@ object DashboardDataModule {
 }
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
-annotation class DashboardWorkoutCollection
+annotation class AssignedWorkoutCollection

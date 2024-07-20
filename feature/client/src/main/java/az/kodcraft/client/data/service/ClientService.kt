@@ -3,8 +3,6 @@ package az.kodcraft.client.data.service
 import az.kodcraft.client.data.dto.ClientDetailsDto
 import az.kodcraft.client.data.dto.ClientDto
 import az.kodcraft.core.utils.localDateToTimestamp
-import az.kodcraft.workout.data.dto.AssignedWorkoutDto
-import com.google.firebase.Timestamp
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FieldPath
 import kotlinx.coroutines.tasks.await
@@ -19,13 +17,13 @@ class ClientService(
     suspend fun getClients(trainerId: String, searchText: String): List<ClientDto> {
         // Step 1: Get the list of client documents for the given trainerId
         val clientDocs = clientsRef
-            .whereEqualTo("trainer_id", trainerId)
+            .whereEqualTo("trainerId", trainerId)
             .get()
             .await()
             .documents
 
         // Step 2: Get the trainee ids from the client documents
-        val traineeIds = clientDocs.mapNotNull { it.getString("trainee_id") }
+        val traineeIds = clientDocs.mapNotNull { it.getString("traineeId") }
 
         // Step 3: Get the user documents for the trainee ids
         val userDocs = usersRef
@@ -89,8 +87,8 @@ class ClientService(
         val endTimestamp = localDateToTimestamp(yearMonth.atEndOfMonth())
 
         val assignedWorkoutDocs = assignedWorkoutsRef
-            .whereEqualTo("trainer_id", trainerId)
-            .whereEqualTo("trainee_id", traineeId)
+            .whereEqualTo("trainerId", trainerId)
+            .whereEqualTo("traineeId", traineeId)
             .whereGreaterThanOrEqualTo("date", startTimestamp)
             .whereLessThanOrEqualTo("date", endTimestamp)
             .get()
@@ -115,56 +113,4 @@ class ClientService(
 
     }
 
-
-    suspend fun assignWorkout(
-        trainerId: String,
-        traineeId: String,
-        workoutId: String,
-        date: Timestamp
-    ): Boolean {
-        val workoutDoc = workoutsRef.document(workoutId).get().await()
-        val title = workoutDoc.getString("title") ?: return false
-        val notes = workoutDoc.getString("notes") ?: ""
-        val labels = workoutDoc.get("labels") as? List<String> ?: emptyList()
-        val exercises = workoutDoc.get("exercises") as? List<Map<String, Any>> ?: emptyList()
-
-        // Map exercises to AssignedWorkoutDto.Exercise
-        val mappedExercises = exercises.map { exercise ->
-            val exerciseId = exercise["id"] as? String ?: ""
-            val exerciseRefId = exercise["exercise_id"] as? String ?: ""
-            val name = exercise["name"] as? String ?: ""
-            val sets = (exercise["sets"] as? List<Map<String, Any>>)?.map { set ->
-                AssignedWorkoutDto.Exercise.Set(
-                    id = set["id"] as? String ?: "",
-                    type = set["type"] as? String ?: "",
-                    reps = set["reps"] as? String ?: "",
-                    restSeconds = (set["rest_seconds"] as? Long ?: 0L).toInt(),
-                    weight = set["weight"] as? String ?: "",
-                    unit = set["weight_unit"] as? String ?: "kg",
-                    isComplete = set["isComplete"] as? Boolean ?: false
-                )
-            } ?: emptyList()
-
-            AssignedWorkoutDto.Exercise(
-                id = exerciseId,
-                exerciseRefId = exerciseRefId,
-                name = name,
-                sets = sets
-            )
-        }
-
-        // Step 2: Create a copy of the workout data in the assigned workouts collection
-        val assignedWorkout = AssignedWorkoutDto(
-            title = title,
-            notes = notes,
-            isFinished = false,
-            date = date,
-            labels = labels,
-            exercises = mappedExercises,
-            trainerId = trainerId,
-            traineeId = traineeId
-        )
-        assignedWorkoutsRef.add(assignedWorkout).await()
-        return true
-    }
 }

@@ -1,10 +1,12 @@
 package az.kodcraft.workout.data.dto
 
+import az.kodcraft.core.domain.UserManager
 import az.kodcraft.workout.domain.model.CreateWorkoutDm
 import com.google.firebase.firestore.PropertyName
 
 data class WorkoutDto(
     var id: String = "",
+    val trainerId: String = UserManager.getUserId(),
     val title: String = "",
     val notes: String = "",
     val labels: List<String> = emptyList(),
