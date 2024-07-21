@@ -249,18 +249,18 @@ fun NavController.navigateToTopLevelDestination(topLevelDestination: TopLevelDes
     )
 
     when (topLevelDestination) {
-        TopLevelDestinationTrainee.DASHBOARD -> navigateToDashboard(topLevelNavOptions)
-        TopLevelDestinationTrainee.EXPLORE_TRAINERS -> navigateToTrainersList(topLevelNavOptions)
-        TopLevelDestinationTrainee.MY_PROGRESS -> {}// navigateToExerciseLibrary()
+        TopLevelDestinationTrainee.DASHBOARD_SCREEN -> navigateToDashboard(topLevelNavOptions)
+        TopLevelDestinationTrainee.EXPLORE_TRAINERS_SCREEN -> navigateToTrainersList(topLevelNavOptions)
+        TopLevelDestinationTrainee.MY_PROGRESS_SCREEN -> {}// navigateToExerciseLibrary()
 
 
-        TopLevelDestinationTrainer.TRAINER_DASHBOARD -> navigateToTrainerDashboard(
+        TopLevelDestinationTrainer.TRAINER_DASHBOARD_SCREEN -> navigateToTrainerDashboard(
             topLevelNavOptions
         )
 
-        TopLevelDestinationTrainer.WORKOUTS_LIBRARY -> navigateToWorkoutsLibrary(topLevelNavOptions)
-        TopLevelDestinationTrainer.EXERCISE_LIBRARY -> {}// navigateToTrainerExerciseLibrary()
-        TopLevelDestinationTrainer.CLIENTS_LIST -> navigateToClientList(topLevelNavOptions)
+        TopLevelDestinationTrainer.WORKOUTS_LIBRARY_SCREEN -> navigateToWorkoutsLibrary(topLevelNavOptions)
+        TopLevelDestinationTrainer.EXERCISE_LIBRARY_SCREEN -> {}// navigateToTrainerExerciseLibrary()
+        TopLevelDestinationTrainer.CLIENT_LIST_SCREEN -> navigateToClientList(topLevelNavOptions)
     }
 }
 

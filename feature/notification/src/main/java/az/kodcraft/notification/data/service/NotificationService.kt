@@ -14,7 +14,7 @@ class NotificationService(
 ) {
     suspend fun getNotifications(): List<NotificationDto> {
         val querySnapshot = notificationsRef
-            .whereEqualTo("trainer_id", UserManager.getUserId())
+            .whereEqualTo("trainerId", UserManager.getUserId())
             .get()
             .await()
 
@@ -29,13 +29,13 @@ class NotificationService(
         // Fetch the subscription request
         val subRequestDoc = subscriptionRequestsRef.document(subRequestId).get().await()
         val traineeId =
-            subRequestDoc.getString("trainee_id") ?: throw Exception("Trainee ID not found")
+            subRequestDoc.getString("traineeId") ?: throw Exception("Trainee ID not found")
         val trainerId = UserManager.getUserId()
 
         // Check if the subscription already exists
         val existingSubscription = trainerSubscriptionsRef
-            .whereEqualTo("trainee_id", traineeId)
-            .whereEqualTo("trainer_id", trainerId)
+            .whereEqualTo("traineeId", traineeId)
+            .whereEqualTo("trainerId", trainerId)
             .get()
             .await()
             .documents
@@ -44,8 +44,8 @@ class NotificationService(
         if (!existingSubscription) {
             // Add new subscription to trainer_subscriptions_collection
             val newSubscription = mapOf(
-                "trainee_id" to traineeId,
-                "trainer_id" to trainerId,
+                "traineeId" to traineeId,
+                "trainerId" to trainerId,
                 "date" to Timestamp.now()
             )
             val a = trainerSubscriptionsRef.add(newSubscription).await()

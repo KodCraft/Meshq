@@ -12,7 +12,9 @@ data class AssignedWorkoutDto(
     val isFinished: Boolean = false,
     val date: Timestamp = Timestamp.now(),
     val labels: List<String> = emptyList(),
-    var exercises: List<Exercise> = emptyList()
+    var exercises: List<Exercise> = emptyList(),
+    var trainerId: String = "",
+    var traineeId: String = ""
 ) {
 
     data class Exercise(

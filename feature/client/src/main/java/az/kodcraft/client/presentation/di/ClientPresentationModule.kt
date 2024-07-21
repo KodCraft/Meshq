@@ -1,5 +1,6 @@
 package az.kodcraft.client.presentation.di
 
+import az.kodcraft.client.presentation.clientDetails.contract.ClientDetailsUiState
 import az.kodcraft.client.presentation.clientList.contract.ClientListUiState
 import dagger.Module
 import dagger.Provides
@@ -12,4 +13,8 @@ object ClientPresentationModule {
     @Provides
     fun provideClientListUiState(): ClientListUiState =
         ClientListUiState()
+
+    @Provides
+    fun provideClientDetailsUiState(): ClientDetailsUiState =
+        ClientDetailsUiState()
 }

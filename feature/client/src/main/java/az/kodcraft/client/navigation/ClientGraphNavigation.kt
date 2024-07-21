@@ -5,7 +5,7 @@ import androidx.navigation.NavOptions
 
 object ClientRouteConstants{
     const val CLIENT_DETAILS_SCREEN = "CLIENT_DETAILS_SCREEN/{userId}"
-    const val CLIENT_LIST_SCREEN = "CLIENT_DETAILS_SCREEN"
+    const val CLIENT_LIST_SCREEN = "CLIENT_LIST_SCREEN"
 }
 
 fun NavController.navigateToClientDetails(userId:String){

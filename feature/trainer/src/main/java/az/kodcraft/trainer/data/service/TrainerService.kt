@@ -46,16 +46,16 @@ class TrainerService(
             )
         }
         val subscriptionRequestSnapshot = subscriptionRequestsRef
-            .whereEqualTo("trainer_id", id)
-            .whereEqualTo("trainee_id", UserManager.getUserId())
+            .whereEqualTo("trainerId", id)
+            .whereEqualTo("traineeId", UserManager.getUserId())
             .get()
             .await()
 
 
 
         val trainerSubsSnapshot = trainerSubsRef
-            .whereEqualTo("trainer_id", id)
-            .whereEqualTo("trainee_id", UserManager.getUserId())
+            .whereEqualTo("trainerId", id)
+            .whereEqualTo("traineeId", UserManager.getUserId())
             .get()
             .await()
 
@@ -78,8 +78,8 @@ class TrainerService(
 
     suspend fun sendSubscriptionRequest(traineeId: String, trainerId: String) {
         val subscriptionRequest = hashMapOf(
-            "trainer_id" to trainerId,
-            "trainee_id" to traineeId,
+            "trainerId" to trainerId,
+            "traineeId" to traineeId,
             "date" to com.google.firebase.Timestamp.now()
         )
 
@@ -88,8 +88,8 @@ class TrainerService(
 
     suspend fun unSendSubscriptionRequest(traineeId: String, trainerId: String) {
         val querySnapshot = subscriptionRequestsRef
-            .whereEqualTo("trainer_id", trainerId)
-            .whereEqualTo("trainee_id", traineeId)
+            .whereEqualTo("trainerId", trainerId)
+            .whereEqualTo("traineeId", traineeId)
             .get()
             .await()
 
@@ -100,7 +100,7 @@ class TrainerService(
 
         // Check and delete corresponding notification
         val notificationSnapshot = notificationsRef
-            .whereEqualTo("trainer_id", trainerId)
+            .whereEqualTo("trainerId", trainerId)
             .whereEqualTo("subscription_request_id", querySnapshot.documents.firstOrNull()?.id)
             .get()
             .await()

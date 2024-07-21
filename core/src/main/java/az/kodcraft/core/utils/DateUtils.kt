@@ -4,6 +4,7 @@ import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAdjusters
 import java.time.temporal.WeekFields
 import java.util.Date
@@ -24,7 +25,17 @@ fun localDateToTimestamp(date: LocalDate): Timestamp {
     return Timestamp(zonedDateTime.toEpochSecond(), 0)
 }
 
-fun Date.formatDateToStringDatAndMonth(): String {
+fun Timestamp.toLocalDate(): LocalDate {
+    val instant = this.toDate().toInstant()
+    return instant.atZone(ZoneId.systemDefault()).toLocalDate()
+}
+
+fun Date.formatDateToStringDayAndMonth(): String {
     val formatter = SimpleDateFormat("dd MMM", Locale.getDefault()) // Using US locale for English month names
     return formatter.format(this)
+}
+
+fun LocalDate.formatDateToWeeklyStringDayAndMonth(): String {
+    val formatter = DateTimeFormatter.ofPattern("EEE d MMM", Locale.getDefault())
+    return this.format(formatter)
 }

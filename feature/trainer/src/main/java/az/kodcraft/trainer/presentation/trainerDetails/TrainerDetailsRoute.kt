@@ -1,15 +1,7 @@
 package az.kodcraft.trainer.presentation.trainerDetails
 
 import android.widget.Toast
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,8 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -41,14 +31,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import az.kodcraft.core.presentation.bases.BasePreviewContainer
 import az.kodcraft.core.presentation.composable.button.ButtonPrimaryLightWithLoader
-import az.kodcraft.core.presentation.theme.AccentBlue
-import az.kodcraft.core.presentation.theme.PrimaryTurq
+import az.kodcraft.core.presentation.composable.image.ShimmerEffect
 import az.kodcraft.core.presentation.theme.body
 import az.kodcraft.core.presentation.theme.bodyLargeLight
 import az.kodcraft.core.presentation.theme.bodySmallLight
 import az.kodcraft.core.presentation.theme.footNoteLight
 import az.kodcraft.core.utils.collectWithLifecycle
-import az.kodcraft.trainer.R
 import az.kodcraft.trainer.domain.model.TrainerDm
 import az.kodcraft.trainer.presentation.trainerDetails.contract.TrainerDetailsEvent
 import az.kodcraft.trainer.presentation.trainerDetails.contract.TrainerDetailsIntent
@@ -131,7 +119,7 @@ fun ProfileHeader(
                     },
                     error = {
                         Image(
-                            painter = painterResource(id = R.drawable.profile_image_placeholder),
+                            painter = painterResource(id = az.kodcraft.core.R.drawable.profile_image_placeholder),
                             contentDescription = "Profile Image",
                             modifier = Modifier
                                 .fillMaxSize()
@@ -143,7 +131,7 @@ fun ProfileHeader(
                         .size(90.dp)
                 )
             } ?: Icon(
-                painter = painterResource(id = R.drawable.profile_image_placeholder),
+                painter = painterResource(id = az.kodcraft.core.R.drawable.profile_image_placeholder),
                 contentDescription = "ProfileImage",
                 modifier = Modifier.size(90.dp)
             )
@@ -180,38 +168,6 @@ fun ProfileHeader(
             iconResId = trainer.subState.icon
         )
     }
-}
-
-@Composable
-fun ShimmerEffect() {
-    val infiniteTransition = rememberInfiniteTransition(label = "")
-    val shimmerTranslateAnim by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1000f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(
-                durationMillis = 1000,
-                easing = LinearEasing
-            ),
-            repeatMode = RepeatMode.Restart
-        ), label = ""
-    )
-
-    val brush = Brush.linearGradient(
-        colors = listOf(
-            PrimaryTurq.copy(alpha = 0.6f),
-            AccentBlue.copy(alpha = 0.2f),
-            PrimaryTurq.copy(alpha = 0.6f)
-        ),
-        start = Offset.Zero,
-        end = Offset(x = shimmerTranslateAnim, y = shimmerTranslateAnim)
-    )
-
-    Canvas(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(brush = brush)
-    ) { }
 }
 
 @Composable
