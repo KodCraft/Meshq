@@ -58,6 +58,7 @@ fun MeshqNavHost(
         clientGraph(
             navigateBack = { navController.popBackStack() },
             navigateToClient = navController::navigateToClientDetails,
+            onMenuClick = onMenuClick
         )
 
         trainerGraph(

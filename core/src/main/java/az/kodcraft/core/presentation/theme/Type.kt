@@ -107,7 +107,7 @@ val bodySmall: TextStyle
         lineHeight = 18.sp,
         letterSpacing = 0.sp
     )
-val Typography.bodySmallLight: TextStyle
+val  Typography.bodySmallLight: TextStyle
     get() = TextStyle(
         fontWeight = FontWeight.ExtraLight,
         fontFamily = MeshqFont,

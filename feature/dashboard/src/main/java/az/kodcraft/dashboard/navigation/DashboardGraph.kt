@@ -3,8 +3,8 @@ package az.kodcraft.dashboard.navigation
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import az.kodcraft.dashboard.navigation.DashboardRouteConstants.DASHBOARD
-import az.kodcraft.dashboard.navigation.DashboardRouteConstants.TRAINER_DASHBOARD
+import az.kodcraft.dashboard.navigation.DashboardRouteConstants.DASHBOARD_SCREEN
+import az.kodcraft.dashboard.navigation.DashboardRouteConstants.TRAINER_DASHBOARD_SCREEN
 import az.kodcraft.dashboard.presentation.traineeDashboard.DashboardRoute
 import az.kodcraft.dashboard.presentation.trainerDashboard.TrainerDashboardRoute
 
@@ -18,7 +18,7 @@ fun NavGraphBuilder.dashboardGraph(
 ) {
 
     //Trainee module
-    composable(route = DASHBOARD) {
+    composable(route = DASHBOARD_SCREEN) {
         DashboardRoute(
             padding = padding,
             navigateToWorkoutDetails = navigateToWorkoutDetails,
@@ -34,7 +34,7 @@ fun NavGraphBuilder.dashboardGraph(
 //    }
 
     //Trainer module
-    composable(route = TRAINER_DASHBOARD) {
+    composable(route = TRAINER_DASHBOARD_SCREEN) {
         TrainerDashboardRoute(
             onNavigateToCreateWorkout = navigateToCreateWorkout,
             onNavigateToNotifications = navigateToNotifications,

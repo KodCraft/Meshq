@@ -18,6 +18,7 @@ data class ClientDetailsUiState(
     val showSheet: Boolean = false,
     val isLoading: Boolean = true,
     val isScheduleLoading: Boolean = true,
+    val isAssignmentLoading: Boolean = false,
     val areWorkoutsLoading: Boolean = true,
     val isError: Boolean = false,
     val selectedDay: LocalDate = LocalDate.now(),
@@ -25,6 +26,7 @@ data class ClientDetailsUiState(
 ) : Parcelable {
     sealed class PartialState {
         data object Loading : PartialState()
+        data object WorkoutAssignLoading : PartialState()
         data object HideSheet : PartialState()
         data object WorkoutAssigned : PartialState()
         data object ResetFilter : PartialState()

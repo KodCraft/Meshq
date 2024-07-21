@@ -5,7 +5,7 @@ import androidx.navigation.NavOptions
 
 object TrainerRouteConstants{
     const val TRAINER_DETAILS_SCREEN = "TRAINER_DETAILS_SCREEN/{userId}"
-    const val EXPLORE_TRAINERS = "EXPLORE_TRAINERS"
+    const val EXPLORE_TRAINERS = "EXPLORE_TRAINERS_SCREEN"
 }
 
 fun NavController.navigateToTrainerDetails(userId:String){

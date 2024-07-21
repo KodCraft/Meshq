@@ -44,7 +44,7 @@ import az.kodcraft.client.presentation.clientDetails.contract.ClientDetailsEvent
 import az.kodcraft.client.presentation.clientDetails.contract.ClientDetailsIntent
 import az.kodcraft.client.presentation.clientDetails.contract.ClientDetailsUiState
 import az.kodcraft.core.presentation.bases.BasePreviewContainer
-import az.kodcraft.core.presentation.composable.button.ButtonPrimaryLight
+import az.kodcraft.core.presentation.composable.button.ButtonPrimaryLightWithLoader
 import az.kodcraft.core.presentation.theme.AccentBlue
 import az.kodcraft.core.presentation.theme.Gray100
 import az.kodcraft.core.presentation.theme.PrimaryBlue
@@ -167,8 +167,10 @@ fun ClientDetailsScreen(
                         Spacer(modifier = Modifier.width(4.dp))
                     }
                     Spacer(modifier = Modifier.weight(1f))
-                    ButtonPrimaryLight(
+                    ButtonPrimaryLightWithLoader(
                         text = "Assign",
+                        iconResId = az.kodcraft.core.R.drawable.ic_add_data,
+                        isLoading = uiState.isAssignmentLoading,
                         onClick = { onIntent.invoke(ClientDetailsIntent.AssignWorkout) }
                     )
                 }

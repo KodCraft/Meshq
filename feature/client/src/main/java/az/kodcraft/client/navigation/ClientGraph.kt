@@ -7,12 +7,14 @@ import az.kodcraft.client.presentation.clientList.ClientListRoute
 
 fun NavGraphBuilder.clientGraph(
     navigateBack: () -> Unit,
+    onMenuClick: () -> Unit,
     navigateToClient: (String) -> Unit,
 ) {
     composable(route = ClientRouteConstants.CLIENT_LIST_SCREEN) {
         ClientListRoute(
             navigateBack = navigateBack,
-            navigateToClient = navigateToClient
+            navigateToClient = navigateToClient,
+            onMenuClick = onMenuClick
         )
 
     }

@@ -36,13 +36,14 @@ import az.kodcraft.core.presentation.composable.appBar.TopAppBar
 import az.kodcraft.core.presentation.theme.PrimaryTurq
 import az.kodcraft.core.presentation.theme.bodyLargeLight
 import az.kodcraft.core.presentation.theme.bodyLight
-import az.kodcraft.core.presentation.theme.largeHeadLine
+import az.kodcraft.core.presentation.theme.headLine
 import az.kodcraft.core.utils.collectWithLifecycle
 import az.kodcraft.core.utils.noRippleClickable
 
 @Composable
 fun ClientListRoute(
     viewModel: ClientListViewModel = hiltViewModel(),
+    onMenuClick: () -> Unit,
     navigateBack: () -> Unit,
     navigateToClient: (String) -> Unit,
 ) {
@@ -54,7 +55,7 @@ fun ClientListRoute(
     }
     ClientListScreen(
         uiState = uiState,
-        navigateBack = navigateBack,
+        onMenuClick = onMenuClick,
         onItemClicked = navigateToClient,
         onIntent = viewModel::acceptIntent,
     )
@@ -64,7 +65,7 @@ fun ClientListRoute(
 @Composable
 fun ClientListScreen(
     uiState: ClientListUiState,
-    navigateBack: () -> Unit = {},
+    onMenuClick: () -> Unit = {},
     onItemClicked: (String) -> Unit = {},
     onIntent: (ClientListIntent) -> Unit = {}
 ) {
@@ -76,8 +77,8 @@ fun ClientListScreen(
             .fillMaxSize()
     ) {
         TopAppBar(
-            showBackIcon = true,
-            onBackClick = navigateBack,
+            showMenuIcon = true,
+            onMenuClick = onMenuClick,
             content = {
                 SearchAndFilter()
             }
@@ -142,8 +143,7 @@ fun SearchAndFilter() {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = "Client list",
-                style = MaterialTheme.typography.largeHeadLine,
-                modifier = Modifier.padding(bottom = 6.dp)
+                style = MaterialTheme.typography.headLine
             )
             Spacer(modifier = Modifier.weight(1f))
             Icon(

@@ -80,6 +80,7 @@ class ClientDetailsViewModel @Inject constructor(
             is ClientDetailsIntent.SetDateForWorkoutToAssign -> flow {
                 emit(ClientDetailsUiState.PartialState.DateForWorkoutToAssign(intent.date))
             }
+
             ClientDetailsIntent.HideSheet -> flow {
                 emit(ClientDetailsUiState.PartialState.HideSheet)
             }
@@ -140,6 +141,7 @@ class ClientDetailsViewModel @Inject constructor(
             workoutToAssign = previousState.workoutToAssign.copy(date = partialState.value),
             showSheet = true
         )
+
         is ClientDetailsUiState.PartialState.HideSheet -> previousState.copy(
             showSheet = false
         )
@@ -169,7 +171,15 @@ class ClientDetailsViewModel @Inject constructor(
             applyFilter = true
         )
 
-        ClientDetailsUiState.PartialState.WorkoutAssigned -> previousState.copy(workoutToAssign = AssignWorkoutReqDm.EMPTY, showSheet = false)
+        ClientDetailsUiState.PartialState.WorkoutAssigned -> previousState.copy(
+            workoutToAssign = AssignWorkoutReqDm.EMPTY,
+            showSheet = false,
+            isAssignmentLoading = false
+        )
+
+        ClientDetailsUiState.PartialState.WorkoutAssignLoading -> previousState.copy(
+            isAssignmentLoading = true
+        )
     }
 
     private fun fetchClientsDetails(
@@ -195,7 +205,7 @@ class ClientDetailsViewModel @Inject constructor(
             }.doOnLoading {
                 emit(ClientDetailsUiState.PartialState.ScheduleLoading)
             }.doOnFailure {
-                Log.e("CLIENT_WORKOUTS",it)
+                Log.e("CLIENT_WORKOUTS", it)
             }.collect()
         }
 
@@ -214,10 +224,17 @@ class ClientDetailsViewModel @Inject constructor(
             assignWorkoutUseCase.execute(
                 uiState.value.workoutToAssign.copy(traineeId = uiState.value.clientDetails.id)
             ).doOnSuccess {
-                acceptIntent(ClientDetailsIntent.GetMonthWorkouts(YearMonth.of( uiState.value.selectedDay.year, uiState.value.selectedDay.monthValue)))
+                acceptIntent(
+                    ClientDetailsIntent.GetMonthWorkouts(
+                        YearMonth.of(
+                            uiState.value.selectedDay.year,
+                            uiState.value.selectedDay.monthValue
+                        )
+                    )
+                )
                 emit(ClientDetailsUiState.PartialState.WorkoutAssigned)
             }.doOnLoading {
-                // emit(ClientDetailsUiState.PartialState.WorkoutsLoading)
+                emit(ClientDetailsUiState.PartialState.WorkoutAssignLoading)
             }.collect()
         }
 
