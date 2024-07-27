@@ -2,13 +2,16 @@ package az.kodcraft.dashboard.data.service
 
 import az.kodcraft.core.domain.UserManager
 import az.kodcraft.core.utils.localDateToTimestamp
-import az.kodcraft.dashboard.data.dto.DashboardWeekWorkoutDto
+import az.kodcraft.dashboard.data.dto.trainee.DashboardWeekWorkoutDto
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.Filter
 import kotlinx.coroutines.tasks.await
 import java.time.LocalDate
 
-class DashboardService(private val assignedWorkoutRef: CollectionReference) {
+class DashboardService(
+    private val assignedWorkoutRef: CollectionReference,
+    private val usersCollection: CollectionReference
+) {
 
     suspend fun fetchWeekWorkouts(
         startDate: String,
@@ -33,5 +36,6 @@ class DashboardService(private val assignedWorkoutRef: CollectionReference) {
             }
         }
     }
+
 }
 

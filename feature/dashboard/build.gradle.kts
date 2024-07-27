@@ -23,6 +23,10 @@ dependencies {
     implementation(libs.androidx.ui.tooling)
     implementation(libs.androidx.ui.tooling.preview)
 
+    // Paging
+    implementation (libs.androidx.paging.runtime.ktx)
+    implementation(libs.androidx.paging.compose)
+
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.android )
     kapt(libs.hilt.compiler)

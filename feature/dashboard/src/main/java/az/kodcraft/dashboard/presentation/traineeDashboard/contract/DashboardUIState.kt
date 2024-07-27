@@ -24,7 +24,7 @@ data class DashboardUiState(
         WeekFields.of(
             Locale.getDefault()
         ).weekOfWeekBasedYear()
-    )+ (index -  startIndex)
+    ) + (index -  startIndex)
 
     sealed class PartialState {
         data object Loading : PartialState()

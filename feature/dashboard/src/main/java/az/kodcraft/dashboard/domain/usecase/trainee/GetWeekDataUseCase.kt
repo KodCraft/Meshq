@@ -1,4 +1,4 @@
-package az.kodcraft.dashboard.domain.usecase
+package az.kodcraft.dashboard.domain.usecase.trainee
 
 import az.kodcraft.core.domain.bases.model.Response
 import az.kodcraft.dashboard.domain.model.DashboardWeekDm

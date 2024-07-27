@@ -7,8 +7,8 @@ import az.kodcraft.core.domain.bases.model.doOnLoading
 import az.kodcraft.core.domain.bases.model.doOnNetworkError
 import az.kodcraft.core.domain.bases.model.doOnSuccess
 import az.kodcraft.core.presentation.bases.BaseViewModel
-import az.kodcraft.dashboard.domain.usecase.GetWeekDataUseCase
-import az.kodcraft.dashboard.domain.usecase.GetWeekWorkoutsUseCase
+import az.kodcraft.dashboard.domain.usecase.trainee.GetWeekDataUseCase
+import az.kodcraft.dashboard.domain.usecase.trainee.GetWeekWorkoutsUseCase
 import az.kodcraft.dashboard.presentation.traineeDashboard.contract.DashboardEvent
 import az.kodcraft.dashboard.presentation.traineeDashboard.contract.DashboardIntent
 import az.kodcraft.dashboard.presentation.traineeDashboard.contract.DashboardUiState

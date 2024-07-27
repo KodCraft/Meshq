@@ -1,4 +1,4 @@
-package az.kodcraft.dashboard.data.dto
+package az.kodcraft.dashboard.data.dto.trainee
 
 import az.kodcraft.core.utils.formatDateToStringDayAndMonth
 import az.kodcraft.dashboard.domain.model.DashboardWeekWorkoutDm
